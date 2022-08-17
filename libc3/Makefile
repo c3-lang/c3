@@ -1,9 +1,12 @@
+## c3
+## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
+
 all: libc3.la
 
 test:
 	${MAKE} -C test
 
-CLEANFILES = *.lo *.la
+CLEANFILES = libc3.la .libs *.lo *.la
 
 clean:
 	rm -rf ${CLEANFILES}

@@ -1,4 +1,4 @@
-/* C3
+/* c3
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
 #ifndef C3_H

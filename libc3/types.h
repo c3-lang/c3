@@ -1,3 +1,6 @@
+/* types
+ * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
+ */
 #ifndef TYPES_H
 #define TYPES_H
 

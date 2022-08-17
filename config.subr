@@ -1,4 +1,7 @@
 #!/bin/sh
+## c3
+## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
+
 set -e
 
 o_rule() {

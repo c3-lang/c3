@@ -1,3 +1,6 @@
+## c3
+## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
+
 all:
 	${MAKE} -C libc3 all
 	${MAKE} -C c3c all

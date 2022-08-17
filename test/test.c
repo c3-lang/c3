@@ -6,9 +6,9 @@
 #include "test.h"
 
 char **g_test_targets = {NULL};
-long g_test_ok = 0;
-long g_test_ko = 0;
-long g_test_count = 0;
+long   g_test_ok = 0;
+long   g_test_ko = 0;
+long   g_test_count = 0;
 
 void test_init (int argc, char **argv)
 {
