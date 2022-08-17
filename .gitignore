@@ -1,5 +1,6 @@
 c3c/c3c
 config.mk
+*.core
 *.la
 .libs/
 *.lo

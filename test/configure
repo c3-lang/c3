@@ -8,7 +8,7 @@ PROG=c3_test
 SOURCES="$(ls *.c | tr '\n' ' ')"
 echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
 
-OBJECTS="$(c2o "$SOURCES")"
+OBJECTS="$(c2lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
 check_libbsd
@@ -27,6 +27,8 @@ if pkg-config libbsd-overlay; then
     CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
 fi
 
+LIBC3=../libc3/libc3.la
+LIBS="$LIBS $LIBC3"
 if pkg-config libbsd-overlay; then
     LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"
 fi
@@ -37,12 +39,12 @@ echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do
-    SRC_O="$(c2o "$SRC")"
+    SRC_LO=$(c2lo $SRC)
     echo >> ${CONFIG_MK}
-    o_rule "$SRC" >> ${CONFIG_MK}
-    echo "	\${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_O" >> ${CONFIG_MK}
+    lo_rule $SRC >> ${CONFIG_MK}
+    echo "	\${LIBTOOL} --tag CC --mode compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
 done
 
 echo >> ${CONFIG_MK}
-echo "$PROG: $OBJECTS" >> ${CONFIG_MK}
-echo "	\${CC} \${LDFLAGS} ${OBJECTS} \${LIBS} -o ${PROG}" >> ${CONFIG_MK}
+echo "$PROG: $LIBC3 $OBJECTS" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
