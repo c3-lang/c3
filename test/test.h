@@ -8,14 +8,7 @@
 
 #define TEST_COLOR_KO "\033[91m"
 #define TEST_COLOR_OK "\033[92m"
-#define TEST_COLOR_RESET "\033[22m"
-
-extern long g_test_ok;
-extern long g_test_ko;
-extern long g_test_count;
-
-void test_ok ();
-void test_ko ();
+#define TEST_COLOR_RESET "\033[39m"
 
 #define TEST_ASSERT(pred)                               \
   do {                                                  \
@@ -29,5 +22,15 @@ void test_ko ();
              __FILE__, __LINE__, __func__, # pred);     \
     }                                                   \
   } while(0)
+
+extern long g_test_ok;
+extern long g_test_ko;
+extern long g_test_count;
+
+void test_init ();
+void test_ok ();
+void test_ko ();
+void test_shutdown ();
+void test_summary ();
 
 #endif /* TEST_H */

@@ -4,7 +4,7 @@
 #include "../libc3/types.h"
 #include "test.h"
 
-void test_types () {
+void types_test () {
   TEST_ASSERT(sizeof(s8)  == 1);
   TEST_ASSERT(sizeof(s16) == 2);
   TEST_ASSERT(sizeof(s32) == 4);

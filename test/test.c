@@ -7,6 +7,13 @@ long g_test_ok = 0;
 long g_test_ko = 0;
 long g_test_count = 0;
 
+void test_init ()
+{
+  g_test_ok = 0;
+  g_test_ko = 0;
+  g_test_count = 0;
+}
+
 void test_ok ()
 {
   g_test_ok++;
@@ -19,11 +26,15 @@ void test_ko ()
   fprintf(stderr, "%sF%s", TEST_COLOR_KO, TEST_COLOR_RESET);
 }
 
+void test_shutdown ()
+{
+}
+
 void test_summary ()
 {
   printf("\nTotal %ld tests. "
-         "%sOK %ld (%f%%)%s. "
-         "%sKO %ld (%f%%)%s.\n",
+         "%sOK %ld (%.1f%%)%s. "
+         "%sKO %ld (%.1f%%)%s.\n",
          g_test_count,
          TEST_COLOR_OK,
          g_test_ok,
