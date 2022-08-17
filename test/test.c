@@ -16,12 +16,14 @@ void test_init ()
 
 void test_ok ()
 {
+  g_test_count++;
   g_test_ok++;
   fprintf(stderr, "%s.%s", TEST_COLOR_OK, TEST_COLOR_RESET);
 }
 
 void test_ko ()
 {
+  g_test_count++;
   g_test_ko++;
   fprintf(stderr, "%sF%s", TEST_COLOR_KO, TEST_COLOR_RESET);
 }

@@ -12,7 +12,6 @@
 
 #define TEST_ASSERT(pred)                               \
   do {                                                  \
-    g_test_count++;                                     \
     if ((pred)) {                                       \
       test_ok();                                        \
     }                                                   \
