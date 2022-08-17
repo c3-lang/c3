@@ -45,4 +45,3 @@ void str_test ()
   TEST_ASSERT(str = str_f("test%d", 42));
   TEST_STR_DELETE(str);
 }
-
