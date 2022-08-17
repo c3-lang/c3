@@ -19,7 +19,7 @@ typedef sw bool;
 
 typedef enum {
   false = 0,
-  true = -1
+  true = 1
 } e_bool;
 
 typedef union ptr {

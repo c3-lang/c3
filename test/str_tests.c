@@ -44,4 +44,20 @@ void str_test ()
   TEST_STR_DELETE(str);
   TEST_ASSERT(str = str_f("test%d", 42));
   TEST_STR_DELETE(str);
+  TEST_ASSERT(str = str_f("test%d", 42));
+  TEST_STR_DELETE(str);
+  len = 4;
+  TEST_ASSERT(str = str_new(false, len, "test"));
+  TEST_ASSERT(str->bytes == len);
+  TEST_ASSERT(strncmp(str->ptr.p, "test", len) == 0);
+  TEST_STR_DELETE(str);
+  len = 4;
+  m = malloc(len);
+  memcpy(m, "test", len);
+  TEST_ASSERT(str = str_new(true, len, m));
+  TEST_ASSERT(str->bytes == len);
+  TEST_ASSERT(strncmp(str->ptr.p, "test", len) == 0);
+  TEST_STR_DELETE(str);
+  /* TODO: str_fputs */
+  /* TODO: str_puts */
 }
