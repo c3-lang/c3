@@ -19,16 +19,19 @@ typedef struct str {
   u_ptr ptr;
 } s_str;
 
-/* Byte string constructors */
-
+/* Constructors, call str_delete after use */
 s_str * str_1 (const char *s, bool free);
 s_str * str_copy (uw bytes, const s8 *p);
-void    str_clean (s_str *str);
-void    str_delete (s_str *str);
 s_str * str_f (const char *fmt, ...);
-sw      str_fputs (s_str *str, FILE *fp);
 void    str_init (s_str *str, bool free, uw bytes, const s8 *p);
 s_str * str_new (bool free, uw bytes, const s8 *p);
-sw      str_puts (s_str *str);
+
+/* Destructors */
+void str_clean (s_str *str);
+void str_delete (s_str *str);
+
+/* Observers */
+sw str_fputs (s_str *str, FILE *fp);
+sw str_puts (s_str *str);
 
 #endif /* STR_H */
