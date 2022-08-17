@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+
+( cd libc3 && ./configure; )
+( cd c3c && ./configure; )
+( cd test && ./configure; )

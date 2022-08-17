@@ -1,0 +1,5 @@
+c3c/c3c
+config.mk
+.libs/
+*.la
+*.lo

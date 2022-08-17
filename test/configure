@@ -1,0 +1,48 @@
+#!/bin/sh
+set -e
+
+. ../config.subr
+
+PROG=c3_test
+
+SOURCES="$(ls *.c | tr '\n' ' ')"
+echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
+
+OBJECTS="$(c2o "$SOURCES")"
+echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+
+check_libbsd
+
+if pkg-config libbsd-overlay; then
+    CPPFLAGS="$CPPFLAGS -D_DEFAULT_SOURCE -D__USE_MISC"
+fi
+
+if [ x"$DEBUG" = x"yes" ]; then
+    CFLAGS="$CFLAGS -DDEBUG -O0 -ggdb"
+else
+    CFLAGS="$CFLAGS -DNDEBUG -O2"
+fi
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+if pkg-config libbsd-overlay; then
+    CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
+fi
+
+if pkg-config libbsd-overlay; then
+    LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"
+fi
+
+echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
+echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
+echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
+echo "LIBS = $LIBS" >> ${CONFIG_MK}
+
+for SRC in $SOURCES; do
+    SRC_O="$(c2o "$SRC")"
+    echo >> ${CONFIG_MK}
+    o_rule "$SRC" >> ${CONFIG_MK}
+    echo "	\${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_O" >> ${CONFIG_MK}
+done
+
+echo >> ${CONFIG_MK}
+echo "$PROG: $OBJECTS" >> ${CONFIG_MK}
+echo "	\${CC} \${LDFLAGS} ${OBJECTS} \${LIBS} -o ${PROG}" >> ${CONFIG_MK}
