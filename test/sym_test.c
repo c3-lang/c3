@@ -32,6 +32,10 @@ void sym_test_sym_1 ()
   s_sym *sym_test;
   s_sym *sym_test123;
   sym_empty = sym_test_sym_1_test("");
+  sym_test_sym_1_test(" ");
+  sym_test_sym_1_test(".");
+  sym_test_sym_1_test("..");
+  sym_test_sym_1_test("...");
   sym_t = sym_test_sym_1_test("t");
   TEST_ASSERT(sym_t != sym_empty);
   mod_t = sym_test_sym_1_test("T");
@@ -55,6 +59,12 @@ void sym_test_sym_1 ()
   mod = sym_test_sym_1_test("Test123.Test456");
   TEST_ASSERT(mod != mod_test123);
   TEST_ASSERT(mod != sym);
+  sym_test_sym_1_test("É");
+  sym_test_sym_1_test("Éo");
+  sym_test_sym_1_test("Éoà \n\r\t\v\"");
+  sym_test_sym_1_test("é");
+  sym_test_sym_1_test("éo");
+  sym_test_sym_1_test("éoà \n\r\t\v\"");
 }
 
 void sym_test_sym_delete_all ()
@@ -109,6 +119,10 @@ void sym_test_sym_inspect_test (const char *test, const char *result)
 void sym_test_sym_inspect ()
 {
   SYM_TEST_SYM_INSPECT("", ":\"\"");
+  SYM_TEST_SYM_INSPECT(" ", ":\"\\s\"");
+  SYM_TEST_SYM_INSPECT(".", ":.");
+  SYM_TEST_SYM_INSPECT("..", ":..");
+  SYM_TEST_SYM_INSPECT("...", ":...");
   SYM_TEST_SYM_INSPECT("t", ":t");
   SYM_TEST_SYM_INSPECT("T", "T");
   SYM_TEST_SYM_INSPECT("test", ":test");
@@ -118,6 +132,14 @@ void sym_test_sym_inspect ()
   SYM_TEST_SYM_INSPECT("Test123", "Test123");
   SYM_TEST_SYM_INSPECT("test123.test456", ":test123.test456");
   SYM_TEST_SYM_INSPECT("Test123.Test456", "Test123.Test456");
+  SYM_TEST_SYM_INSPECT("É", ":\"É\"");
+  SYM_TEST_SYM_INSPECT("Éo", ":\"Éo\"");
+  SYM_TEST_SYM_INSPECT("Éoà \n\r\t\v\"",
+                       ":\"Éoà\\s\\n\\r\\t\\v\\\"\"");
+  SYM_TEST_SYM_INSPECT("é", ":\"é\"");
+  SYM_TEST_SYM_INSPECT("éo", ":\"éo\"");
+  SYM_TEST_SYM_INSPECT("éoà \n\r\t\v\"",
+                       ":\"éoà\\s\\n\\r\\t\\v\\\"\"");
 }
 
 void sym_test ()

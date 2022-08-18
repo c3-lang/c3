@@ -230,7 +230,7 @@ character str_read_character (s_str *str)
   c = str_to_character(str);
   if (c < 0)
     return -1;
-  bytes = character_bytes(c);
+  bytes = character_utf8_bytes(c);
   if (bytes < 0)
     return -1;
   str->bytes -= bytes;
@@ -243,17 +243,19 @@ character str_to_character (s_str *str)
   assert(str);
   u8 *b;
   u8 x[4];
+  const u8 _00000111 = 0x07;
+  const u8 _00001111 = 0x0F;
+  const u8 _00011111 = 0x1F;
+  const u8 _00111111 = 0x3F;
   const u8 _10000000 = 0x80;
   const u8 _11000000 = 0xC0;
   const u8 _11100000 = 0xE0;
   const u8 _11110000 = 0xF0;
   const u8 _11111000 = 0xF8;
-  const u8 _00011111 = 0x1F;
-  const u8 _00111111 = 0x3F;
   if (str->bytes <= 0)
     return -1;
   b = (u8 *) str->ptr.p;
-  if (! (b[0] & _10000000))
+  if ((b[0] & _10000000) == 0)
     return *b;
   if ((b[0] & _11100000) == _11000000) {
     if (str->bytes < 2)
@@ -271,7 +273,7 @@ character str_to_character (s_str *str)
       return -1;
     if ((b[2] & _11000000) != _10000000)
       return -1;
-    x[0] = b[0] & _00011111;
+    x[0] = b[0] & _00001111;
     x[1] = b[1] & _00111111;
     x[2] = b[2] & _00111111;
     return (x[0] << 12) | (x[1] << 6) | x[2];
@@ -285,7 +287,7 @@ character str_to_character (s_str *str)
       return -1;
     if ((b[3] & _11000000) != _10000000)
       return -1;
-    x[0] = b[0] & _00011111;
+    x[0] = b[0] & _00000111;
     x[1] = b[1] & _00111111;
     x[2] = b[2] & _00111111;
     x[3] = b[3] & _00111111;
