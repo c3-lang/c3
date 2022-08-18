@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include "character.h"
 #include "str.h"
 
 s_str * str_1 (bool free, const char *s)
@@ -126,6 +127,18 @@ void str_delete (s_str *str)
   free(str);
 }
 
+s_str * str_dup (s_str *src)
+{
+  s8 *n;
+  s_str *str;
+  assert(src);
+  n = malloc(src->bytes);
+  memcpy(n, src->ptr.p, src->bytes);
+  str = str_new(true, src->bytes, n);
+  return str;
+}
+
+
 s_str * str_empty ()
 {
   s_str *str;
@@ -208,6 +221,77 @@ s_str * str_new (bool free, uw bytes, const s8 *p)
 sw str_puts (s_str *str)
 {
   return str_fputs(str, stdout);
+}
+
+character str_read_character (s_str *str)
+{
+  character c;
+  sw bytes;
+  c = str_to_character(str);
+  if (c < 0)
+    return -1;
+  bytes = character_bytes(c);
+  if (bytes < 0)
+    return -1;
+  str->bytes -= bytes;
+  str->ptr.p = (s8 *) str->ptr.p + bytes;
+  return c;
+}
+
+character str_to_character (s_str *str)
+{
+  assert(str);
+  u8 *b;
+  u8 x[4];
+  const u8 _10000000 = 0x80;
+  const u8 _11000000 = 0xC0;
+  const u8 _11100000 = 0xE0;
+  const u8 _11110000 = 0xF0;
+  const u8 _11111000 = 0xF8;
+  const u8 _00011111 = 0x1F;
+  const u8 _00111111 = 0x3F;
+  if (str->bytes <= 0)
+    return -1;
+  b = (u8 *) str->ptr.p;
+  if (! (b[0] & _10000000))
+    return *b;
+  if ((b[0] & _11100000) == _11000000) {
+    if (str->bytes < 2)
+      return -1;
+    if ((b[1] & _11000000) != _10000000)
+      return -1;
+    x[0] = b[0] & _00011111;
+    x[1] = b[1] & _00111111;
+    return (x[0] << 6) | x[1];
+  }
+  if ((b[0] & _11110000) == _11100000) {
+    if (str->bytes < 3)
+      return -1;
+    if ((b[1] & _11000000) != _10000000)
+      return -1;
+    if ((b[2] & _11000000) != _10000000)
+      return -1;
+    x[0] = b[0] & _00011111;
+    x[1] = b[1] & _00111111;
+    x[2] = b[2] & _00111111;
+    return (x[0] << 12) | (x[1] << 6) | x[2];
+  }
+  if ((b[0] & _11111000) == _11110000) {
+    if (str->bytes < 4)
+      return -1;
+    if ((b[1] & _11000000) != _10000000)
+      return -1;
+    if ((b[2] & _11000000) != _10000000)
+      return -1;
+    if ((b[3] & _11000000) != _10000000)
+      return -1;
+    x[0] = b[0] & _00011111;
+    x[1] = b[1] & _00111111;
+    x[2] = b[2] & _00111111;
+    x[3] = b[3] & _00111111;
+    return (x[0] << 18) | (x[1] << 12) | (x[2] << 6) | x[3];
+  }
+  return -1;
 }
 
 s_str * str_vf (const char *fmt, va_list ap)

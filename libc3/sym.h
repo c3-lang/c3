@@ -24,4 +24,7 @@ void sym_delete_all ();
 /** @brief Call str_free after use. */
 s_str * sym_inspect (s_sym *sym);
 
+/** @brief True iff sym is a module name (starts with a capital). */
+bool sym_is_module (s_sym *sym);
+
 #endif /* SYM_H */

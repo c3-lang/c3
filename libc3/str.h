@@ -29,6 +29,7 @@ s_str * str_append_f (s_str *str, const char *fmt, ...);
 s_str * str_append_inspect (s_str *str, s_str *x);
 s_str * str_append_realloc (s_str *str, uw bytes, const s8 *p);
 s_str * str_cpy (uw bytes, const s8 *p);
+s_str * str_dup (s_str *src);
 s_str * str_empty ();
 s_str * str_f (const char *fmt, ...);
 s_str * str_inspect (s_str *x);
@@ -39,9 +40,13 @@ s_str * str_vf (const char *fmt, va_list ap);
 void str_delete (s_str *str);
 
 /* Observers */
-sw      str_cmp (s_str *a, s_str *b);
-sw      str_fputs (s_str *str, FILE *fp);
-sw      str_puts (s_str *str);
-s_sym * str_to_sym (s_str *str);
+sw        str_cmp (s_str *a, s_str *b);
+sw        str_fputs (s_str *str, FILE *fp);
+sw        str_puts (s_str *str);
+character str_to_character (s_str *str);
+s_sym *   str_to_sym (s_str *str);
+
+/* Modifiers */
+character str_read_character (s_str *str);
 
 #endif /* STR_H */

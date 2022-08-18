@@ -22,6 +22,8 @@ typedef enum {
   true = 1
 } e_bool;
 
+typedef s64 character;
+
 typedef union ptr {
   const void *p;
   u64 u64;

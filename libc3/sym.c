@@ -3,6 +3,7 @@
  */
 #include <err.h>
 #include <stdlib.h>
+#include "character.h"
 #include "str.h"
 #include "sym.h"
 
@@ -49,6 +50,24 @@ void sym_delete_all ()
     free(tmp);
   }
   g_sym_list = NULL;
+}
+
+s_str * sym_inspect (s_sym *sym)
+{
+  s_str colon;
+  if (sym_is_module(sym))
+    return str_dup(&sym->str);
+  str_init(&colon, false, 1, ":");
+  return str_append(str_empty(), &colon, &sym->str);
+}
+
+bool sym_is_module (s_sym *sym)
+{
+  character c;
+  c = str_to_character(&sym->str);
+  if (character_is_upper(c))
+    return true;
+  return false;
 }
 
 s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next)

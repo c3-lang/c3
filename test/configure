@@ -30,7 +30,7 @@ if pkg-config libbsd-overlay; then
     CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
 fi
 
-LIBC3=../libc3/libc3.la
+LIBC3=../libc3/libc3.a
 LIBS="$LIBS $LIBC3"
 if pkg-config libbsd-overlay; then
     LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"

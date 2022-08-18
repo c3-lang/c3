@@ -1,3 +1,4 @@
+*.a
 c3c/c3c
 config.mk
 *.core

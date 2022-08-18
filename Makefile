@@ -4,6 +4,7 @@
 all:
 	${MAKE} -C libc3 all
 	${MAKE} -C c3c all
+	${MAKE} -C test all
 
 test: all
 	${MAKE} -C test test
