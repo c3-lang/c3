@@ -27,4 +27,22 @@ typedef union ptr {
   u64 u64;
 } u_ptr;
 
+typedef struct str {
+  bool free;
+  u64 bytes;
+  u_ptr ptr;
+} s_str;
+
+typedef struct symbol s_symbol;
+
+typedef union symbol_ptr {
+  s_symbol *symbol;
+  u64 u64;
+} u_symbol_ptr;
+  
+struct symbol {
+  s_str str;
+  u_symbol_ptr next;
+};
+
 #endif

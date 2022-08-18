@@ -38,9 +38,9 @@ void str_test ()
   TEST_ASSERT(stra.bytes == len);
   TEST_ASSERT(strncmp(stra.ptr.p, "test", len) == 0);
   TEST_STR_CLEAN(stra);
-  TEST_ASSERT(str = str_1("test", false));
+  TEST_ASSERT(str = str_1(false, "test"));
   TEST_STR_DELETE(str);
-  TEST_ASSERT(str = str_copy(4, "test"));
+  TEST_ASSERT(str = str_cpy(4, "test"));
   TEST_STR_DELETE(str);
   TEST_ASSERT(str = str_f("test%d", 42));
   TEST_STR_DELETE(str);
@@ -58,6 +58,8 @@ void str_test ()
   TEST_ASSERT(str->bytes == len);
   TEST_ASSERT(strncmp(str->ptr.p, "test", len) == 0);
   TEST_STR_DELETE(str);
+  /* TODO: str_append_* */
   /* TODO: str_fputs */
   /* TODO: str_puts */
+  /* TODO: str_inspect */
 }
