@@ -1,9 +1,9 @@
-/* str
+/* c3
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
 /**
  * @file str.h
- * @brief Byte strings.
+ * @brief Byte string manipulation functions.
  *
  * Structure to manipulate byte strings.
  */
@@ -39,9 +39,9 @@ s_str * str_vf (const char *fmt, va_list ap);
 void str_delete (s_str *str);
 
 /* Observers */
-sw         str_cmp (s_str *a, s_str *b);
-sw         str_fputs (s_str *str, FILE *fp);
-sw         str_puts (s_str *str);
-s_symbol * str_to_symbol (s_str *str);
+sw      str_cmp (s_str *a, s_str *b);
+sw      str_fputs (s_str *str, FILE *fp);
+sw      str_puts (s_str *str);
+s_sym * str_to_sym (s_str *str);
 
 #endif /* STR_H */

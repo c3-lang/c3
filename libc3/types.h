@@ -33,16 +33,20 @@ typedef struct str {
   u_ptr ptr;
 } s_str;
 
-typedef struct symbol s_symbol;
+typedef struct sym_list s_sym_list;
 
-typedef union symbol_ptr {
-  s_symbol *symbol;
-  u64 u64;
-} u_symbol_ptr;
-  
-struct symbol {
+typedef struct sym {
   s_str str;
-  u_symbol_ptr next;
+} s_sym;
+
+typedef union sym_list_ptr {
+  s_sym_list *p;
+  u64 u64;
+} u_sym_list_ptr;
+  
+struct sym_list {
+  s_sym *sym;
+  u_sym_list_ptr next;
 };
 
 #endif

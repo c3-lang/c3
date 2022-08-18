@@ -2,7 +2,7 @@
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
 /**
- * @file symbol.h
+ * @file sym.h
  * @brief Symbol data structure.
  *
  * Structure to manipulate symbols.
@@ -10,22 +10,18 @@
  * They are allocated once and only free'd at the end of the program.
  * Comparing symbols is fast : it's a pointer comparison.
  */
-#ifndef SYMBOL_H
-#define SYMBOL_H
+#ifndef SYM_H
+#define SYM_H
 
-#include <stdio.h>
 #include "types.h"
 
 /** @brief Make symbol from C string. */
-s_symbol * symbol_1 (s8 *p);
-
-/** @brief Compare symbols. */
-sw symbol_cmp (s_symbol *a, s_symbol *b);
+s_sym * sym_1 (s8 *p);
 
 /** @brief Call when exiting program. */
-void symbol_delete_all ();
+void sym_delete_all ();
 
 /** @brief Call str_free after use. */
-s_str * symbol_inspect (s_symbol *sym);
+s_str * sym_inspect (s_sym *sym);
 
-#endif /* SYMBOL_H */
+#endif /* SYM_H */
