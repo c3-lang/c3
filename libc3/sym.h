@@ -16,7 +16,7 @@
 #include "types.h"
 
 /** @brief Make symbol from C string. */
-s_sym * sym_1 (s8 *p);
+s_sym * sym_1 (const s8 *p);
 
 /** @brief Call when exiting program. */
 void sym_delete_all ();

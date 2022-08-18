@@ -11,7 +11,7 @@ s_sym      * sym_new (s_str *str);
 
 s_sym_list * g_sym_list = NULL;
 
-s_sym * sym_1 (s8 *p)
+s_sym * sym_1 (const s8 *p)
 {
   s_str stra;
   s_sym *sym;
@@ -37,7 +37,7 @@ void sym_delete (s_sym *sym)
   free(sym);
 }
   
-void sym_list_delete_all ()
+void sym_delete_all ()
 {
   s_sym_list *sym_list;
   sym_list = g_sym_list;

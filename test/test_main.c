@@ -5,6 +5,7 @@
 
 void types_test ();
 void str_test ();
+void sym_test ();
 
 int main (int argc, char **argv)
 {
@@ -13,6 +14,8 @@ int main (int argc, char **argv)
     types_test();
   if (test_target("str"))
     str_test();
+  if (test_target("sym"))
+    sym_test();
   test_summary();
   test_shutdown();
   return 0;
