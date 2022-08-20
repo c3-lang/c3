@@ -9,8 +9,12 @@ o_rule() {
     echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: Makefile config.mk/'
 }
 
+ext_rule() {
+    o_rule "$2" | sed -e "s/[.]o:/$1:/"
+}
+
 lo_rule() {
-    o_rule "$1" | sed -e 's/[.]o:/.lo:/'
+    ext_rule .lo "$1"
 }
 
 prog_rule() {
@@ -21,16 +25,21 @@ c2prog() {
     echo "$@" | sed -e 's/[.]c$//' -e 's/[.]c / /g'
 }
 
+c2ext() {
+    EXT="$1"; shift
+    echo "$@" | sed -e "s/[.]c$/${EXT}/" -e "s/[.]c /${EXT} /g"
+}
+
 c2o() {
-    echo "$@" | sed -e 's/[.]c$/.o/' -e 's/[.]c /.o /g'
+    c2ext .o "$@"
 }
 
 c2lo() {
-    echo "$@" | sed -e 's/[.]c$/.lo/' -e 's/[.]c /.lo /g'
+    c2ext .lo "$@"
 }
 
 c2la() {
-    echo "$@" | sed -e 's/[.]c$/.la/' -e 's/[.]c /.la /g'
+    c2ext .la "$@"
 }
 
 require_pkg_config() {

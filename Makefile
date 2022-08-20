@@ -6,8 +6,15 @@ all:
 	${MAKE} -C c3c all
 	${MAKE} -C test all
 
+debug:
+	${MAKE} -C libc3 debug
+	${MAKE} -C test debug
+
 test: all
 	${MAKE} -C test test
+
+test_debug: debug
+	${MAKE} -C test test_debug
 
 install: all
 	${MAKE} -C libc3 install

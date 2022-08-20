@@ -98,6 +98,7 @@ void sym_delete_all ()
 s_str * sym_inspect (s_sym *sym)
 {
   s_str colon;
+  s_str *str;
   assert(sym);
   if (sym->str.bytes == 0)
     return str_1(false, ":\"\"");
@@ -106,7 +107,8 @@ s_str * sym_inspect (s_sym *sym)
   if (sym_is_module(sym))
     return str_dup(&sym->str);
   str_init(&colon, false, 1, ":");
-  return str_append(str_empty(), &colon, &sym->str);
+  str = str_append(str_empty(), &colon, &sym->str, NULL);
+  return str;
 }
 
 s_str * sym_inspect_reserved (s_sym *sym)
@@ -115,7 +117,7 @@ s_str * sym_inspect_reserved (s_sym *sym)
   sw cbytes;
   character esc;
   s8 *n = 0;
-  uw  nbytes;
+  sw  nbytes;
   uw  o;
   s_str *str;
   s_str stra;
@@ -142,7 +144,7 @@ s_str * sym_inspect_reserved (s_sym *sym)
     }
   }
   n[o++] = '"';
-  assert(o == nbytes);
+  assert(o == (uw) nbytes);
   str = str_new(true, nbytes, n);
   return str;
  error:
