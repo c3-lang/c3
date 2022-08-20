@@ -2,7 +2,11 @@
 c3c/c3c
 config.mk
 *.core
+*.gcno
 *.la
 .libs/
 *.lo
 test/c3_test
+test/c3_test.asan
+test/c3_test.cov
+test/c3_test.debug

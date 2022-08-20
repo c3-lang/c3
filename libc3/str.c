@@ -22,7 +22,7 @@ s_str * str_append (s_str *str, ...)
   s_str *i;
   va_start(ap, str);
   /* TODO: realloc only once */
-  while ((i = va_arg(ap, (s_str *))))
+  while ((i = va_arg(ap, s_str *)))
     str_append_copy(str, i->bytes, i->ptr.p);
   va_end(ap);
   return str;

@@ -7,6 +7,8 @@ set -e
 . ../config.subr
 
 PROG=c3_test
+PROG_ASAN=c3_test.asan
+PROG_COV=c3_test.cov
 PROG_DEBUG=c3_test.debug
 
 SOURCES="$(ls *.c | tr '\n' ' ')"
@@ -14,6 +16,12 @@ echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
 
 OBJECTS="$(c2lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+
+OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
+echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
+
+OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
@@ -34,6 +42,20 @@ if pkg-config libbsd-overlay; then
     CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
     LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"
 fi
+
+# Asan config
+CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
+LDFLAGS_ASAN="$LDFLAGS"
+LIBC3_ASAN=../libc3/libc3.asan.a
+LIBS_ASAN="$LIBS $LIBC3_ASAN"
+LIBS_ASAN="$LIBS ../libc3/libc3.asan.a"
+
+# Coverage config
+CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
+LDFLAGS_COV="$LDFLAGS"
+LIBC3_COV=../libc3/libc3.cov.a
+LIBS_COV="$LIBS $LIBC3_COV"
+LIBS_COV="$LIBS ../libc3/libc3.cov.a"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
@@ -68,20 +90,39 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do
-    SRC_LO="$(c2lo "$SRC")"
     echo >> ${CONFIG_MK}
+    SRC_LO="$(c2lo "$SRC")"
     lo_rule "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-    SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
+
     echo >> ${CONFIG_MK}
+    SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
+    ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
+
+    echo >> ${CONFIG_MK}
+    SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
+    ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
+
+    echo >> ${CONFIG_MK}
+    SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
     ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
 done
 
 echo >> ${CONFIG_MK}
 echo "$PROG: $LIBC3 $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
+
+echo >> ${CONFIG_MK}
+echo "$PROG_ASAN: $LIBC3_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_ASAN} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} ${LIBS_ASAN} -o $PROG_ASAN" >> ${CONFIG_MK}
+
+echo >> ${CONFIG_MK}
+echo "$PROG_COV: $LIBC3_COV $OBJECTS_COV" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_COV} \${LDFLAGS_COV} ${OBJECTS_COV} ${LIBS_COV} -o $PROG_COV" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$PROG_DEBUG: $LIBC3_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} ${LIBS_DEBUG} -o $PROG_DEBUG" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_DEBUG} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} ${LIBS_DEBUG} -o $PROG_DEBUG" >> ${CONFIG_MK}

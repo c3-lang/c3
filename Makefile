@@ -6,12 +6,26 @@ all:
 	${MAKE} -C c3c all
 	${MAKE} -C test all
 
+asan:
+	${MAKE} -C libc3 asan
+	${MAKE} -C test asan
+
+cov:
+	${MAKE} -C libc3 cov
+	${MAKE} -C test cov
+
 debug:
 	${MAKE} -C libc3 debug
 	${MAKE} -C test debug
 
 test: all
 	${MAKE} -C test test
+
+test_asan: asan
+	${MAKE} -C test test_asan
+
+test_cov: cov
+	${MAKE} -C test test_cov
 
 test_debug: debug
 	${MAKE} -C test test_debug
