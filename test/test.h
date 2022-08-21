@@ -22,6 +22,15 @@
     }                                                   \
   } while(0)
 
+#define TEST_EQ(test, expected)                   \
+  do {                                            \
+    long long tmp = test;                              \
+    TEST_ASSERT((tmp = test) == expected);        \
+    if (! g_test_last_ok)                         \
+      printf("Expected %lld got %lld\n",      \
+             (long long) expected, tmp);       \
+  } while (0)
+
 extern long   g_test_count;
 extern long   g_test_ko;
 extern long   g_test_last_ok;

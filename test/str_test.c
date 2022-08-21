@@ -10,8 +10,8 @@
   do {                                          \
     str_clean(&stra);                           \
     TEST_ASSERT(stra.bytes == 0);               \
-    TEST_ASSERT(stra.ptr.p == NULL);             \
-    TEST_ASSERT(stra.ptr.u64 == 0);              \
+    TEST_ASSERT(stra.ptr.p == NULL);            \
+    TEST_ASSERT(stra.ptr.u64 == 0);             \
   } while(0)
 
 #define TEST_STR_DELETE(str) \
