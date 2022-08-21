@@ -89,7 +89,7 @@ sw buf_flush (s_buf *buf)
   return 0;
 }
 
-sw buf_read (s_buf *buf, u8 *p)
+sw buf_peek (s_buf *buf, u8 *p)
 {
   sw r;
   assert(buf);
@@ -107,11 +107,11 @@ sw buf_read (s_buf *buf, u8 *p)
     assert(! "buffer overflow");
     return -1;
   }
-  *p = buf->str.ptr.pu8[buf->rpos++];
+  *p = buf->str.ptr.pu8[buf->rpos];
   return 1;
 }
 
-sw buf_read_str (s_buf *buf, s_str *str)
+sw buf_peek_str (s_buf *buf, s_str *str)
 {
   sw r;
   assert(buf);
@@ -129,8 +129,25 @@ sw buf_read_str (s_buf *buf, s_str *str)
   if (buf->rpos + str->bytes > buf->wpos)
     return 0;
   memcpy((void*) str->ptr.p, (s8 *) buf->str.ptr.p + buf->rpos, str->bytes);
-  buf->rpos += str->bytes;
   return str->bytes;
+}
+
+sw buf_read (s_buf *buf, u8 *p)
+{
+  sw r;
+  r = buf_peek(buf, p);
+  if (r == 1)
+    buf->rpos++;
+  return r;
+}
+
+sw buf_read_str (s_buf *buf, s_str *str)
+{
+  sw r;
+  r = buf_peek_str(buf, str);
+  if (r > 0)
+    buf->rpos += r;
+  return r;
 }
 
 sw buf_refill (s_buf *buf)

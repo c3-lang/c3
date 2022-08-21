@@ -73,6 +73,14 @@ void buf_test_new_delete ()
   TEST_BUF_DELETE(buf);
 }
 
+void buf_test_peek ()
+{
+}
+
+void buf_test_peek_str ()
+{
+}
+
 void buf_test_read ()
 {
   char a[8] = "ABCDEFGH";
@@ -193,8 +201,10 @@ void buf_test ()
 {
   buf_test_init_clean();
   buf_test_new_delete();
+  buf_test_peek();
+  buf_test_peek_str();
   buf_test_read();
+  buf_test_read_str();
   buf_test_write();
   buf_test_write_str();
-  buf_test_read_str();
 }

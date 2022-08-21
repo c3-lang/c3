@@ -27,6 +27,8 @@ void buf_delete (s_buf *buf);
 
 /* Modifiers */
 sw buf_flush (s_buf *buf);
+sw buf_peek (s_buf *buf, u8 *p);
+sw buf_peek_str (s_buf *buf, s_str *str);
 sw buf_read (s_buf *buf, u8 *p);
 sw buf_read_str (s_buf *buf, s_str *str);
 sw buf_refill (s_buf *buf);
