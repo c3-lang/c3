@@ -30,6 +30,8 @@ void buf_init (s_buf *buf, bool free, uw bytes, const s8 *p)
   str_init(&buf->str, free, bytes, p);
   buf->rpos = 0;
   buf->wpos = 0;
+  buf->refill = NULL;
+  buf->flush = NULL;
 }
 
 void buf_init_alloc (s_buf *buf, uw bytes)

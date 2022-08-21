@@ -70,11 +70,33 @@ void buf_test_new_delete ()
 
 void buf_test_read ()
 {
-  char a[4] = "Test";
+  char a[16] = "ABCDEFGHIJKLMNOP";
   s_buf buf;
   u8 byte;
   buf_init(&buf, false, sizeof(a), a);
+  TEST_EQ(buf_read(&buf, &byte), 0);
+  TEST_EQ(buf_read(&buf, &byte), 0);
+  buf.wpos = 1;
   TEST_EQ(buf_read(&buf, &byte), 1);
+  TEST_EQ(byte, 'A');
+  TEST_EQ(buf.rpos, 1);
+  TEST_EQ(buf_read(&buf, &byte), 0);
+  TEST_EQ(buf_read(&buf, &byte), 0);
+  buf.wpos = 5;
+  TEST_EQ(buf_read(&buf, &byte), 1);
+  TEST_EQ(byte, 'B');
+  TEST_EQ(buf.rpos, 2);
+  TEST_EQ(buf_read(&buf, &byte), 1);
+  TEST_EQ(byte, 'C');
+  TEST_EQ(buf.rpos, 3);
+  TEST_EQ(buf_read(&buf, &byte), 1);
+  TEST_EQ(byte, 'D');
+  TEST_EQ(buf.rpos, 4);
+  TEST_EQ(buf_read(&buf, &byte), 1);
+  TEST_EQ(byte, 'E');
+  TEST_EQ(buf.rpos, 5);
+  TEST_EQ(buf_read(&buf, &byte), 0);
+  TEST_EQ(buf_read(&buf, &byte), 0);
   buf_clean(&buf);
 }
 
@@ -95,7 +117,7 @@ void buf_test ()
   buf_test_init_clean();
   buf_test_new_delete();
   buf_test_read();
-  buf_test_read_str();
   buf_test_write();
   buf_test_write_str();
+  buf_test_read_str();
 }
