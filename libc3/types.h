@@ -26,7 +26,9 @@ typedef s64 character;
 
 typedef union ptr {
   const void *p;
-  u64 u64;
+  const s8   *ps8;
+  const u8   *pu8;
+  u64         u64;
 } u_ptr;
 
 typedef struct str {
@@ -49,6 +51,16 @@ typedef union sym_list_ptr {
 struct sym_list {
   s_sym *sym;
   u_sym_list_ptr next;
+};
+
+typedef struct buf s_buf;
+
+struct buf {
+  s_str str;
+  u64 rpos;
+  u64 wpos;
+  sw (*flush) (s_buf *buf);
+  sw (*refill) (s_buf *buf);
 };
 
 #endif
