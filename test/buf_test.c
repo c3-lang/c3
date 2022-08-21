@@ -13,6 +13,10 @@
     TEST_EQ(bufa.str.bytes, 0);                 \
     TEST_ASSERT(bufa.str.ptr.p == NULL);        \
     TEST_EQ(bufa.str.ptr.u64, 0);               \
+    TEST_EQ(bufa.rpos, 0);                      \
+    TEST_EQ(bufa.wpos, 0);                      \
+    TEST_ASSERT(bufa.flush == NULL);            \
+    TEST_ASSERT(bufa.refill == NULL);           \
   } while(0)
 
 #define TEST_BUF_DELETE(buf) \
@@ -115,7 +119,7 @@ void buf_test_read ()
 void buf_test_read_str ()
 {
   char a[8]  = "ABCDEFGH";
-  char a1[8] = "ABCDEFGH";
+  char a1[8] = "abcdefgh";
   s_buf buf;
   s_str str0;
   s_str str1;
@@ -167,6 +171,14 @@ void buf_test_read_str ()
   TEST_EQ(buf.rpos, 6);
   TEST_EQ(buf.wpos, 6);
   TEST_STRNCMP(str3.ptr.p, "DEF", 3);
+  buf.wpos = 8;
+  TEST_EQ(buf_read_str(&buf, &str3), 0);
+  TEST_EQ(buf.rpos, 6);
+  TEST_EQ(buf.wpos, 8);
+  TEST_EQ(buf_read_str(&buf, &str2), 2);
+  TEST_EQ(buf.rpos, 8);
+  TEST_EQ(buf.wpos, 8);
+  TEST_STRNCMP(str2.ptr.p, "GH", 2);
 }
 
 void buf_test_write ()
