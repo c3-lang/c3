@@ -1,14 +1,22 @@
 ## c3
 ## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
 
+CLEANFILES = *.a c3_test c3_test.asan c3_test.cov c3_test.debug *.css *.gcno *.html *.o .libs *.lo
+CLEANFILES_COV = *.gcno .libs/*.gcda
+
 all:   c3_test
 asan:  c3_test.asan
 cov:   c3_test.cov
 debug: c3_test.debug
 
-CLEANFILES = c3_test c3_test.asan c3_test.cov c3_test.debug *.a *.o *.lo *.gcno
 clean:
-	rm -f ${CLEANFILES}
+	rm -rf ${CLEANFILES}
+
+clean_cov:
+	rm -rf ${CLEANFILES_COV}
+
+gcovr:
+	gcovr --html-details test
 
 test: c3_test
 	./c3_test
@@ -22,6 +30,6 @@ test_cov: c3_test.cov
 test_debug: c3_test.debug
 	./c3_test.debug
 
-.PHONY: all test
+.PHONY: all asan cov debug clean clean_cov test test_asan test_cov test_debug
 
 include config.mk
