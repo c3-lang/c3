@@ -22,13 +22,19 @@
     }                                                   \
   } while(0)
 
-#define TEST_EQ(test, expected)                   \
-  do {                                            \
-    long long tmp = test;                              \
-    TEST_ASSERT((tmp = test) == expected);        \
-    if (! g_test_last_ok)                         \
-      printf("Expected %lld got %lld\n",      \
-             (long long) expected, tmp);       \
+#define TEST_EQ(test, expected)                         \
+  do {                                                  \
+    long long tmp = test;                               \
+    if (tmp == (long long) expected) {                  \
+      test_ok();                                        \
+    }                                                   \
+    else {                                              \
+      test_ko();                                        \
+      printf("\nAssertion failed in %s:%d %s\n"         \
+             "%s == %s\nExpected %s got %lld",          \
+             __FILE__, __LINE__, __func__,              \
+             # test, # expected, # expected, tmp);      \
+    }                                                   \
   } while (0)
 
 extern long   g_test_count;

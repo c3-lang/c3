@@ -14,8 +14,8 @@ s_sym * sym_test_sym_1_test(const s8 *p)
   s_sym *sym;
   len = strlen(p);
   TEST_ASSERT(sym = sym_1(p));
-  TEST_ASSERT(sym->str.bytes == len);
-  TEST_ASSERT(strncmp(p, sym->str.ptr.p, len) == 0);
+  TEST_EQ(sym->str.bytes, len);
+  TEST_EQ(strncmp(p, sym->str.ptr.p, len), 0);
   return sym;
 }
 
@@ -83,8 +83,8 @@ void sym_test_sym_inspect_test (const char *test, const char *result)
   sym = sym_1(test);
   TEST_ASSERT(str = sym_inspect(sym));
   len = strlen(result);
-  TEST_ASSERT(str->bytes == len);
-  TEST_ASSERT(strncmp(result, str->ptr.p, len));
+  TEST_EQ(str->bytes, len);
+  TEST_EQ(strncmp(result, str->ptr.p, len), 0);
   str_delete(str);
 }
 
@@ -92,7 +92,7 @@ void sym_test_sym_inspect_test (const char *test, const char *result)
   do {                                                    \
     size_t len;                                           \
     len = strlen(result);                                 \
-    TEST_ASSERT(str->bytes == len);                       \
+    TEST_EQ(str->bytes, len);                             \
     TEST_ASSERT(strncmp(result, str->ptr.p, len) == 0);   \
     if (!g_test_last_ok) {                                \
       printf("%sExpected \"%s\" got \"",                  \
@@ -114,6 +114,7 @@ void sym_test_sym_inspect_test (const char *test, const char *result)
     TEST_ASSERT(str = sym_inspect(sym));                  \
     TEST_STR_CMP(str, result);                            \
     str_delete(str);                                      \
+    test_context(NULL);                                   \
   } while (0)
   
 void sym_test_sym_inspect ()
