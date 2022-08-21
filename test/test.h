@@ -12,7 +12,7 @@
 
 #define TEST_ASSERT(pred)                               \
   do {                                                  \
-    if ((pred)) {                                       \
+    if (pred) {                                         \
       test_ok();                                        \
     }                                                   \
     else {                                              \
@@ -34,6 +34,26 @@
              "%s == %s\nExpected %s got %lld",          \
              __FILE__, __LINE__, __func__,              \
              # test, # expected, # expected, tmp);      \
+    }                                                   \
+  } while (0)
+
+#define TEST_STRNCMP(test, result, bytes)               \
+  do {                                                  \
+    const char *tmp = test;                             \
+    if (strncmp(tmp, result, bytes) == 0) {             \
+      test_ok();                                        \
+    }                                                   \
+    else {                                              \
+      test_ko();                                        \
+      printf("\nAssertion failed in %s:%d %s\n"         \
+             "strncmp(%s, %s, %ld) == 0\n",             \
+             __FILE__, __LINE__, __func__,              \
+             # test, # result, (long) bytes);           \
+      printf("%sExpected %s got \"",                    \
+             TEST_COLOR_KO,                             \
+             # result);                                 \
+      fwrite(tmp, bytes, 1, stdout);                    \
+      printf("\".%s\n", TEST_COLOR_RESET);              \
     }                                                   \
   } while (0)
 

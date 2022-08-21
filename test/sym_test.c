@@ -13,7 +13,7 @@ s_sym * sym_test_sym_1_test(const s8 *p)
   uw len;
   s_sym *sym;
   len = strlen(p);
-  TEST_ASSERT(sym = sym_1(p));
+  TEST_ASSERT((sym = sym_1(p)));
   TEST_EQ(sym->str.bytes, len);
   TEST_EQ(strncmp(p, sym->str.ptr.p, len), 0);
   return sym;
@@ -96,7 +96,7 @@ void sym_test_sym_delete_all ()
     assert(result);                                       \
     test_context("sym_inspect(" #test ") -> " #result);   \
     sym = sym_1(test);                                    \
-    TEST_ASSERT(str = sym_inspect(sym));                  \
+    TEST_ASSERT((str = sym_inspect(sym)));                \
     TEST_STR_CMP(str, result);                            \
     str_delete(str);                                      \
     test_context(NULL);                                   \

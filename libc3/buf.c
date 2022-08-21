@@ -95,15 +95,18 @@ sw buf_read (s_buf *buf, u8 *p)
   assert(buf);
   assert(p);
   assert(buf->rpos <= buf->wpos);
+  assert(buf->wpos <= buf->str.bytes);
+  if (buf->rpos == buf->wpos) {
+    r = buf_refill(buf);
+    if (r <= 0)
+      return r;
+  }
   if (buf->rpos == buf->wpos)
     return 0;
-  if (buf->rpos == buf->str.bytes &&
-      (r = buf_refill(buf)) < 0)
-    return r;
-  if (buf->rpos == buf->wpos)
-    return 0;
-  if (buf->rpos >= buf->str.bytes)
+  if (buf->rpos >= buf->str.bytes) {
+    assert(! "buffer overflow");
     return -1;
+  }
   *p = buf->str.ptr.pu8[buf->rpos++];
   return 1;
 }
@@ -114,44 +117,44 @@ sw buf_read_str (s_buf *buf, s_str *str)
   assert(buf);
   assert(str);
   assert(buf->rpos <= buf->wpos);
-  if (buf->rpos + str->bytes > buf->wpos &&
-      (r = buf_refill(buf)) < 0)
-    return r;
+  if (buf->rpos + str->bytes > buf->wpos) {
+    r = buf_refill(buf);
+    if (r <= 0)
+      return r;
+  }
   if (buf->rpos + str->bytes > buf->str.bytes) {
     assert(! "buffer is too small");
     return -1;
   }
   if (buf->rpos + str->bytes > buf->wpos)
     return 0;
-  if (buf->rpos + str->bytes > buf->str.bytes) {
-    assert(! "buffer overflow");
-    return -1;
-  }
   memcpy((void*) str->ptr.p, (s8 *) buf->str.ptr.p + buf->rpos, str->bytes);
+  buf->rpos += str->bytes;
   return str->bytes;
 }
 
 sw buf_refill (s_buf *buf)
 {
   assert(buf);
-  if (buf->rpos > 0) {
-    if (buf->rpos == buf->wpos) {
-      buf->rpos = 0;
-      buf->wpos = 0;
+  if (buf->refill) {
+    if (buf->rpos > 0) {
+      if (buf->rpos == buf->wpos) {
+        buf->rpos = 0;
+        buf->wpos = 0;
+      }
+      else {
+        uw bytes;
+        bytes = buf->wpos - buf->rpos;
+        assert(bytes < buf->str.bytes);
+        memmove((void *) buf->str.ptr.p,
+                buf->str.ptr.ps8 + buf->rpos,
+                bytes);
+        buf->rpos = 0;
+        buf->wpos = bytes;
+      }
     }
-    else {
-      uw bytes;
-      bytes = buf->wpos - buf->rpos;
-      assert(bytes < buf->str.bytes);
-      memmove((void *) buf->str.ptr.p,
-              buf->str.ptr.ps8 + buf->rpos,
-              bytes);
-      buf->rpos = 0;
-      buf->wpos = bytes;
-    }
-  }
-  if (buf->refill)
     return buf->refill(buf);
+  }
   return 0;
 }
 
