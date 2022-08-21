@@ -42,6 +42,14 @@ c2la() {
     c2ext .la "$@"
 }
 
+check_libbsd() {
+    if pkg-config libbsd-overlay; then
+	HAVE_LIBBSD=Yes
+    else
+	HAVE_LIBBSD=No
+    fi
+}
+
 require_pkg_config() {
     if ! which pkg-config >/dev/null; then
         echo "please install pkg-config" >&2
@@ -65,6 +73,24 @@ if test -z "$CC"; then
 fi
 echo "CC = $CC" >> ${CONFIG_MK}
 
+if test -z "$GCOV"; then
+    if test -x "$(which gcov)"; then
+        GCOV=gcov
+    elif test -x "$(which egcov)"; then
+        GCOV=egcov
+    else
+        GCOV=gcov
+    fi
+fi
+echo "GCOV = $GCOV" >> ${CONFIG_MK}
+    
+if test -z "$INSTALL"; then
+    if test -x "$(which install)"; then
+        INSTALL=install
+    fi
+fi
+echo "INSTALL = $INSTALL" >> ${CONFIG_MK}
+
 if test -z "$LIBTOOL"; then
     if test -x "$(which glibtool 2>/dev/null)"; then
         LIBTOOL="$(which glibtool)"
@@ -77,13 +103,6 @@ if test -z "$LIBTOOL"; then
     fi
 fi
 echo "LIBTOOL = $LIBTOOL" >> ${CONFIG_MK}
-
-if test -z "$INSTALL"; then
-    if test -x "$(which install)"; then
-        INSTALL=install
-    fi
-fi
-echo "INSTALL = $INSTALL" >> ${CONFIG_MK}
 
 if test -z "$PREFIX"; then
     if test -d "$HOME/.c3"; then
@@ -119,11 +138,3 @@ if test -z "$LIBDIR"; then
     LIBDIR=${PREFIX}/lib
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
-
-check_libbsd() {
-    if pkg-config libbsd-overlay; then
-	HAVE_LIBBSD=Yes
-    else
-	HAVE_LIBBSD=No
-    fi
-}

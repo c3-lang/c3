@@ -2,7 +2,7 @@
 ## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
 
 CLEANFILES = *.a *.css *.gcno *.html libc3.la *.la .libs *.lo *.o
-CLEANFILES_COV = *.gcno .libs/*.gcda
+CLEANFILES_COV = *.css *.gcno *.html .libs/*.gcda
 
 all: libc3.la libc3.a
 
@@ -19,7 +19,7 @@ cov: libc3.cov.la libc3.cov.a
 debug: libc3.debug.la libc3.debug.a
 
 gcovr:
-	gcovr --html-details libc3
+	gcovr --gcov-executable ${GCOV} --html-details libc3.html
 
 libc3.a: libc3.la
 	cp .libs/libc3.a ./

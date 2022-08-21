@@ -2,7 +2,9 @@
 c3c/c3c
 config.mk
 *.core
+*.css
 *.gcno
+*.html
 *.la
 .libs/
 *.lo

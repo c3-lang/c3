@@ -73,21 +73,6 @@ void sym_test_sym_delete_all ()
   test_ok(); /* sym_delete_all */
 }
 
-void sym_test_sym_inspect_test (const char *test, const char *result)
-{
-  size_t len;
-  s_sym *sym;
-  s_str *str;
-  assert(test);
-  assert(result);
-  sym = sym_1(test);
-  TEST_ASSERT(str = sym_inspect(sym));
-  len = strlen(result);
-  TEST_EQ(str->bytes, len);
-  TEST_EQ(strncmp(result, str->ptr.p, len), 0);
-  str_delete(str);
-}
-
 #define TEST_STR_CMP(str, result)                         \
   do {                                                    \
     size_t len;                                           \
