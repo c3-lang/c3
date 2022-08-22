@@ -107,7 +107,7 @@ s_str * sym_inspect (s_sym *sym)
   if (sym_is_module(sym))
     return str_dup(&sym->str);
   str_init(&colon, false, 1, ":");
-  str = str_append(str_empty(), &colon, &sym->str, NULL);
+  str = str_join(2, &colon, &sym->str);
   return str;
 }
 

@@ -187,7 +187,8 @@ sw buf_write (s_buf *buf, u8 v)
     assert(! "buffer overflow");
     return -1;
   }
-  ((u8 *) buf->str.ptr.pu8)[buf->wpos++] = v;
+  ((u8 *) buf->str.ptr.pu8)[buf->wpos] = v;
+  buf->wpos++;
   return 1;
 }
 
@@ -205,5 +206,6 @@ sw buf_write_str (s_buf *buf, const s_str *src)
     return -1;
   }
   memcpy(((u8 *) buf->str.ptr.pu8) + buf->wpos, src->ptr.p, src->bytes);
+  buf->wpos += src->bytes;
   return src->bytes;
 }

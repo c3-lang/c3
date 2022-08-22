@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include "buf.h"
 #include "character.h"
 #include "str.h"
 
@@ -16,76 +17,37 @@ s_str * str_1 (bool free, const char *s)
   return str;
 }
 
-s_str * str_append (s_str *str, ...)
+void str_init_join_v (s_str *str, uw count, va_list ap)
 {
-  va_list ap;
-  s_str *i;
-  va_start(ap, str);
-  /* TODO: realloc only once */
-  while ((i = va_arg(ap, s_str *)))
-    str_append_copy(str, i->bytes, i->ptr.p);
-  va_end(ap);
-  return str;
-}
-
-s_str * str_append_copy (s_str *str, uw bytes, const s8 *p)
-{
-  assert(str);
-  if (bytes == 0)
-    return str;
-  if (str->free)
-    return str_append_realloc(str, bytes, p);
-  {
-    size_t nbytes = str->bytes + bytes;
-    char *n = malloc(nbytes);
-    if (! n)
-      err(1, "out of memory");
-    memcpy(n, str->ptr.p, str->bytes);
-    memcpy(n + str->bytes, p, bytes);
-    str->bytes = nbytes;
-    str->ptr.p = n;
+  va_list ap2;
+  s_buf buf;
+  uw bytes;
+  uw c;
+  s_str *s;
+  va_copy(ap2, ap);
+  bytes = 0;
+  c = count;
+  while (c--) {
+    s = va_arg(ap, s_str *);
+    bytes += s->bytes;
   }
-  return str;
+  str_init(str, true, bytes, malloc(bytes));
+  buf_init_str(&buf, str);
+  c = count;
+  while (c--) {
+    s = va_arg(ap2, s_str *);
+    buf_write_str(&buf, s);
+  }
+  va_end(ap2);
+  assert(buf.wpos == bytes);
 }
 
-s_str * str_append_1 (s_str *str, const char *s)
-{
-  size_t len;
-  len = strlen(s);
-  return str_append(str, len, s);
-}
-
-s_str * str_append_f (s_str *str, const char *fmt, ...)
+void str_init_join (s_str *str, uw count, ...)
 {
   va_list ap;
-  s_str *f;
-  s_str *n;
-  va_start(ap, fmt);
-  f = str_vf(fmt, ap);
+  va_start(ap, count);
+  str_init_join_v(str, count, ap);
   va_end(ap);
-  n = str_append(str, f);
-  str_delete(f);
-  return n;
-}
-
-s_str * str_append_realloc (s_str *str, uw bytes, const s8 *p)
-{
-  uw nbytes = str->bytes + bytes;
-  char *n = realloc((void *) str->ptr.p, nbytes);
-  if (! n)
-    err(1, "out of memory");
-  memcpy(n + str->bytes, p, bytes);
-  str->ptr.p = n;
-  str->bytes = nbytes;
-  return str;
-}
-
-s_str * str_append_inspect (s_str *str, s_str *x)
-{
-  /* TODO */
-  (void) str;
-  (void) x;
-  return NULL;
 }
 
 void str_clean (s_str *str)
@@ -192,14 +154,31 @@ void str_init_dup (s_str *str, s_str *src)
 }
 
 
-s_str * str_inspect (s_str *str)
+s_str * str_inspect (s_str *src)
 {
-  s_str *o = str_empty();
-  str_append_1(o, "\"");
-  /* TODO: \0 and \n */
-  str_append(o, str);
-  str_append_1(o, "\"");
-  return o;
+  s_str quote;
+  s_str *str;
+  str_init(&quote, false, 1, "\"");
+  str = str_join(3, &quote, src, &quote);
+  return str;
+}
+
+s_str * str_join (uw count, ...)
+{
+  va_list ap;
+  s_str *str;
+  va_start(ap, count);
+  str = str_join_v(count, ap);
+  va_end(ap);
+  return str;
+}
+
+s_str * str_join_v (uw count, va_list ap)
+{
+  s_str *str;
+  str = str_new(false, 0, NULL);
+  str_init_join_v(str, count, ap);
+  return str;
 }
 
 s_str * str_n (size_t len, const char *s, bool free)
@@ -236,6 +215,12 @@ character str_read_character (s_str *str)
   str->bytes -= bytes;
   str->ptr.p = (s8 *) str->ptr.p + bytes;
   return c;
+}
+
+void str_resize (s_str *str, uw bytes)
+{
+  str_clean(str);
+  str_init(str, true, bytes, calloc(bytes, 1));
 }
 
 character str_to_character (s_str *str)
