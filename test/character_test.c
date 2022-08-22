@@ -7,10 +7,12 @@
 #include "test.h"
 
 void character_test_character_1 ();
+void character_test_character_is_upper ();
 
 void character_test ()
 {
   character_test_character_1();
+  character_test_character_is_upper();
 }
 
 #define CHARACTER_TEST_CHARACTER_1_ASCII(string)        \
@@ -44,4 +46,28 @@ void character_test_character_1 ()
   TEST_EQ(character_1("É"), 201);
   TEST_EQ(character_1("à"), 224);
   TEST_EQ(character_1("é"), 233);
+}
+
+void character_test_character_is_upper ()
+{
+  TEST_ASSERT(! character_is_upper('0'));
+  TEST_ASSERT(! character_is_upper('1'));
+  TEST_ASSERT(! character_is_upper('8'));
+  TEST_ASSERT(! character_is_upper('9'));
+  TEST_ASSERT(character_is_upper('A'));
+  TEST_ASSERT(character_is_upper('B'));
+  TEST_ASSERT(character_is_upper('C'));
+  TEST_ASSERT(character_is_upper('X'));
+  TEST_ASSERT(character_is_upper('Y'));
+  TEST_ASSERT(character_is_upper('Z'));
+  TEST_ASSERT(! character_is_upper('a'));
+  TEST_ASSERT(! character_is_upper('b'));
+  TEST_ASSERT(! character_is_upper('c'));
+  TEST_ASSERT(! character_is_upper('x'));
+  TEST_ASSERT(! character_is_upper('y'));
+  TEST_ASSERT(! character_is_upper('z'));
+  TEST_ASSERT(character_is_upper(192));
+  TEST_ASSERT(character_is_upper(201));
+  TEST_ASSERT(! character_is_upper(224));
+  TEST_ASSERT(! character_is_upper(233));
 }

@@ -27,7 +27,7 @@ debug:
 	${MAKE} -C libc3 debug
 	${MAKE} -C test debug
 
-gcovr:
+gcovr: test_cov
 	${MAKE} -C libc3 gcovr
 	${MAKE} -C test gcovr
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
@@ -42,7 +42,7 @@ test: all
 test_asan: asan
 	${MAKE} -C test test_asan
 
-test_cov: cov
+test_cov: cov clean_cov
 	${MAKE} -C test test_cov
 
 test_debug: debug

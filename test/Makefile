@@ -24,7 +24,7 @@ test: c3_test
 test_asan: c3_test.asan
 	./c3_test.asan
 
-test_cov: c3_test.cov
+test_cov: c3_test.cov clean_cov
 	./c3_test.cov
 
 test_debug: c3_test.debug
