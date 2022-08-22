@@ -1,0 +1,47 @@
+/* c3
+ * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
+ */
+#include <stdlib.h>
+#include <string.h>
+#include "../libc3/character.h"
+#include "test.h"
+
+void character_test_character_1 ();
+
+void character_test ()
+{
+  character_test_character_1();
+}
+
+#define CHARACTER_TEST_CHARACTER_1_ASCII(string)        \
+  TEST_EQ(character_1(string), string[0])
+
+void character_test_character_1 ()
+{
+  CHARACTER_TEST_CHARACTER_1_ASCII("0");
+  CHARACTER_TEST_CHARACTER_1_ASCII("1");
+  CHARACTER_TEST_CHARACTER_1_ASCII("2");
+  CHARACTER_TEST_CHARACTER_1_ASCII("3");
+  CHARACTER_TEST_CHARACTER_1_ASCII("4");
+  CHARACTER_TEST_CHARACTER_1_ASCII("5");
+  CHARACTER_TEST_CHARACTER_1_ASCII("6");
+  CHARACTER_TEST_CHARACTER_1_ASCII("7");
+  CHARACTER_TEST_CHARACTER_1_ASCII("8");
+  CHARACTER_TEST_CHARACTER_1_ASCII("9");
+  CHARACTER_TEST_CHARACTER_1_ASCII("A");
+  CHARACTER_TEST_CHARACTER_1_ASCII("B");
+  CHARACTER_TEST_CHARACTER_1_ASCII("C");
+  CHARACTER_TEST_CHARACTER_1_ASCII("X");
+  CHARACTER_TEST_CHARACTER_1_ASCII("Y");
+  CHARACTER_TEST_CHARACTER_1_ASCII("Z");
+  CHARACTER_TEST_CHARACTER_1_ASCII("a");
+  CHARACTER_TEST_CHARACTER_1_ASCII("b");
+  CHARACTER_TEST_CHARACTER_1_ASCII("c");
+  CHARACTER_TEST_CHARACTER_1_ASCII("x");
+  CHARACTER_TEST_CHARACTER_1_ASCII("y");
+  CHARACTER_TEST_CHARACTER_1_ASCII("z");
+  TEST_EQ(character_1("À"), 192);
+  TEST_EQ(character_1("É"), 201);
+  TEST_EQ(character_1("à"), 224);
+  TEST_EQ(character_1("é"), 233);
+}

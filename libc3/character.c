@@ -1,12 +1,14 @@
 /* c3
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
+#include <assert.h>
 #include "character.h"
 #include "str.h"
 
 character character_1 (const s8 *p)
 {
   s_str stra;
+  assert(p);
   str_init_1(&stra, false, p);
   return str_to_character(&stra);
 }

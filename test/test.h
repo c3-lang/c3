@@ -57,11 +57,11 @@
     }                                                   \
   } while (0)
 
-extern long   g_test_count;
-extern long   g_test_ko;
-extern long   g_test_last_ok;
-extern long   g_test_ok;
-extern char **g_test_targets;
+extern long         g_test_count;
+extern long         g_test_ko;
+extern long         g_test_last_ok;
+extern long         g_test_ok;
+extern const char **g_test_targets;
 
 void test_context (const char *context);
 void test_init (int argc, char **argv);
