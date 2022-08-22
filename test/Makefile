@@ -2,7 +2,7 @@
 ## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
 
 CLEANFILES = *.a c3_test c3_test.asan c3_test.cov c3_test.debug *.css *.gcno *.html *.o .libs *.lo
-CLEANFILES_COV = *.css *.gcno *.html .libs/*.gcda
+CLEANFILES_COV = *.css *.gcda *.gcno *.html .libs/*.gcda .libs/*.gcno
 
 all:   c3_test
 asan:  c3_test.asan

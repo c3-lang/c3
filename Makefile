@@ -27,9 +27,10 @@ debug:
 	${MAKE} -C libc3 debug
 	${MAKE} -C test debug
 
-gcovr: clean_cov test_cov
+gcovr:
 	${MAKE} -C libc3 gcovr
 	${MAKE} -C test gcovr
+	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
 install: all
 	${MAKE} -C libc3 install
