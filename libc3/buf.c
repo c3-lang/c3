@@ -39,7 +39,7 @@ void buf_init_alloc (s_buf *buf, uw bytes)
   s8 *p;
   assert(buf);
   assert(bytes);
-  p = malloc(bytes);
+  p = calloc(bytes, 1);
   if (!p)
     err(1, "out of memory");
   buf_init(buf, true, bytes, p);
