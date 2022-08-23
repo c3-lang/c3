@@ -26,8 +26,6 @@ echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
-check_libbsd
-
 # Default config
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
@@ -37,11 +35,8 @@ LIBS="${LIBS:=}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-if pkg-config libbsd-overlay; then
-    CPPFLAGS="$CPPFLAGS -D_DEFAULT_SOURCE -D__USE_MISC"
-    CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
-    LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"
-fi
+config_libbsd
+config_libcrypto
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"

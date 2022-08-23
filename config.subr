@@ -42,19 +42,18 @@ c2la() {
     c2ext .la "$@"
 }
 
-check_libbsd() {
+config_libbsd() {
     if pkg-config libbsd-overlay; then
-	HAVE_LIBBSD=Yes
-    else
-	HAVE_LIBBSD=No
+	CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"
+	CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
+	LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"
     fi
 }
 
-check_libcrypto() {
+config_libcrypto() {
     if pkg-config libcrypto; then
-	HAVE_LIBCRYPTO=Yes
-    else
-	HAVE_LIBCRYPTO=No
+	CFLAGS="$CFLAGS $(pkg-config --cflags libcrypto)"
+	LIBS="$LIBS $(pkg-config --libs libcrypto)"
     fi
 }
 

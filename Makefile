@@ -3,7 +3,6 @@
 
 all:
 	${MAKE} -C libc3 all
-	${MAKE} -C c3c all
 	${MAKE} -C test all
 
 asan:
@@ -16,7 +15,6 @@ cov:
 
 clean:
 	${MAKE} -C libc3 clean
-	${MAKE} -C c3c clean
 	${MAKE} -C test clean
 
 clean_cov:

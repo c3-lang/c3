@@ -20,8 +20,6 @@ OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
 OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
-check_libbsd
-
 # Default config
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
@@ -31,15 +29,8 @@ LIBS="${LIBS:=}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-if pkg-config libbsd-overlay; then
-    CPPFLAGS="$CPPFLAGS -D_DEFAULT_SOURCE -D__USE_MISC"
-    CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
-    LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"
-fi
-if pkg-config libcrypto; then
-    CFLAGS="$CFLAGS $(pkg-config --cflags libcrypto)"
-    LIBS="$LIBS $(pkg-config --libs libcrypto)"
-fi
+config_libbsd
+config_libcrypto
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
