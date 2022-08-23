@@ -66,7 +66,7 @@ void character_test_character_is_upper ()
   TEST_ASSERT(! character_is_upper('x'));
   TEST_ASSERT(! character_is_upper('y'));
   TEST_ASSERT(! character_is_upper('z'));
-  TEST_ASSERT(character_is_upper(192));
+  TEST_ASSERT(character_is_upper(character_1("À")));
   TEST_ASSERT(character_is_upper(201));
   TEST_ASSERT(! character_is_upper(224));
   TEST_ASSERT(! character_is_upper(233));
