@@ -50,6 +50,14 @@ check_libbsd() {
     fi
 }
 
+check_libcrypto() {
+    if pkg-config libcrypto; then
+	HAVE_LIBCRYPTO=Yes
+    else
+	HAVE_LIBCRYPTO=No
+    fi
+}
+
 require_pkg_config() {
     if ! which pkg-config >/dev/null; then
         echo "please install pkg-config" >&2
