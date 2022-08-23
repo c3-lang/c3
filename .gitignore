@@ -8,6 +8,7 @@ config.mk
 *.la
 .libs/
 *.lo
+*.o
 test/c3_test
 test/c3_test.asan
 test/c3_test.cov
