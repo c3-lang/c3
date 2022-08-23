@@ -8,11 +8,15 @@
 
 void character_test_character_1 ();
 void character_test_character_is_upper ();
+void character_test_character_utf8 ();
+void character_test_character_utf8_bytes ();
 
 void character_test ()
 {
   character_test_character_1();
   character_test_character_is_upper();
+  character_test_character_utf8_bytes();
+  character_test_character_utf8();
 }
 
 #define CHARACTER_TEST_CHARACTER_1_ASCII(string)        \
@@ -70,4 +74,34 @@ void character_test_character_is_upper ()
   TEST_ASSERT(character_is_upper(character_1("É")));
   TEST_ASSERT(! character_is_upper(character_1("à")));
   TEST_ASSERT(! character_is_upper(character_1("é")));
+}
+
+void character_test_character_utf8 ()
+{
+}
+
+void character_test_character_utf8_bytes ()
+{
+  TEST_EQ(character_utf8_bytes('0'), 1);
+  TEST_EQ(character_utf8_bytes('1'), 1);
+  TEST_EQ(character_utf8_bytes('2'), 1);
+  TEST_EQ(character_utf8_bytes('7'), 1);
+  TEST_EQ(character_utf8_bytes('8'), 1);
+  TEST_EQ(character_utf8_bytes('9'), 1);
+  TEST_EQ(character_utf8_bytes('A'), 1);
+  TEST_EQ(character_utf8_bytes('B'), 1);
+  TEST_EQ(character_utf8_bytes('C'), 1);
+  TEST_EQ(character_utf8_bytes('X'), 1);
+  TEST_EQ(character_utf8_bytes('Y'), 1);
+  TEST_EQ(character_utf8_bytes('Z'), 1);
+  TEST_EQ(character_utf8_bytes('a'), 1);
+  TEST_EQ(character_utf8_bytes('b'), 1);
+  TEST_EQ(character_utf8_bytes('c'), 1);
+  TEST_EQ(character_utf8_bytes('x'), 1);
+  TEST_EQ(character_utf8_bytes('y'), 1);
+  TEST_EQ(character_utf8_bytes('z'), 1);
+  TEST_EQ(character_utf8_bytes(character_1("À")), 2);
+  TEST_EQ(character_utf8_bytes(character_1("É")), 2);
+  TEST_EQ(character_utf8_bytes(character_1("à")), 2);
+  TEST_EQ(character_utf8_bytes(character_1("é")), 2);
 }
