@@ -32,7 +32,6 @@ gcovr: test_cov
 
 install: all
 	${MAKE} -C libc3 install
-	${MAKE} -C c3c install
 
 test: all
 	${MAKE} -C test test
