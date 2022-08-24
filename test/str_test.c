@@ -20,11 +20,10 @@
     test_ok();               \
   } while(0)
 
-void str_test ()
+void str_test_init_clean ()
 {
   size_t len;
   char *m;
-  s_str *str;
   s_str stra;
   len = 4;
   str_init(&stra, false, len, "test");
@@ -38,14 +37,13 @@ void str_test ()
   TEST_EQ(stra.bytes, len);
   TEST_STRNCMP(stra.ptr.p, "test", len);
   TEST_STR_CLEAN(stra);
-  TEST_ASSERT((str = str_1(false, "test")));
-  TEST_STR_DELETE(str);
-  TEST_ASSERT((str = str_cpy(4, "test")));
-  TEST_STR_DELETE(str);
-  TEST_ASSERT((str = str_f("test%d", 42)));
-  TEST_STR_DELETE(str);
-  TEST_ASSERT((str = str_f("test%d", 42)));
-  TEST_STR_DELETE(str);
+}
+
+void str_test_new_delete ()
+{
+  size_t len;
+  char *m;
+  s_str *str;
   len = 4;
   TEST_ASSERT((str = str_new(false, len, "test")));
   TEST_EQ(str->bytes, len);
@@ -58,8 +56,32 @@ void str_test ()
   TEST_EQ(str->bytes, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
   TEST_STR_DELETE(str);
-  /* TODO: str_append_* */
-  /* TODO: str_fputs */
-  /* TODO: str_puts */
-  /* TODO: str_inspect */
+}
+
+void str_test_1 ()
+{
+  s_str *str;
+  TEST_ASSERT((str = str_1(false, "test")));
+  str_delete(str);
+}
+
+void str_test_cpy ()
+{
+  s_str *str;
+  TEST_ASSERT((str = str_cpy(4, "test")));
+  str_delete(str);
+}
+
+void str_test_f ()
+{
+  s_str *str;
+  TEST_ASSERT((str = str_f("test%d", 42)));
+  str_delete(str);
+  TEST_ASSERT((str = str_f("test%d", 42)));
+  str_delete(str);
+}
+
+void str_test ()
+{
+  str_test_init_clean();
 }
