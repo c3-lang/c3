@@ -76,12 +76,18 @@ void str_test_f ()
 {
   s_str *str;
   TEST_ASSERT((str = str_f("test%d", 42)));
+  TEST_STRNCMP(str->ptr.p, "test42", str->bytes);
   str_delete(str);
-  TEST_ASSERT((str = str_f("test%d", 42)));
+  TEST_ASSERT((str = str_f("test%lld", (long long) 42)));
+  TEST_STRNCMP(str->ptr.p, "test42", str->bytes);
   str_delete(str);
 }
 
 void str_test ()
 {
   str_test_init_clean();
+  str_test_new_delete();
+  str_test_1();
+  str_test_cpy();
+  str_test_f();
 }
