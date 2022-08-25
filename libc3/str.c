@@ -32,8 +32,7 @@ void str_init_join_v (s_str *str, uw count, va_list ap)
     s = va_arg(ap, s_str *);
     bytes += s->bytes;
   }
-  str_init(str, true, bytes, malloc(bytes));
-  buf_init_str(&buf, str);
+  buf_init_alloc(&buf, bytes);
   c = count;
   while (c--) {
     s = va_arg(ap2, s_str *);
@@ -41,6 +40,9 @@ void str_init_join_v (s_str *str, uw count, va_list ap)
   }
   va_end(ap2);
   assert(buf.wpos == bytes);
+  str->free = true;
+  str->bytes = bytes;
+  str->ptr.p = buf.ptr.p;
 }
 
 void str_init_join (s_str *str, uw count, ...)

@@ -28,8 +28,15 @@ typedef union ptr {
   const void *p;
   const s8   *ps8;
   const u8   *pu8;
-  u64         u64;
+  const u64   u64;
 } u_ptr;
+
+typedef union ptr_w {
+  void *p;
+  s8   *ps8;
+  u8   *pu8;
+  u64   u64;
+} u_ptr_w;
 
 typedef struct str {
   bool free;
@@ -56,7 +63,9 @@ struct sym_list {
 typedef struct buf s_buf;
 
 struct buf {
-  s_str str;
+  bool free;
+  u64 size;
+  u_ptr_w ptr;
   u64 rpos;
   u64 wpos;
   sw (*flush) (s_buf *buf);
