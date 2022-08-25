@@ -3,6 +3,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "../libc3/str.h"
 #include "test.h"
 

@@ -57,7 +57,7 @@ CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
 LIBC3_DEBUG=../libc3/libc3.debug.a
 LIBS_DEBUG="$LIBS $LIBC3_DEBUG"
-LIBS_DEBUG="$LIBS ../libc3/libc3.debug.a"
+LIBS_DEBUG="../libc3/libc3.debug.a $LIBS"
 
 # Main config
 if [ "x$ENV_CFLAGS" = "x" ]; then
@@ -65,7 +65,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
 LIBC3=../libc3/libc3.a
-LIBS="$LIBS $LIBC3"
+LIBS="$LIBC3 $LIBS"
 
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
