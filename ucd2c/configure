@@ -1,0 +1,49 @@
+#!/bin/sh
+## c3
+## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
+
+set -e
+
+. ../config.subr
+
+PROG=ucd2c
+
+SOURCES="$(ls *.c | tr '\n' ' ')"
+echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
+
+OBJECTS="$(c2lo "$SOURCES")"
+echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+
+# Default config
+CPPFLAGS="${CPPFLAGS:=}"
+ENV_CFLAGS="${CFLAGS:=}"
+DEFAULT_CFLAGS="-O2 -pipe"
+LDFLAGS="${LDFLAGS:=}"
+LIBS="${LIBS:=}"
+
+# Common config for all targets
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+config_libbsd
+
+# Main config
+if [ "x$ENV_CFLAGS" = "x" ]; then
+    CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
+fi
+CFLAGS="$CFLAGS -DNDEBUG"
+
+echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
+echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
+echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
+echo "LIBS = $LIBS" >> ${CONFIG_MK}
+echo >> ${CONFIG_MK}
+
+for SRC in $SOURCES; do
+    echo >> ${CONFIG_MK}
+    SRC_LO="$(c2lo "$SRC")"
+    lo_rule "$SRC" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
+done
+
+echo >> ${CONFIG_MK}
+echo "$PROG: $OBJECTS" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}

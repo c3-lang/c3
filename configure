@@ -4,5 +4,6 @@
 
 set -e
 
+( cd ucd2c && ./configure; )
 ( cd libc3 && ./configure; )
 ( cd test && ./configure; )

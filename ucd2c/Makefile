@@ -1,5 +1,5 @@
 
-all: UCD
+all: ucd.c
 
 UCD: UCD.zip
 	rm -rf UCD
@@ -11,3 +11,8 @@ UCD.zip:
 
 license.txt:
 	ftp "https://www.unicode.org/license.txt" -o license.txt
+
+ucd.c: UCD UCD/UnicodeData.txt ucd2c
+	./ucd2c < UCD/UnicodeData.txt > ucd.c
+
+include config.mk

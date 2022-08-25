@@ -2,6 +2,7 @@
 ## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
 
 all:
+	${MAKE} -C ucd2c all
 	${MAKE} -C libc3 all
 	${MAKE} -C test all
 
@@ -14,6 +15,7 @@ cov:
 	${MAKE} -C test cov
 
 clean:
+	${MAKE} -C ucd2c clean
 	${MAKE} -C libc3 clean
 	${MAKE} -C test clean
 

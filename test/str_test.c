@@ -32,6 +32,7 @@ void str_test_init_clean ()
   TEST_STR_CLEAN(stra);
   len = 4;
   m = malloc(len);
+  assert(m);
   memcpy(m, "test", len);
   str_init(&stra, true, len, m);
   TEST_EQ(stra.bytes, len);
