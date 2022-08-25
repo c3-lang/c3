@@ -8,7 +8,7 @@ set -e
 
 PROG=ucd2c
 
-SOURCES="$(ls *.c | tr '\n' ' ')"
+SOURCES="ucd2c.c"
 echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
 
 OBJECTS="$(c2lo "$SOURCES")"
