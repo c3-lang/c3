@@ -107,19 +107,19 @@ sw buf_peek_str (s_buf *buf, s_str *str)
   assert(buf);
   assert(str);
   assert(buf->rpos <= buf->wpos);
-  if (buf->rpos + str->bytes > buf->wpos) {
+  if (buf->rpos + str->size > buf->wpos) {
     r = buf_refill(buf);
     if (r <= 0)
       return r;
   }
-  if (buf->rpos + str->bytes > buf->size) {
+  if (buf->rpos + str->size > buf->size) {
     assert(! "buffer is too small");
     return -1;
   }
-  if (buf->rpos + str->bytes > buf->wpos)
+  if (buf->rpos + str->size > buf->wpos)
     return 0;
-  memcpy((void*) str->ptr.p, (s8 *) buf->ptr.p + buf->rpos, str->bytes);
-  return str->bytes;
+  memcpy((void*) str->ptr.p, (s8 *) buf->ptr.p + buf->rpos, str->size);
+  return str->size;
 }
 
 sw buf_read (s_buf *buf, u8 *p)
@@ -188,14 +188,14 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   assert(buf);
   assert(src);
   assert(buf->wpos <= buf->size);
-  if (buf->wpos + src->bytes > buf->size &&
+  if (buf->wpos + src->size > buf->size &&
       (r = buf_flush(buf)) < 0)
     return r;
-  if (buf->wpos + src->bytes > buf->size) {
+  if (buf->wpos + src->size > buf->size) {
     assert(! "buffer overflow");
     return -1;
   }
-  memcpy(((u8 *) buf->ptr.pu8) + buf->wpos, src->ptr.p, src->bytes);
-  buf->wpos += src->bytes;
-  return src->bytes;
+  memcpy(((u8 *) buf->ptr.pu8) + buf->wpos, src->ptr.p, src->size);
+  buf->wpos += src->size;
+  return src->size;
 }

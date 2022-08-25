@@ -24,7 +24,7 @@
 
 #define TEST_EQ(test, expected)                         \
   do {                                                  \
-    long long tmp = test;                               \
+    long long tmp = (long long) test;                   \
     if (tmp == (long long) expected) {                  \
       test_ok();                                        \
     }                                                   \

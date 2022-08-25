@@ -39,9 +39,9 @@ typedef union ptr_w {
 } u_ptr_w;
 
 typedef struct str {
-  bool free;
-  u64 bytes;
-  u_ptr ptr;
+  bool  free;           /**< Should ptr be free'd ? */
+  u64   size;           /**< Size in bytes. */
+  u_ptr ptr;            /**< Pointer to memory. */
 } s_str;
 
 typedef struct sym_list s_sym_list;

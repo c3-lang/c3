@@ -14,7 +14,7 @@ s_sym * sym_test_sym_1_test(const s8 *p)
   s_sym *sym;
   len = strlen(p);
   TEST_ASSERT((sym = sym_1(p)));
-  TEST_EQ(sym->str.bytes, len);
+  TEST_EQ(sym->str.size, len);
   TEST_EQ(strncmp(p, sym->str.ptr.p, len), 0);
   return sym;
 }
@@ -32,6 +32,7 @@ void sym_test_sym_1 ()
   s_sym *sym_test;
   s_sym *sym_test123;
   sym_empty = sym_test_sym_1_test("");
+  TEST_EQ(sym_test_sym_1_test(""), sym_empty);
   sym_test_sym_1_test(" ");
   sym_test_sym_1_test(".");
   sym_test_sym_1_test("..");
@@ -82,7 +83,7 @@ void sym_test_sym_delete_all ()
     test_context("sym_inspect(" #test ") -> " #result);   \
     sym = sym_1(test);                                    \
     TEST_ASSERT((str = sym_inspect(sym)));                \
-    TEST_STRNCMP(str->ptr.p, result, str->bytes);         \
+    TEST_STRNCMP(str->ptr.p, result, str->size);          \
     str_delete(str);                                      \
     test_context(NULL);                                   \
   } while (0)

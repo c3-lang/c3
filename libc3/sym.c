@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include "buf.h"
 #include "character.h"
 #include "str.h"
 #include "sym.h"
@@ -12,7 +13,7 @@ character    sym_character_escape (character c);
 bool         sym_character_reserved (character c);
 bool         sym_has_reserved_characters (s_sym *sym);
 s_str *      sym_inspect_reserved (s_sym *sym);
-sw           sym_inspect_reserved_bytes (s_sym *sym);
+sw           sym_inspect_reserved_size (s_sym *sym);
 s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next);
 s_sym *      sym_new (s_str *str);
 
@@ -65,8 +66,8 @@ bool sym_has_reserved_characters (s_sym *sym)
 {
   character c;
   s_str stra;
-  str_init(&stra, false, sym->str.bytes, sym->str.ptr.p);
-  while ((c = str_read_character(&stra)) >= 0) {
+  str_init(&stra, false, sym->str.size, sym->str.ptr.p);
+  while (str_read_character(&stra, &c) > 0) {
     if (sym_character_reserved(c))
       return true;
   }
@@ -98,89 +99,87 @@ s_str * sym_inspect (s_sym *sym)
   s_str colon;
   s_str *str;
   assert(sym);
-  if (sym->str.bytes == 0)
-    return str_1(false, ":\"\"");
+  if (sym->str.size == 0)
+    return str_new_1(false, ":\"\"");
   if (sym_has_reserved_characters(sym))
     return sym_inspect_reserved(sym);
   if (sym_is_module(sym))
-    return str_dup(&sym->str);
+    return str_new_dup(&sym->str);
   str_init(&colon, false, 1, ":");
-  str = str_join(2, &colon, &sym->str);
+  str = str_new_join(2, &colon, &sym->str);
   return str;
 }
 
 s_str * sym_inspect_reserved (s_sym *sym)
 {
   character c;
-  sw cbytes;
+  sw csize;
   character esc;
-  s8 *n = 0;
-  sw  nbytes;
-  uw  o;
+  sw  size;
+  s_buf buf;
   s_str *str;
   s_str stra;
-  /* XXX keep in sync with sym_inspect_reserved_bytes */
-  nbytes = sym_inspect_reserved_bytes(sym);
-  if (nbytes < 0)
-    return NULL;
-  n = malloc(nbytes);
-  o = 0;
-  n[o++] = ':';
-  n[o++] = '"';
-  str_init(&stra, false, sym->str.bytes, sym->str.ptr.p);
-  while ((c = str_read_character(&stra)) >= 0) {
+  size = sym_inspect_reserved_size(sym);
+  buf_init_alloc(&buf, size);
+  buf_write(&buf, ':');
+  buf_write(&buf, '"');
+  /* XXX keep in sync with sym_inspect_reserved_size */
+  str_init(&stra, false, sym->str.size, sym->str.ptr.p);
+  while (str_read_character(&stra, &c) > 0) {
     if ((esc = sym_character_escape(c)) > 0) {
-      n[o++] = '\\';
-      if ((cbytes = character_utf8(esc, n + o)) < 0)
+      buf_write(&buf, '\\');
+      if ((csize = character_utf8(esc, buf.ptr.ps8 + buf.wpos)) < 0)
         goto error;
-      o += cbytes;
+      buf.wpos += csize;
     }
     else {
-      if ((cbytes = character_utf8(c, n + o)) < 0)
+      if ((csize = character_utf8(c, buf.ptr.ps8 + buf.wpos)) < 0)
         goto error;
-      o += cbytes;
+      buf.wpos += csize;
     }
   }
-  n[o++] = '"';
-  assert(o == (uw) nbytes);
-  str = str_new(true, nbytes, n);
+  buf_write(&buf, '"');
+  assert(buf.wpos == (uw) size);
+  str = str_new(true, size, buf.ptr.p);
   return str;
  error:
   fprintf(stderr, "sym_inspect_reserved: character_utf8\n");
-  free(n);
+  buf_clean(&buf);
   return NULL;
 }
 
-sw sym_inspect_reserved_bytes (s_sym *sym)
+sw sym_inspect_reserved_size (s_sym *sym)
 {
   character c;
-  sw cbytes;
+  sw csize;
   character esc;
-  uw nbytes;
+  uw size;
   s_str stra;
+  size = 3;
   /* XXX keep in sync with sym_inspect_reserved */
-  nbytes = 3;
-  str_init(&stra, false, sym->str.bytes, sym->str.ptr.p);
-  while ((c = str_read_character(&stra)) >= 0) {
+  str_init(&stra, false, sym->str.size, sym->str.ptr.p);
+  while (str_read_character(&stra, &c) > 0) {
     if ((esc = sym_character_escape(c)) > 0) {
-      if ((cbytes = character_utf8_bytes(esc)) < 0)
+      size++;
+      if ((csize = character_utf8_size(esc)) < 0)
         return -1;
-      nbytes += cbytes + 1;
+      size += csize;
     }
     else {
-      if ((cbytes = character_utf8_bytes(c)) < 0)
+      if ((csize = character_utf8_size(c)) < 0)
         return -1;
-      nbytes += cbytes;
+      size += csize;
     }
   }
-  return nbytes;
+  return size;
 }
 
 bool sym_is_module (s_sym *sym)
 {
   character c;
-  c = str_to_character(&sym->str);
-  return character_is_uppercase(c);
+  if (str_to_character(&sym->str, &c) > 0)
+    return character_is_uppercase(c);
+  return false;
 }
 
 s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next)

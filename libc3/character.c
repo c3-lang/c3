@@ -8,10 +8,12 @@
 
 character character_1 (const s8 *p)
 {
+  character c;
   s_str stra;
   assert(p);
   str_init_1(&stra, false, p);
-  return str_to_character(&stra);
+  str_to_character(&stra, &c);
+  return c;
 }
 
 bool character_is_digit (character c)
@@ -72,7 +74,7 @@ sw character_utf8 (character c, s8 *dest)
   return -1;
 }
 
-sw character_utf8_bytes (character c)
+sw character_utf8_size (character c)
 {
   if (c == -1)
     return -1;

@@ -12,9 +12,21 @@
 
 #include "types.h"
 
+#define BUF_INIT_ALLOCA(buf, size)              \
+  do {                                          \
+    s8 *p;                                      \
+    assert(buf);                                \
+    assert(size);                               \
+    p = alloca(size);                           \
+    if (!p)                                     \
+      err(1, "out of memory");                  \
+    buf_init((buf), false, (size), p);          \
+  } while (0)
+
 /* Stack constructors, call buf_clean after use. */
 void buf_init (s_buf *buf, bool free, uw size, s8 *p);
 void buf_init_alloc (s_buf *buf, uw size);
+void buf_init_alloca (s_buf *buf, uw size);
 
 /* Constructors, call buf_delete after use. */
 s_buf * buf_new (bool free, uw size, s8 *p);

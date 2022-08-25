@@ -11,7 +11,7 @@ bool      character_is_digit (character c);
 bool      character_is_lowercase (character c);
 bool      character_is_uppercase (character c);
 sw        character_utf8 (character c, s8 *dest);
-sw        character_utf8_bytes (character c);
+sw        character_utf8_size (character c);
 
 
 #endif /* CHARACTER_H */

@@ -17,7 +17,7 @@ s_str *sha1 (s_str *src)
   str = str_new(true, SHA1_DIGEST_LENGTH, hash);
   assert(str);
   SHA1Init(&ctx);
-  SHA1Update(&ctx, src->ptr.p, src->bytes);
+  SHA1Update(&ctx, src->ptr.p, src->size);
   SHA1Final((u8 *) str->ptr.p, &ctx);
   return str;
 }

@@ -15,7 +15,7 @@
 #include "types.h"
 
 /* Stack allocation compatible functions */
-void str_init (s_str *str, bool free, uw bytes, const s8 *p);
+void str_init (s_str *str, bool free, uw size, const s8 *p);
 void str_init_1 (s_str *str, bool free, const s8 *p);
 void str_init_dup (s_str *str, s_str *src);
 void str_init_join (s_str *str, uw count, ...);
@@ -23,16 +23,16 @@ void str_init_join_v (s_str *str, uw count, va_list ap);
 void str_clean (s_str *str);
 
 /* Constructors, call str_delete after use */
-s_str * str_1 (bool free, const char *s);
-s_str * str_cpy (uw bytes, const s8 *p);
-s_str * str_dup (s_str *src);
-s_str * str_empty ();
-s_str * str_f (const char *fmt, ...);
-s_str * str_inspect (s_str *x);
-s_str * str_join (uw count, ...);
-s_str * str_join_v (uw count, va_list ap);
-s_str * str_new (bool free, uw bytes, const s8 *p);
-s_str * str_vf (const char *fmt, va_list ap);
+s_str * str_new (bool free, uw size, const s8 *p);
+s_str * str_new_1 (bool free, const char *s);
+s_str * str_new_cpy (uw size, const s8 *p);
+s_str * str_new_dup (s_str *src);
+s_str * str_new_empty ();
+s_str * str_new_f (const char *fmt, ...);
+s_str * str_new_inspect (s_str *x);
+s_str * str_new_join (uw count, ...);
+s_str * str_new_join_v (uw count, va_list ap);
+s_str * str_new_vf (const char *fmt, va_list ap);
 
 /* Destructor */
 void str_delete (s_str *str);
@@ -41,11 +41,11 @@ void str_delete (s_str *str);
 sw        str_cmp (s_str *a, s_str *b);
 sw        str_fputs (s_str *str, FILE *fp);
 sw        str_puts (s_str *str);
-character str_to_character (s_str *str);
+sw        str_to_character (s_str *str, character *c);
 s_sym *   str_to_sym (s_str *str);
 
 /* Modifiers */
-character str_read_character (s_str *str);
-void      str_resize (s_str *str, uw bytes);
+sw        str_read_character (s_str *str, character *c);
+void      str_resize (s_str *str, uw size);
 
 #endif /* STR_H */

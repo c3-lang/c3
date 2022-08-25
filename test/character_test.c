@@ -9,13 +9,13 @@
 void character_test_character_1 ();
 void character_test_character_is_uppercase ();
 void character_test_character_utf8 ();
-void character_test_character_utf8_bytes ();
+void character_test_character_utf8_size ();
 
 void character_test ()
 {
   character_test_character_1();
   character_test_character_is_uppercase();
-  character_test_character_utf8_bytes();
+  character_test_character_utf8_size();
   character_test_character_utf8();
 }
 
@@ -80,28 +80,28 @@ void character_test_character_utf8 ()
 {
 }
 
-void character_test_character_utf8_bytes ()
+void character_test_character_utf8_size ()
 {
-  TEST_EQ(character_utf8_bytes('0'), 1);
-  TEST_EQ(character_utf8_bytes('1'), 1);
-  TEST_EQ(character_utf8_bytes('2'), 1);
-  TEST_EQ(character_utf8_bytes('7'), 1);
-  TEST_EQ(character_utf8_bytes('8'), 1);
-  TEST_EQ(character_utf8_bytes('9'), 1);
-  TEST_EQ(character_utf8_bytes('A'), 1);
-  TEST_EQ(character_utf8_bytes('B'), 1);
-  TEST_EQ(character_utf8_bytes('C'), 1);
-  TEST_EQ(character_utf8_bytes('X'), 1);
-  TEST_EQ(character_utf8_bytes('Y'), 1);
-  TEST_EQ(character_utf8_bytes('Z'), 1);
-  TEST_EQ(character_utf8_bytes('a'), 1);
-  TEST_EQ(character_utf8_bytes('b'), 1);
-  TEST_EQ(character_utf8_bytes('c'), 1);
-  TEST_EQ(character_utf8_bytes('x'), 1);
-  TEST_EQ(character_utf8_bytes('y'), 1);
-  TEST_EQ(character_utf8_bytes('z'), 1);
-  TEST_EQ(character_utf8_bytes(character_1("À")), 2);
-  TEST_EQ(character_utf8_bytes(character_1("É")), 2);
-  TEST_EQ(character_utf8_bytes(character_1("à")), 2);
-  TEST_EQ(character_utf8_bytes(character_1("é")), 2);
+  TEST_EQ(character_utf8_size('0'), 1);
+  TEST_EQ(character_utf8_size('1'), 1);
+  TEST_EQ(character_utf8_size('2'), 1);
+  TEST_EQ(character_utf8_size('7'), 1);
+  TEST_EQ(character_utf8_size('8'), 1);
+  TEST_EQ(character_utf8_size('9'), 1);
+  TEST_EQ(character_utf8_size('A'), 1);
+  TEST_EQ(character_utf8_size('B'), 1);
+  TEST_EQ(character_utf8_size('C'), 1);
+  TEST_EQ(character_utf8_size('X'), 1);
+  TEST_EQ(character_utf8_size('Y'), 1);
+  TEST_EQ(character_utf8_size('Z'), 1);
+  TEST_EQ(character_utf8_size('a'), 1);
+  TEST_EQ(character_utf8_size('b'), 1);
+  TEST_EQ(character_utf8_size('c'), 1);
+  TEST_EQ(character_utf8_size('x'), 1);
+  TEST_EQ(character_utf8_size('y'), 1);
+  TEST_EQ(character_utf8_size('z'), 1);
+  TEST_EQ(character_utf8_size(character_1("À")), 2);
+  TEST_EQ(character_utf8_size(character_1("É")), 2);
+  TEST_EQ(character_utf8_size(character_1("à")), 2);
+  TEST_EQ(character_utf8_size(character_1("é")), 2);
 }
