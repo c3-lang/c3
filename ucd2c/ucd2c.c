@@ -84,18 +84,23 @@ void ucd_write_c (s_ucd ucd[UCD_MAX])
   unsigned long i = 0;
   printf("static const s_ucd g_ucd[UCD_MAX] = {\n");
   while (i < UCD_MAX) {
-    printf("  {%lx, \"%s\"},\n",
-           ucd[i].flags,
-           ucd[i].name);
+    printf("  {%lx, ",
+           ucd[i].flags);
+    if (ucd[i].name)
+      printf("\"%s\"", ucd[i].name);
+    else
+      printf("0");
+    printf("},\n");
     i++;
   }
+  printf("};\n");
 }
 
 int main (int argc, char **argv)
 {
   char buf[BUFSZ];
   unsigned long lineno;
-  s_ucd ucd[UCD_MAX];
+  s_ucd ucd[UCD_MAX] = {0};
   (void) argc;
   (void) argv;
   lineno = 0;
