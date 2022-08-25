@@ -27,4 +27,6 @@ typedef struct ucd {
   char *name;
 } s_ucd;
 
+extern const s_ucd g_ucd[UCD_MAX];
+
 #endif /* UCD_H */
