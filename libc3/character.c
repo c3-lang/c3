@@ -4,6 +4,7 @@
 #include <assert.h>
 #include "character.h"
 #include "str.h"
+#include "ucd.h"
 
 character character_1 (const s8 *p)
 {
@@ -13,9 +14,18 @@ character character_1 (const s8 *p)
   return str_to_character(&stra);
 }
 
-bool character_is_upper (character c)
+bool character_is_lowercase (character c)
 {
-  return 'A' <= c && c <= 'Z';
+  if (c < UCD_MAX && g_ucd[c].flags & UCD_FLAG_LOWERCASE)
+    return true;
+  return false;
+}
+
+bool character_is_uppercase (character c)
+{
+  if (c < UCD_MAX && g_ucd[c].flags & UCD_FLAG_UPPERCASE)
+    return true;
+  return false;
 }
 
 sw character_utf8 (character c, s8 *dest)

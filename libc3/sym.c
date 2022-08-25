@@ -182,9 +182,7 @@ bool sym_is_module (s_sym *sym)
 {
   character c;
   c = str_to_character(&sym->str);
-  if (character_is_upper(c))
-    return true;
-  return false;
+  return character_is_uppercase(c);
 }
 
 s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next)
