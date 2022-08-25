@@ -1,3 +1,7 @@
+## c3
+## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
+
+CLEANFILES = ucd2c
 
 all: ucd.c
 
@@ -14,5 +18,10 @@ license.txt:
 
 ucd.c: UCD UCD/UnicodeData.txt ucd2c
 	./ucd2c < UCD/UnicodeData.txt > ucd.c
+
+clean:
+	rm -f ${CLEANFILES}
+
+.PHONY: all clean
 
 include config.mk

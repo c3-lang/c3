@@ -22,7 +22,7 @@ LDFLAGS="${LDFLAGS:=}"
 LIBS="${LIBS:=}"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -O0 -ggdb"
 config_libbsd
 
 # Main config
