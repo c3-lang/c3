@@ -14,6 +14,13 @@ character character_1 (const s8 *p)
   return str_to_character(&stra);
 }
 
+bool character_is_digit (character c)
+{
+  if ('0' <= c && c <= '9')
+    return true;
+  return false;
+}
+
 bool character_is_lowercase (character c)
 {
   if (c < UCD_MAX && g_ucd[c].flags & UCD_FLAG_LOWERCASE)

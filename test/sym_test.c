@@ -73,21 +73,6 @@ void sym_test_sym_delete_all ()
   test_ok(); /* sym_delete_all */
 }
 
-#define TEST_STR_CMP(str, result)                         \
-  do {                                                    \
-    size_t len;                                           \
-    len = strlen(result);                                 \
-    TEST_EQ(str->bytes, len);                             \
-    TEST_ASSERT(strncmp(result, str->ptr.p, len) == 0);   \
-    if (!g_test_last_ok) {                                \
-      printf("%sExpected \"%s\" got \"",                  \
-             TEST_COLOR_KO,                               \
-             result);                                     \
-      fwrite(str->ptr.p, str->bytes, 1, stdout);          \
-      printf("\".%s\n", TEST_COLOR_RESET);                \
-    }                                                     \
-  } while (0)
-
 #define SYM_TEST_SYM_INSPECT(test, result)                \
   do {                                                    \
     s_sym *sym;                                           \
@@ -97,7 +82,7 @@ void sym_test_sym_delete_all ()
     test_context("sym_inspect(" #test ") -> " #result);   \
     sym = sym_1(test);                                    \
     TEST_ASSERT((str = sym_inspect(sym)));                \
-    TEST_STR_CMP(str, result);                            \
+    TEST_STRNCMP(str->ptr.p, result, str->bytes);         \
     str_delete(str);                                      \
     test_context(NULL);                                   \
   } while (0)
@@ -118,12 +103,12 @@ void sym_test_sym_inspect ()
   SYM_TEST_SYM_INSPECT("Test123", "Test123");
   SYM_TEST_SYM_INSPECT("test123.test456", ":test123.test456");
   SYM_TEST_SYM_INSPECT("Test123.Test456", "Test123.Test456");
-  SYM_TEST_SYM_INSPECT("É", ":\"É\"");
-  SYM_TEST_SYM_INSPECT("Éo", ":\"Éo\"");
+  SYM_TEST_SYM_INSPECT("É", "É");
+  SYM_TEST_SYM_INSPECT("Éo", "Éo");
   SYM_TEST_SYM_INSPECT("Éoà \n\r\t\v\"",
                        ":\"Éoà\\s\\n\\r\\t\\v\\\"\"");
-  SYM_TEST_SYM_INSPECT("é", ":\"é\"");
-  SYM_TEST_SYM_INSPECT("éo", ":\"éo\"");
+  SYM_TEST_SYM_INSPECT("é", ":é");
+  SYM_TEST_SYM_INSPECT("éo", ":éo");
   SYM_TEST_SYM_INSPECT("éoà \n\r\t\v\"",
                        ":\"éoà\\s\\n\\r\\t\\v\\\"\"");
 }

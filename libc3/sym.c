@@ -52,15 +52,13 @@ character sym_character_escape (character c)
   }
 }
 
-          
-
 bool sym_character_reserved (character c)
 {
-  return (! ('0' <= c && c <= '9') &&
-          ! ('A' <= c && c <= 'Z') &&
-          ! ('a' <= c && c <= 'z') &&
-          c != '.' &&
-          c != '_');
+  return (! (character_is_digit(c) ||
+             character_is_uppercase(c) ||
+             character_is_lowercase(c) ||
+             c == '.' ||
+             c == '_'));
 }
 
 bool sym_has_reserved_characters (s_sym *sym)
