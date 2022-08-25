@@ -15,14 +15,14 @@ end
 
 ## TODO
 
- - types
-   - string
-   - symbol
-   - u_value
-   - list
- - tests
+ - libc3
+   - types
+     - str
+     - sym
+     - list
+- tests
+  - libc3
    - types
    - str
    - symbol
-   - u_value
    - list
