@@ -85,6 +85,23 @@ void str_test_new_f ()
   str_delete(str);
 }
 
+static void test_hex_ncmp (s8 *str_given, s8 *hex_result)
+{
+  s_str *str;
+  s_str stra;
+  str_init_1(&stra, false, str_given);
+  str = str_to_hex(&stra);
+  TEST_STRNCMP(str->ptr.p, hex_result, str->size);
+  str_delete(str);
+}
+
+void str_test_hex ()
+{
+  test_hex_ncmp("abc", "616263");
+  test_hex_ncmp("abcdefghijklmnopqrstuvwxyz", "6162636465666768696a6b6c6d6e6f707172737475767778797a");
+  test_hex_ncmp("", "");
+}
+
 void str_test ()
 {
   str_test_init_clean();

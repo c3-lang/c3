@@ -189,7 +189,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   assert(src);
   assert(buf->wpos <= buf->size);
   if (buf->wpos + src->size > buf->size &&
-      (r = buf_flush(buf)) < 0)
+      (r = buf_flush(buf)) <= 0)
     return r;
   if (buf->wpos + src->size > buf->size) {
     assert(! "buffer overflow");
