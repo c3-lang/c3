@@ -291,30 +291,24 @@ sw str_to_character (const s_str *str, character *c)
   return -1;
 }
 
-static char *char_to_hex (s8 x, s8 *dest)
-{
-  sprintf(dest, "%02x", x);
-  return dest;
-}
-
-s_str * str_to_hex (s_str *src)
+s_str * str_to_hex (const s_str *src)
 {
   s_buf buf;
   s_str *hex;
   u8 *b;
-  s8 *tmp;
   if (src->size == 0)
     return str_new_empty();
-  tmp = malloc(sizeof(s8) * 3);
   buf_init_alloc(&buf, src->size * 2);
   b = src->ptr.pu8;
   for (uw i = 0; i < src->size; i++) {
-   char_to_hex(b[i], tmp);
-   buf_write(&buf, tmp[0]);
-   buf_write(&buf, tmp[1]);
+    buf_f(&buf, "%02x", b[i]);
+    /*
+    snprintf(tmp, 2, "%02x", b[i]);
+    buf_write(&buf, tmp[0]);
+    buf_write(&buf, tmp[1]);
+    */
   }
   hex = str_new(true, buf.size, buf.ptr.p);
-  free(tmp);
   return hex;
 }
 

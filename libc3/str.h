@@ -38,11 +38,12 @@ void str_delete (s_str *str);
 
 /* Observers */
 sw            str_cmp (const s_str *a, const s_str *b);
-sw            str_fputs (const s_str *str, FILE *fp);
+sw            str_fputs (const s_str *src, FILE *fp);
 s_str *       str_inspect (const s_str *x);
-sw            str_puts (const s_str *str);
-sw            str_to_character (const s_str *str, character *c);
-const s_sym * str_to_sym (const s_str *str);
+sw            str_puts (const s_str *src);
+sw            str_to_character (const s_str *src, character *c);
+s_str *       str_to_hex (const s_str *src);
+const s_sym * str_to_sym (const s_str *src);
 
 /* Modifiers */
 sw        str_read_character (s_str *str, character *c);

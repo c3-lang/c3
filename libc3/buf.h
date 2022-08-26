@@ -10,6 +10,7 @@
 #ifndef BUF_H
 #define BUF_H
 
+#include <stdarg.h>
 #include "types.h"
 
 #define BUF_INIT_ALLOCA(buf, size)              \
@@ -37,11 +38,13 @@ void buf_clean (s_buf *buf);
 void buf_delete (s_buf *buf);
 
 /* Modifiers */
+sw buf_f (s_buf *buf, const char *fmt, ...);
 sw buf_flush (s_buf *buf);
 sw buf_peek (s_buf *buf, u8 *p);
 sw buf_read (s_buf *buf, u8 *p);
 sw buf_read_character (s_buf *buf, character *p);
 sw buf_refill (s_buf *buf);
+sw buf_vf (s_buf *buf, const char *fmt, va_list ap);
 sw buf_write (s_buf *buf, u8 v);
 sw buf_write_str (s_buf *buf, const s_str *src);
 

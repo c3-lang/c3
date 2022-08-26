@@ -199,3 +199,23 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   buf->wpos += src->size;
   return src->size;
 }
+
+sw buf_f (s_buf *buf, const char *fmt, ...)
+{
+  va_list ap;
+  sw r;
+  va_start(ap, fmt);
+  r = buf_vf(buf, fmt, ap);
+  va_end(ap);
+  return r;
+}
+
+sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
+{
+  sw r;
+  s_str *str;
+  str = str_new_vf(fmt, ap);
+  r = buf_write_str(buf, str);
+  str_delete(str);
+  return r;
+}
