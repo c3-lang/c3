@@ -12,7 +12,6 @@
 character    sym_character_escape (character c);
 bool         sym_character_reserved (character c);
 void         sym_delete (s_sym *sym);
-s_sym *      sym_find_ (const s_str *src);
 bool         sym_has_reserved_characters (const s_sym *sym);
 s_str *      sym_inspect_reserved (const s_sym *sym);
 sw           sym_inspect_reserved_size (const s_sym *sym);
@@ -22,12 +21,14 @@ static s_sym_list * g_sym_list = NULL;
 
 const s_sym * sym_1 (const s8 *p)
 {
+  const s_sym *found;
   s_str stra;
   s_sym *sym;
   str_init_1(&stra, false, (void *) p);
-  sym = sym_find_(&stra);
-  if (! sym)
-    sym = sym_new(&stra);
+  found = sym_find(&stra);
+  if (found)
+    return found;
+  sym = sym_new(&stra);
   if (! sym) {
     assert(false);
     return NULL;
@@ -80,11 +81,6 @@ void sym_delete_all ()
 }
 
 const s_sym * sym_find (const s_str *str)
-{
-  return sym_find_(str);
-}
-
-s_sym * sym_find_ (const s_str *str)
 {
   s_sym_list *sym_list;
   sym_list = g_sym_list;
