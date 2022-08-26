@@ -10,17 +10,17 @@
 #include "buf.h"
 #include "character.h"
 #include "str.h"
-#include "buf.h"
+#include "sym.h"
 
 void str_clean (s_str *str)
 {
   assert(str);
-  if (str->free)
-    free((void *) str->ptr.p);
-  explicit_bzero(str, sizeof(s_str));
+  if (str->free) {
+    free(str->ptr.p);
+  }
 }
 
-sw str_cmp (s_str *a, s_str *b)
+sw str_cmp (const s_str *a, const s_str *b)
 {
   assert(a);
   assert(b);
@@ -39,7 +39,7 @@ void str_delete (s_str *str)
   free(str);
 }
 
-sw str_fputs (s_str *str, FILE *fp)
+sw str_fputs (const s_str *str, FILE *fp)
 {
   size_t r;
   r = fwrite(str->ptr.p, str->size, 1, fp);
@@ -48,7 +48,7 @@ sw str_fputs (s_str *str, FILE *fp)
   return -1;
 }
 
-void str_init (s_str *str, bool free, uw size, const s8 *p)
+void str_init (s_str *str, bool free, uw size, s8 *p)
 {
   assert(str);
   str->free = free;
@@ -56,7 +56,7 @@ void str_init (s_str *str, bool free, uw size, const s8 *p)
   str->ptr.p = p;
 }
 
-void str_init_1 (s_str *str, bool free, const s8 *p)
+void str_init_1 (s_str *str, bool free, s8 *p)
 {
   assert(str);
   str->free = free;
@@ -64,7 +64,7 @@ void str_init_1 (s_str *str, bool free, const s8 *p)
   str->ptr.p = p;
 }
 
-void str_init_dup (s_str *str, s_str *src)
+void str_init_dup (s_str *str, const s_str *src)
 {
   assert(str);
   assert(src);
@@ -109,7 +109,16 @@ void str_init_join_v (s_str *str, uw count, va_list ap)
   str->ptr.p = buf.ptr.p;
 }
 
-s_str * str_new (bool free, uw size, const s8 *p)
+s_str * str_inspect (const s_str *src)
+{
+  s_str quote;
+  s_str *str;
+  str_init(&quote, false, 1, "\"");
+  str = str_new_join(3, &quote, src, &quote);
+  return str;
+}
+
+s_str * str_new (bool free, uw size, s8 *p)
 {
   s_str *str;
   str = malloc(sizeof(s_str));
@@ -119,7 +128,7 @@ s_str * str_new (bool free, uw size, const s8 *p)
   return str;
 }
 
-s_str * str_new_1 (bool free, const char *s)
+s_str * str_new_1 (bool free, char *s)
 {
   size_t len = strlen(s);
   s_str *str = str_new(free, len, s);
@@ -138,7 +147,7 @@ s_str * str_new_cpy (uw size, const s8 *p)
   return str;
 }
 
-s_str * str_new_dup (s_str *src)
+s_str * str_new_dup (const s_str *src)
 {
   s8 *n;
   s_str *str;
@@ -163,15 +172,6 @@ s_str * str_new_f (const char *fmt, ...)
   va_start(ap, fmt);
   str = str_new_vf(fmt, ap);
   va_end(ap);
-  return str;
-}
-
-s_str * str_new_inspect (s_str *src)
-{
-  s_str quote;
-  s_str *str;
-  str_init(&quote, false, 1, "\"");
-  str = str_new_join(3, &quote, src, &quote);
   return str;
 }
 
@@ -205,7 +205,7 @@ s_str * str_new_vf (const char *fmt, va_list ap)
   return str;
 }
 
-sw str_puts (s_str *str)
+sw str_puts (const s_str *str)
 {
   return str_fputs(str, stdout);
 }
@@ -227,7 +227,7 @@ void str_resize (s_str *str, uw size)
   str_init(str, true, size, calloc(size, 1));
 }
 
-sw str_to_character (s_str *str, character *c)
+sw str_to_character (const s_str *str, character *c)
 {
   assert(str);
   assert(c);
@@ -307,7 +307,7 @@ s_str * str_to_hex (s_str *src)
     return str_new_empty();
   tmp = malloc(sizeof(s8) * 3);
   buf_init_alloc(&buf, src->size * 2);
-  b = (u8 *) src->ptr.p;
+  b = src->ptr.pu8;
   for (uw i = 0; i < src->size; i++) {
    char_to_hex(b[i], tmp);
    buf_write(&buf, tmp[0]);
@@ -316,4 +316,13 @@ s_str * str_to_hex (s_str *src)
   hex = str_new(true, buf.size, buf.ptr.p);
   free(tmp);
   return hex;
+}
+
+const s_sym * str_to_sym (const s_str *src)
+{
+  const s_sym *sym;
+  sym = sym_find(src);
+  if (!sym)
+    sym = sym_new(src);
+  return sym;
 }

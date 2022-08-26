@@ -7,20 +7,6 @@
 #include "../libc3/str.h"
 #include "test.h"
 
-#define TEST_STR_CLEAN(stra)                    \
-  do {                                          \
-    str_clean(&stra);                           \
-    TEST_EQ(stra.size, 0);                     \
-    TEST_ASSERT(stra.ptr.p == NULL);            \
-    TEST_EQ(stra.ptr.u64, 0);                   \
-  } while(0)
-
-#define TEST_STR_DELETE(str) \
-  do {                       \
-    str_delete(str);         \
-    test_ok();               \
-  } while(0)
-
 void str_test_init_clean ()
 {
   size_t len;
@@ -30,7 +16,8 @@ void str_test_init_clean ()
   str_init(&stra, false, len, "test");
   TEST_EQ(stra.size, len);
   TEST_STRNCMP(stra.ptr.p, "test", len);
-  TEST_STR_CLEAN(stra);
+  str_clean(&stra);
+  test_ok();
   len = 4;
   m = malloc(len);
   assert(m);
@@ -38,7 +25,8 @@ void str_test_init_clean ()
   str_init(&stra, true, len, m);
   TEST_EQ(stra.size, len);
   TEST_STRNCMP(stra.ptr.p, "test", len);
-  TEST_STR_CLEAN(stra);
+  str_clean(&stra);
+  test_ok();
 }
 
 void str_test_new_delete ()
@@ -50,14 +38,16 @@ void str_test_new_delete ()
   TEST_ASSERT((str = str_new(false, len, "test")));
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
-  TEST_STR_DELETE(str);
+  str_delete(str);
+  test_ok();
   len = 4;
   m = malloc(len);
   memcpy(m, "test", len);
   TEST_ASSERT((str = str_new(true, len, m)));
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
-  TEST_STR_DELETE(str);
+  str_delete(str);
+  test_ok();
 }
 
 void str_test_new_1 ()

@@ -15,16 +15,22 @@
 
 #include "types.h"
 
-/** @brief Make symbol from C string. */
-s_sym * sym_1 (const s8 *p);
+/** @brief Make symbol from C string.
+ *  @sa str_to_sym
+ */
+const s_sym * sym_1 (const s8 *p);
 
 /** @brief Call when exiting program. */
 void sym_delete_all ();
 
-/** @brief Call str_free after use. */
-s_str * sym_inspect (s_sym *sym);
+/** @brief Find an existing symbol. */
+const s_sym * sym_find (const s_str *src);
+
+s_str * sym_inspect (const s_sym *sym);
 
 /** @brief True iff sym is a module name (starts with a capital). */
-bool sym_is_module (s_sym *sym);
+bool sym_is_module (const s_sym *sym);
+
+s_sym * sym_new (const s_str *src);
 
 #endif /* SYM_H */
