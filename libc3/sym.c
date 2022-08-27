@@ -9,13 +9,11 @@
 #include "str.h"
 #include "sym.h"
 
-character    sym_character_escape (character c);
-bool         sym_character_reserved (character c);
 void         sym_delete (s_sym *sym);
-bool         sym_has_reserved_characters (const s_sym *sym);
 s_str *      sym_inspect_reserved (const s_sym *sym);
 sw           sym_inspect_reserved_size (const s_sym *sym);
 s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next);
+bool         sym_character_reserved (character c);
 
 static s_sym_list * g_sym_list = NULL;
 
@@ -35,29 +33,6 @@ const s_sym * sym_1 (const s8 *p)
   }
   g_sym_list = sym_list_new(sym, g_sym_list);
   return sym;
-}
-
-character sym_character_escape (character c)
-{
-  switch (c) {
-  case '\0': return '0';
-  case '\n': return 'n';
-  case '\r': return 'r';
-  case '\t': return 't';
-  case '\v': return 'v';
-  case '\"': return '\"';
-  case ' ': return 's';
-  default: return -1;
-  }
-}
-
-bool sym_character_reserved (character c)
-{
-  return (! (character_is_digit(c) ||
-             character_is_uppercase(c) ||
-             character_is_lowercase(c) ||
-             c == '.' ||
-             c == '_'));
 }
 
 void sym_delete (s_sym *sym)
@@ -93,6 +68,11 @@ const s_sym * sym_find (const s_str *str)
   return NULL;
 }
 
+bool sym_reserved_character (character c)
+{
+  return str_character_reserved(c);
+}
+
 bool sym_has_reserved_characters (const s_sym *sym)
 {
   character c;
@@ -103,85 +83,6 @@ bool sym_has_reserved_characters (const s_sym *sym)
       return true;
   }
   return false;
-}
-
-s_str * sym_inspect (const s_sym *sym)
-{
-  s_str colon;
-  s_str *str;
-  assert(sym);
-  if (sym->str.size == 0)
-    return str_new_1(false, ":\"\"");
-  if (sym_has_reserved_characters(sym))
-    return sym_inspect_reserved(sym);
-  if (sym_is_module(sym))
-    return str_new_dup(&sym->str);
-  str_init(&colon, false, 1, ":");
-  str = str_new_join(2, &colon, &sym->str);
-  return str;
-}
-
-s_str * sym_inspect_reserved (const s_sym *sym)
-{
-  character c;
-  sw csize;
-  character esc;
-  sw  size;
-  s_buf buf;
-  s_str *str;
-  s_str stra;
-  size = sym_inspect_reserved_size(sym);
-  buf_init_alloc(&buf, size);
-  buf_write(&buf, ':');
-  buf_write(&buf, '"');
-  /* XXX keep in sync with sym_inspect_reserved_size */
-  str_init(&stra, false, sym->str.size, sym->str.ptr.p);
-  while (str_read_character(&stra, &c) > 0) {
-    if ((esc = sym_character_escape(c)) > 0) {
-      buf_write(&buf, '\\');
-      csize = character_utf8(esc, buf.ptr.ps8 + buf.wpos);
-      buf.wpos += csize;
-    }
-    else {
-      if ((csize = character_utf8(c, buf.ptr.ps8 + buf.wpos)) < 0)
-        goto error;
-      buf.wpos += csize;
-    }
-  }
-  buf_write(&buf, '"');
-  assert(buf.wpos == (uw) size);
-  str = str_new(true, size, buf.ptr.p);
-  return str;
- error:
-  fprintf(stderr, "sym_inspect_reserved: character_utf8\n");
-  buf_clean(&buf);
-  return NULL;
-}
-
-sw sym_inspect_reserved_size (const s_sym *sym)
-{
-  character c;
-  sw csize;
-  character esc;
-  uw size;
-  s_str stra;
-  size = 3;
-  /* XXX keep in sync with sym_inspect_reserved */
-  str_init(&stra, false, sym->str.size, sym->str.ptr.p);
-  while (str_read_character(&stra, &c) > 0) {
-    if ((esc = sym_character_escape(c)) > 0) {
-      size++;
-      if ((csize = character_utf8_size(esc)) < 0)
-        return -1;
-      size += csize;
-    }
-    else {
-      if ((csize = character_utf8_size(c)) < 0)
-        return -1;
-      size += csize;
-    }
-  }
-  return size;
 }
 
 bool sym_is_module (const s_sym *sym)

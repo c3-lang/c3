@@ -40,13 +40,21 @@ void buf_delete (s_buf *buf);
 /* Modifiers */
 sw buf_f (s_buf *buf, const char *fmt, ...);
 sw buf_flush (s_buf *buf);
+sw buf_inspect_character_ (s_buf *buf, character c);
+sw buf_inspect_character (s_buf *buf, character c);
+sw buf_inspect_str (s_buf *buf, const s_str *str);
+sw buf_inspect_sym (s_buf *buf, const s_sym *sym);
 sw buf_peek (s_buf *buf, u8 *p);
+sw buf_peek_character (s_buf *buf, character *p);
 sw buf_read (s_buf *buf, u8 *p);
 sw buf_read_character (s_buf *buf, character *p);
 sw buf_refill (s_buf *buf);
 sw buf_vf (s_buf *buf, const char *fmt, va_list ap);
 sw buf_write (s_buf *buf, u8 v);
+sw buf_write_1 (s_buf *buf, s8 *p);
+sw buf_write_character (s_buf *buf, character c);
 sw buf_write_str (s_buf *buf, const s_str *src);
+sw buf_xfer (s_buf *buf, s_buf *src);
 
 /* Str observers, call str_delete after use. */
 s_str * buf_to_str (const s_buf *src);

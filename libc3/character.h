@@ -9,7 +9,10 @@
 character character_1 (const s8 *p);
 bool      character_is_digit (character c);
 bool      character_is_lowercase (character c);
+bool      character_is_printable (character c);
 bool      character_is_uppercase (character c);
+sw        character_read (s_buf *buf, character *c);
+sw        character_write (s_buf *buf, character c);
 sw        character_utf8 (character c, s8 *dest);
 sw        character_utf8_size (character c);
 

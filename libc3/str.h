@@ -37,7 +37,10 @@ s_str * str_new_vf (const char *fmt, va_list ap);
 void str_delete (s_str *str);
 
 /* Observers */
+character     str_character_escape (character c);
+bool          str_character_reserved (character c);
 sw            str_cmp (const s_str *a, const s_str *b);
+bool          str_has_reserved_characters (const s_str *str);
 sw            str_fputs (const s_str *src, FILE *fp);
 s_str *       str_inspect (const s_str *x);
 sw            str_puts (const s_str *src);
