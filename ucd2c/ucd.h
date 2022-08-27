@@ -4,21 +4,46 @@
 #ifndef UCD_H
 #define UCD_H
 
-#define UCD_MAX 0x11000
+#define UCD_MAX     0x110000
+#define UCD_SUB_MAX 0x010000
 
-#define UCD_FLAG_LOWERCASE 0x01
-#define UCD_FLAG_UPPERCASE 0x02
-/* unknown flags */
-#define UCD_FLAG_C         0x0
-#define UCD_FLAG_P         0x0
-#define UCD_FLAG_S         0x0
-#define UCD_FLAG_Z         0x0
-#define UCD_FLAG_c         0x0
-#define UCD_FLAG_e         0x0
-#define UCD_FLAG_l         0x0
-#define UCD_FLAG_o         0x0
-#define UCD_FLAG_p         0x0
-#define UCD_FLAG_s         0x0
+#define UCD_LETTER                    0x0000000001
+#define UCD_LETTER_LOWERCASE          0x0000000002
+#define UCD_LETTER_MODIFIER           0x0000000004
+#define UCD_LETTER_OTHER              0x0000000008
+#define UCD_LETTER_TITLECASE          0x0000000010
+#define UCD_LETTER_UPPERCASE          0x0000000020
+#define UCD_MARK                      0x0000000040
+#define UCD_MARK_COMBINING            0x0000000080
+#define UCD_MARK_ENCLOSING            0x0000000100
+#define UCD_MARK_NONSPACING           0x0000000200
+#define UCD_NUMBER                    0x0000000400
+#define UCD_NUMBER_DECIMAL_DIGIT      0x0000000800
+#define UCD_NUMBER_LETTER             0x0000001000
+#define UCD_NUMBER_OTHER              0x0000002000
+#define UCD_PUNCTUATION               0x0000004000
+#define UCD_PUNCTUATION_CLOSE         0x0000008000
+#define UCD_PUNCTUATION_CONNECTOR     0x0000010000
+#define UCD_PUNCTUATION_DASH          0x0000020000
+#define UCD_PUNCTUATION_FINAL_QUOTE   0x0000040000
+#define UCD_PUNCTUATION_INITIAL_QUOTE 0x0000080000
+#define UCD_PUNCTUATION_OPEN          0x0000100000
+#define UCD_PUNCTUATION_OTHER         0x0000200000
+#define UCD_SYMBOL                    0x0000400000
+#define UCD_SYMBOL_CURRENCY           0x0000800000
+#define UCD_SYMBOL_MATH               0x0001000000
+#define UCD_SYMBOL_MODIFIER           0x0002000000
+#define UCD_SYMBOL_OTHER              0x0004000000
+#define UCD_SEPARATOR                 0x0008000000
+#define UCD_SEPARATOR_LINE            0x0010000000
+#define UCD_SEPARATOR_PARAGRAPH       0x0020000000
+#define UCD_SEPARATOR_SPACE           0x0040000000
+#define UCD_OTHER                     0x0080000000
+#define UCD_OTHER_CONTROL             0x0100000000
+#define UCD_OTHER_FORMAT              0x0200000000
+#define UCD_OTHER_SURROGATE           0x0400000000
+#define UCD_OTHER_PRIVATE_USE         0x0800000000
+#define UCD_OTHER_NOT_ASSIGNED        0x1000000000
 
 typedef unsigned long ucd_flags;
 

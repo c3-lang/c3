@@ -45,10 +45,14 @@ void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
   unsigned long i;
   char *p = NULL;
   char *sep;
+#define UCD_PARSE_UNKNOWN_CATEGORY \
+  warnx("line %lu: unknown category : %c%c", lineno, p[0], p[1])
   p = line;
   i = read_hex((const char **) &p);
-  if (i >= UCD_MAX)
+  if (i >= UCD_MAX) {
+    warnx("%lu > UCD_MAX", i);
     goto error;
+  }
   ucd[i].flags = 0;
   if (! (sep = strchr(p, ';')))
     goto error;
@@ -58,21 +62,85 @@ void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
   if (! (sep = strchr(p, ';')))
     goto error;
   while (p < sep) {
-    switch (*p) {
-    case 'C': ucd[i].flags |= UCD_FLAG_C; break;
-    case 'P': ucd[i].flags |= UCD_FLAG_P; break;
-    case 'S': ucd[i].flags |= UCD_FLAG_S; break;
-    case 'Z': ucd[i].flags |= UCD_FLAG_Z; break;
-    case 'c': ucd[i].flags |= UCD_FLAG_c; break;
-    case 'e': ucd[i].flags |= UCD_FLAG_e; break;
-    case 'l': ucd[i].flags |= UCD_FLAG_LOWERCASE; break;
-    case 'o': ucd[i].flags |= UCD_FLAG_o; break;
-    case 'p': ucd[i].flags |= UCD_FLAG_p; break;
-    case 's': ucd[i].flags |= UCD_FLAG_s; break;
-    case 'u': ucd[i].flags |= UCD_FLAG_UPPERCASE; break;
-    default: warnx("line %lu: unknown flag: '%c'", lineno, *p);
+    switch (p[0]) {
+    case 'L':
+      ucd[i].flags |= UCD_LETTER;
+      switch (p[1]) {
+      case 'l': ucd[i].flags |= UCD_LETTER_LOWERCASE; break;
+      case 'm': ucd[i].flags |= UCD_LETTER_MODIFIER; break;
+      case 'o': ucd[i].flags |= UCD_LETTER_OTHER; break;
+      case 't': ucd[i].flags |= UCD_LETTER_TITLECASE; break;
+      case 'u': ucd[i].flags |= UCD_LETTER_UPPERCASE; break;
+      default: UCD_PARSE_UNKNOWN_CATEGORY;
+      }
+      break;
+    case 'M':
+      ucd[i].flags |= UCD_MARK;
+      switch (p[1]) {
+      case 'c': ucd[i].flags |= UCD_MARK_COMBINING; break;
+      case 'e': ucd[i].flags |= UCD_MARK_ENCLOSING; break;
+      case 'n': ucd[i].flags |= UCD_MARK_NONSPACING; break;
+      default: UCD_PARSE_UNKNOWN_CATEGORY;
+      }
+      break;
+    case 'N':
+      ucd[i].flags |= UCD_NUMBER;
+      switch (p[1]) {
+      case 'd': ucd[i].flags |= UCD_NUMBER_DECIMAL_DIGIT; break;
+      case 'l': ucd[i].flags |= UCD_NUMBER_LETTER; break;
+      case 'o': ucd[i].flags |= UCD_NUMBER_OTHER; break;
+      default: UCD_PARSE_UNKNOWN_CATEGORY;
+      }
+      break;
+    case 'P':
+      ucd[i].flags |= UCD_PUNCTUATION;
+      switch (p[1]) {
+      case 'c': ucd[i].flags |= UCD_PUNCTUATION_CONNECTOR; break;
+      case 'd': ucd[i].flags |= UCD_PUNCTUATION_DASH; break;
+      case 's': ucd[i].flags |= UCD_PUNCTUATION_OPEN; break;
+      case 'e': ucd[i].flags |= UCD_PUNCTUATION_CLOSE; break;
+      case 'i': ucd[i].flags |= UCD_PUNCTUATION_INITIAL_QUOTE; break;
+      case 'f': ucd[i].flags |= UCD_PUNCTUATION_FINAL_QUOTE; break;
+      case 'o': ucd[i].flags |= UCD_PUNCTUATION_OTHER; break;
+      default: UCD_PARSE_UNKNOWN_CATEGORY;
+      }
+      break;
+    case 'S':
+      ucd[i].flags |= UCD_SYMBOL;
+      switch (p[1]) {
+      case 'c': ucd[i].flags |= UCD_SYMBOL_CURRENCY; break;
+      case 'k': ucd[i].flags |= UCD_SYMBOL_MODIFIER; break;
+      case 'm': ucd[i].flags |= UCD_SYMBOL_MATH; break;
+      case 'o': ucd[i].flags |= UCD_SYMBOL_OTHER; break;
+      default: UCD_PARSE_UNKNOWN_CATEGORY;
+      }
+      break;
+    case 'Z':
+      ucd[i].flags |= UCD_SEPARATOR;
+      switch (p[1]) {
+      case 'l': ucd[i].flags |= UCD_SEPARATOR_LINE; break;
+      case 'p': ucd[i].flags |= UCD_SEPARATOR_PARAGRAPH; break;
+      case 's': ucd[i].flags |= UCD_SEPARATOR_SPACE; break;
+      default: UCD_PARSE_UNKNOWN_CATEGORY;
+      }
+      break;
+    case 'C':
+      ucd[i].flags |= UCD_OTHER;
+      switch (p[1]) {
+      case 'c': ucd[i].flags |= UCD_OTHER_CONTROL; break;
+      case 'f': ucd[i].flags |= UCD_OTHER_FORMAT; break;
+      case 's': ucd[i].flags |= UCD_OTHER_SURROGATE; break;
+      case 'o': ucd[i].flags |= UCD_OTHER_PRIVATE_USE; break;
+      case 'n': ucd[i].flags |= UCD_OTHER_NOT_ASSIGNED; break;
+      default: UCD_PARSE_UNKNOWN_CATEGORY;
+      }
+      break;
+    default: warnx("line %lu: unknown category: '%c'", lineno, *p);
     }
-    p++;
+    if (*p != ';')
+      p++;
+    if (*p != ';')
+      p++;
   }
   return;
  error:
@@ -88,7 +156,7 @@ void ucd_write_c (s_ucd ucd[UCD_MAX])
   while (i < UCD_MAX) {
     if (i > 0)
       printf(",\n");
-    printf("  {%lx, ",
+    printf("  {0x%lx, ",
            ucd[i].flags);
     if (ucd[i].name)
       printf("\"%s\"", ucd[i].name);
@@ -104,7 +172,7 @@ int main (int argc, char **argv)
 {
   char buf[BUFSZ];
   unsigned long lineno;
-  s_ucd ucd[UCD_MAX] = {0};
+  s_ucd *ucd = calloc(sizeof(s_ucd), UCD_MAX);
   (void) argc;
   (void) argv;
   lineno = 0;
@@ -115,5 +183,6 @@ int main (int argc, char **argv)
     ucd_parse(ucd, buf, ++lineno);
   }
   ucd_write_c(ucd);
+  free(ucd);
   return 0;
 }
