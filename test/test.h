@@ -40,7 +40,7 @@
 #define TEST_STRNCMP(test, result, bytes)               \
   do {                                                  \
     const char *tmp = test;                             \
-    if (strncmp(tmp, result, bytes) == 0) {             \
+    if (strncmp(tmp, result, bytes) == 0) {           \
       test_ok();                                        \
     }                                                   \
     else {                                              \

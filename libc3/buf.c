@@ -10,6 +10,8 @@
 #include "str.h"
 #include "sym.h"
 
+const sw buf_u8_to_hex_size = 2;
+
 sw   buf_inspect_str_reserved (s_buf *buf, const s_str *str);
 sw   buf_inspect_str_reserved_size (const s_str *str);
 sw   buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym);
@@ -141,14 +143,20 @@ sw buf_inspect_str_character (s_buf *buf, character c)
   default:
     BUF_INIT_ALLOCA(&char_buf, 4);
     i = buf_write_character(&char_buf, c);
-    j = 0;
-    if (i-- > 0) {
+    if (i <= 0) {
       buf_write(buf, 'x');
-      buf_f(buf, "%02x", char_buf.ptr.pu8[j++]);
-      while (i--) {
-        buf_write(buf, '\\');
+      buf_u8_to_hex(buf, c);
+    }
+    else {
+      j = 0;
+      if (i-- > 0) {
         buf_write(buf, 'x');
-        buf_f(buf, "%02x", char_buf.ptr.pu8[j++]);
+        buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
+        while (i--) {
+          buf_write(buf, '\\');
+          buf_write(buf, 'x');
+          buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
+        }
       }
     }
   }
@@ -175,6 +183,8 @@ sw buf_inspect_str_character_size (character c)
     break;
   default:
     csize = character_utf8_size(c);
+    if (csize < 0)
+      csize = 1;
     size += csize * 4;
   }
   return size;
@@ -465,6 +475,45 @@ sw buf_refill (s_buf *buf)
     return buf->refill(buf);
   }
   return 0;
+}
+
+sw buf_str_to_hex (s_buf *buf, const s_str *src)
+{
+  u8 *b;
+  sw size;
+  uw i;
+  if (src->size == 0)
+    return 0;
+  size = src->size * 2;
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  b = src->ptr.pu8;
+  i = 0;
+  while (i++ < src->size)
+    buf_u8_to_hex(buf, *(b++));
+  return size;
+}
+
+sw buf_u8_to_hex (s_buf *buf, u8 x)
+{
+  u8 digit;
+  if (buf->wpos + buf_u8_to_hex_size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  digit = x >> 4;
+  if (digit < 10)
+    buf_write(buf, digit + '0');
+  else
+    buf_write(buf, digit - 10 + 'A');
+  digit = x & 0xF;
+  if (digit < 10)
+    buf_write(buf, digit + '0');
+  else
+    buf_write(buf, digit - 10 + 'A');
+  return buf_u8_to_hex_size;
 }
 
 sw buf_vf (s_buf *buf, const char *fmt, va_list ap)

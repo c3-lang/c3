@@ -139,7 +139,7 @@ s_str * str_inspect (const s_str *src)
     return NULL;
   buf_init_alloc(&buf, size);
   buf_inspect_str(&buf, src);
-  assert(buf.wpos == size);
+  assert(buf.wpos == (u64) size);
   str = str_new(true, buf.size, buf.ptr.p);
   return str;
 }
@@ -324,19 +324,12 @@ s_str * str_to_hex (const s_str *src)
 {
   s_buf buf;
   s_str *hex;
-  u8 *b;
+  sw size;
   if (src->size == 0)
     return str_new_empty();
-  buf_init_alloc(&buf, src->size * 2);
-  b = src->ptr.pu8;
-  for (uw i = 0; i < src->size; i++) {
-    buf_f(&buf, "%02x", b[i]);
-    /*
-    snprintf(tmp, 2, "%02x", b[i]);
-    buf_write(&buf, tmp[0]);
-    buf_write(&buf, tmp[1]);
-    */
-  }
+  size = src->size * 2;
+  buf_init_alloc(&buf, size);
+  buf_str_to_hex(&buf, src);
   hex = str_new(true, buf.size, buf.ptr.p);
   return hex;
 }

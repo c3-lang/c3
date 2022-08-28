@@ -53,14 +53,15 @@ sw buf_peek_character (s_buf *buf, character *p);
 sw buf_read (s_buf *buf, u8 *p);
 sw buf_read_character (s_buf *buf, character *p);
 sw buf_refill (s_buf *buf);
+sw buf_str_to_hex (s_buf *buf, const s_str *src);
+sw buf_str_to_hex_size (const s_str *src);
+sw buf_u8_to_hex (s_buf *buf, u8 x);
+const sw buf_u8_to_hex_size;
 sw buf_vf (s_buf *buf, const char *fmt, va_list ap);
 sw buf_write (s_buf *buf, u8 v);
 sw buf_write_1 (s_buf *buf, s8 *p);
 sw buf_write_character (s_buf *buf, character c);
 sw buf_write_str (s_buf *buf, const s_str *src);
 sw buf_xfer (s_buf *buf, s_buf *src);
-
-/* Str observers, call str_delete after use. */
-s_str * buf_to_str (const s_buf *src);
 
 #endif /* BUF_H */
