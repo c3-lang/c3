@@ -27,6 +27,10 @@
 /* Stack constructors, call buf_clean after use. */
 void buf_init (s_buf *buf, bool free, uw size, s8 *p);
 void buf_init_alloc (s_buf *buf, uw size);
+
+/* Read only stack contructors, do not write into.
+   Call buf_clean after use. */
+void buf_init_1 (s_buf *buf, bool free, s8 *p);
 void buf_init_str (s_buf *buf, const s_str *src);
 
 /* Constructors, call buf_delete after use. */

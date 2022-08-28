@@ -47,7 +47,17 @@
     test_context("buf_inspect_str_character_size("                     \
                  # test ") -> " # result);                             \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_str_character_size(test), result);       \
+    TEST_EQ(buf_inspect_str_character_size(test), result);             \
+  } while (0)
+
+#define BUF_TEST_READ_CHARACTER(test, result)                          \
+  do {                                                                 \
+    character c;                                                       \
+    s_buf buf;                                                         \
+    test_context("buf_read_character(" # test ") -> " # result);       \
+    buf_init_1(&buf, false, test);                                     \
+    TEST_ASSERT(buf_read_character(&buf, &c) >= 0);                    \
+    TEST_EQ(c, result);                                                \
   } while (0)
 
 void buf_test_init_clean ();
@@ -58,6 +68,7 @@ void buf_test_new_delete ();
 void buf_test_peek ();
 void buf_test_peek_str ();
 void buf_test_read ();
+void buf_test_read_character ();
 void buf_test_write ();
 void buf_test_write_str ();
 
@@ -68,6 +79,7 @@ void buf_test ()
   buf_test_peek();
   buf_test_peek_str();
   buf_test_read();
+  buf_test_read_character();
   buf_test_write();
   buf_test_write_str();
   buf_test_inspect_str_character_size();
@@ -112,7 +124,10 @@ void buf_test_inspect_character ()
   BUF_TEST_INSPECT_CHARACTER('Z', "'Z'");
   BUF_TEST_INSPECT_CHARACTER('a', "'a'");
   BUF_TEST_INSPECT_CHARACTER('z', "'z'");
+  BUF_TEST_INSPECT_CHARACTER(928, "'Π'");
   BUF_TEST_INSPECT_CHARACTER(0xFF, "'ÿ'");
+  BUF_TEST_INSPECT_CHARACTER(40960, "'ꀀ'");
+  BUF_TEST_INSPECT_CHARACTER(65856, "'𐅀'");
 }
 
 void buf_test_inspect_str_character ()
@@ -128,7 +143,10 @@ void buf_test_inspect_str_character ()
   BUF_TEST_INSPECT_STR_CHARACTER('Z', "Z");
   BUF_TEST_INSPECT_STR_CHARACTER('a', "a");
   BUF_TEST_INSPECT_STR_CHARACTER('z', "z");
+  BUF_TEST_INSPECT_STR_CHARACTER(928, "Π");
   BUF_TEST_INSPECT_STR_CHARACTER(0xFF, "ÿ");
+  BUF_TEST_INSPECT_STR_CHARACTER(40960, "ꀀ");
+  BUF_TEST_INSPECT_STR_CHARACTER(65856, "𐅀");
 }
 
 void buf_test_inspect_str_character_size ()
@@ -144,7 +162,10 @@ void buf_test_inspect_str_character_size ()
   BUF_TEST_INSPECT_STR_CHARACTER_SIZE('Z', 1);
   BUF_TEST_INSPECT_STR_CHARACTER_SIZE('a', 1);
   BUF_TEST_INSPECT_STR_CHARACTER_SIZE('z', 1);
+  BUF_TEST_INSPECT_STR_CHARACTER_SIZE(928, 2);
   BUF_TEST_INSPECT_STR_CHARACTER_SIZE(0xFF, 2);
+  BUF_TEST_INSPECT_STR_CHARACTER_SIZE(40960, 3);
+  BUF_TEST_INSPECT_STR_CHARACTER_SIZE(65856, 4);
 }
 
 void buf_test_new_delete ()
@@ -220,6 +241,13 @@ void buf_test_read ()
   TEST_EQ(buf.rpos, 8);
   TEST_EQ(buf_read(&buf, &byte), 0);
   buf_clean(&buf);
+}
+
+void buf_test_read_character ()
+{
+  BUF_TEST_READ_CHARACTER("Π", 928);
+  BUF_TEST_READ_CHARACTER("ꀀ", 40960);
+  BUF_TEST_READ_CHARACTER("𐅀", 65856);
 }
 
 void buf_test_write ()

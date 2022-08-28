@@ -68,6 +68,15 @@ void buf_init (s_buf *buf, bool free, uw size, s8 *p)
   buf->flush = NULL;
 }
 
+void buf_init_1 (s_buf *buf, bool free, s8 *p)
+{
+  uw size;
+  assert(p);
+  size = strlen(p);
+  buf_init(buf, free, size, p);
+  buf->wpos = size;
+}
+
 void buf_init_alloc (s_buf *buf, uw size)
 {
   s8 *p;
@@ -172,20 +181,14 @@ sw buf_inspect_str_character (s_buf *buf, character c)
   default:
     BUF_INIT_ALLOCA(&char_buf, 4);
     i = buf_write_character(&char_buf, c);
-    if (i <= 0) {
+    j = 0;
+    if (i-- > 0) {
       buf_write(buf, 'x');
-      buf_u8_to_hex(buf, c);
-    }
-    else {
-      j = 0;
-      if (i-- > 0) {
+      buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
+      while (i--) {
+        buf_write(buf, '\\');
         buf_write(buf, 'x');
         buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
-        while (i--) {
-          buf_write(buf, '\\');
-          buf_write(buf, 'x');
-          buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
-        }
       }
     }
   }
