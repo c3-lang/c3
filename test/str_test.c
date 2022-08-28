@@ -97,6 +97,9 @@ void str_test_character_is_reserved ()
   TEST_ASSERT(! str_character_is_reserved('x'));
   TEST_ASSERT(! str_character_is_reserved('y'));
   TEST_ASSERT(! str_character_is_reserved('z'));
+  TEST_ASSERT(! str_character_is_reserved('\''));
+  TEST_ASSERT(str_character_is_reserved('"'));
+  TEST_ASSERT(str_character_is_reserved('\\'));
 }
 
 void str_test_cmp ()
@@ -158,6 +161,7 @@ void str_test_inspect ()
   STR_TEST_INSPECT_1("\t", "\"\\t\"");
   STR_TEST_INSPECT_1("\v", "\"\\v\"");
   STR_TEST_INSPECT_1("\"", "\"\\\"\"");
+  STR_TEST_INSPECT_1("\\", "\"\\\\\"");
   STR_TEST_INSPECT_1(".", "\".\"");
   STR_TEST_INSPECT_1("..", "\"..\"");
   STR_TEST_INSPECT_1("...", "\"...\"");
@@ -184,8 +188,8 @@ void str_test_inspect ()
   STR_TEST_INSPECT_1("Π", "\"Π\"");
   STR_TEST_INSPECT_1("ꀀ", "\"ꀀ\"");
   STR_TEST_INSPECT_1("𐅀", "\"𐅀\"");
-  STR_TEST_INSPECT_1("ÉoàΠꀀ𐅀 \\n\\r\t\v\"",
-                     "\"ÉoàΠꀀ𐅀 \\n\\r\\t\\v\\\"\"");
+  STR_TEST_INSPECT_1("ÉoàΠꀀ𐅀\n\r\t\v\\\"",
+                     "\"ÉoàΠꀀ𐅀\\n\\r\\t\\v\\\\\\\"\"");
   STR_TEST_INSPECT_1("\xff", "\"\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");

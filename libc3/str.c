@@ -14,7 +14,9 @@
 
 bool str_character_is_reserved (character c)
 {
-  return ! character_is_printable(c) || c == '"';
+  return ! character_is_printable(c) ||
+    c == '"' ||
+    c == '\\';
 }
 
 void str_clean (s_str *str)
