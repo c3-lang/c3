@@ -27,6 +27,7 @@
 /* Stack constructors, call buf_clean after use. */
 void buf_init (s_buf *buf, bool free, uw size, s8 *p);
 void buf_init_alloc (s_buf *buf, uw size);
+void buf_init_str (s_buf *buf, const s_str *src);
 
 /* Constructors, call buf_delete after use. */
 s_buf * buf_new (bool free, uw size, s8 *p);
@@ -52,6 +53,7 @@ sw buf_peek (s_buf *buf, u8 *p);
 sw buf_peek_character (s_buf *buf, character *p);
 sw buf_read (s_buf *buf, u8 *p);
 sw buf_read_character (s_buf *buf, character *p);
+sw buf_read_character_or_byte (s_buf *buf, character *p);
 sw buf_refill (s_buf *buf);
 sw buf_str_to_hex (s_buf *buf, const s_str *src);
 sw buf_str_to_hex_size (const s_str *src);

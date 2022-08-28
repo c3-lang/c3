@@ -30,18 +30,20 @@
     }                                                   \
     else {                                              \
       test_ko();                                        \
-      printf("\nAssertion failed in %s:%d %s\n"         \
+      printf("\n%sAssertion failed in %s:%d %s\n"       \
              "%s == %s\n"                               \
-             "Expected %s got %lld",                    \
+             "Expected %s got %lld.%s\n",               \
+             TEST_COLOR_KO,                             \
              __FILE__, __LINE__, __func__,              \
-             # test, # expected, # expected, tmp);      \
+             # test, # expected, # expected, tmp,       \
+             TEST_COLOR_RESET);                         \
     }                                                   \
   } while (0)
 
 #define TEST_STRNCMP(test, result, bytes)               \
   do {                                                  \
     const char *tmp = test;                             \
-    if (strncmp(tmp, result, bytes) == 0) {           \
+    if (strncmp(tmp, result, bytes) == 0) {             \
       test_ok();                                        \
     }                                                   \
     else {                                              \

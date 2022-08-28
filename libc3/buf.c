@@ -11,7 +11,9 @@
 #include "sym.h"
 
 const sw buf_u8_to_hex_size = 2;
+const sw buf_inspect_str_byte_size = 4;
 
+sw   buf_inspect_str_byte (s_buf *buf, u8 b);
 sw   buf_inspect_str_reserved (s_buf *buf, const s_str *str);
 sw   buf_inspect_str_reserved_size (const s_str *str);
 sw   buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym);
@@ -77,6 +79,14 @@ void buf_init_alloc (s_buf *buf, uw size)
   buf_init(buf, true, size, p);
 }
 
+void buf_init_str (s_buf *buf, const s_str *src)
+{
+  assert(buf);
+  assert(src);
+  buf_init(buf, src->free, src->size, src->ptr.p);
+  buf->wpos = src->size;
+}
+
 sw buf_inspect_character (s_buf *buf, character c)
 {
   s_buf tmp;
@@ -112,6 +122,19 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   buf_write(buf, '"');
   buf_write_str(buf, str);
   buf_write(buf, '"');
+  return size;
+}
+
+sw buf_inspect_str_byte (s_buf *buf, u8 b)
+{
+  sw size = 4;
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf_write(buf, '\\');
+  buf_write(buf, 'x');
+  buf_u8_to_hex(buf, b);
   return size;
 }
 
@@ -192,9 +215,11 @@ sw buf_inspect_str_character_size (character c)
 
 sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
 {
+  u8 b;
   character c;
+  sw r;
   sw size;
-  s_str stra;
+  s_buf src_buf;
   size = buf_inspect_str_reserved_size(src);
   if (size <= 0)
     return size;
@@ -203,9 +228,16 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
     return -1;
   }
   buf_write(buf, '"');
-  str_init(&stra, false, src->size, src->ptr.p);
-  while (str_read_character(&stra, &c) > 0) {
-    buf_inspect_str_character(buf, c);
+  buf_init_str(&src_buf, src);
+  while (1) {
+    if ((r = buf_read_character(&src_buf, &c)) > 0)
+      buf_inspect_str_character(buf, c);
+    else if (r && (r = buf_read(&src_buf, &b)) == 1)
+      buf_inspect_str_byte(buf, b);
+    else if (r < 0)
+      return -1;
+    else if (r == 0)
+      break;
   }
   buf_write(buf, '"');
   return size;
@@ -213,17 +245,23 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
 
 sw buf_inspect_str_reserved_size (const s_str *src)
 {
+  u8 b;
   character c;
   const sw quote_size = 1;
+  sw r;
   sw size;
-  s_str stra;
+  s_buf src_buf;
   size = 2 * quote_size;
-  str_init(&stra, false, src->size, src->ptr.p);
-  while (str_read_character(&stra, &c) > 0) {
-    const sw csize = buf_inspect_str_character_size(c);
-    if (csize < 0)
-      return csize;
-    size += csize;
+  buf_init_str(&src_buf, src);
+  while (1) {
+    if ((r = buf_read_character(&src_buf, &c)) > 0)
+      size += buf_inspect_str_character_size(c);
+    else if (r && (r = buf_read(&src_buf, &b)) == 1)
+      size += buf_inspect_str_byte_size;
+    else if (r < 0)
+      return -1;
+    else if (r == 0)
+      break;
   }
   return size;
 }
@@ -440,6 +478,24 @@ sw buf_read_character (s_buf *buf, character *p)
   r = buf_peek_character(buf, p);
   if (r > 0)
     buf->rpos += r;
+  return r;
+}
+
+sw buf_read_character_or_byte (s_buf *buf, character *p)
+{
+  u8 b;
+  sw r;
+  r = buf_peek_character(buf, p);
+  if (r > 0) {
+    buf->rpos += r;
+    return r;
+  }
+  r = buf_peek(buf, &b);
+  if (r == 1) {
+    *p = b;
+    buf->rpos++;
+    return 1;
+  }
   return r;
 }
 

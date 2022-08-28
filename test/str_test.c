@@ -65,6 +65,8 @@ void str_test_new_1 ();
 void str_test_new_cpy ();
 void str_test_new_delete ();
 void str_test_new_f ();
+void str_test_to_hex ();
+void str_test_to_sym ();
 
 void str_test_character_is_reserved ()
 {
@@ -182,6 +184,8 @@ void str_test_inspect ()
   STR_TEST_INSPECT_1("Π", "\"Π\"");
   STR_TEST_INSPECT_1("ꀀ", "\"ꀀ\"");
   STR_TEST_INSPECT_1("𐅀", "\"𐅀\"");
+  STR_TEST_INSPECT_1("ÉoàΠꀀ𐅀 \\n\\r\t\v\"",
+                     "\"ÉoàΠꀀ𐅀 \\n\\r\\t\\v\\\"\"");
   STR_TEST_INSPECT_1("\xff", "\"\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");
@@ -349,6 +353,36 @@ void str_test_to_hex ()
                   "7172737475767778797A");
 }
 
+void str_test_to_sym ()
+{
+  s_str *test;
+  const s_sym *result;
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, ""))));
+  STR_TEST_CMP(&result->str, test, 0);
+  str_delete(test);
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "0"))));
+  STR_TEST_CMP(&result->str, test, 0);
+  str_delete(test);
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "012"))));
+  STR_TEST_CMP(&result->str, test, 0);
+  str_delete(test);
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "A"))));
+  STR_TEST_CMP(&result->str, test, 0);
+  str_delete(test);
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "ABC"))));
+  STR_TEST_CMP(&result->str, test, 0);
+  str_delete(test);
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "Abc"))));
+  STR_TEST_CMP(&result->str, test, 0);
+  str_delete(test);
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "a"))));
+  STR_TEST_CMP(&result->str, test, 0);
+  str_delete(test);
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "abc"))));
+  STR_TEST_CMP(&result->str, test, 0);
+  str_delete(test);
+}
+
 void str_test ()
 {
   str_test_init_clean();
@@ -360,4 +394,5 @@ void str_test ()
   str_test_character_is_reserved();
   str_test_inspect();
   str_test_to_hex();
+  str_test_to_sym();
 }
