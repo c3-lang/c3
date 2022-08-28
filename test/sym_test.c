@@ -93,6 +93,11 @@ void sym_test_inspect ()
 {
   SYM_TEST_INSPECT("", ":\"\"");
   SYM_TEST_INSPECT(" ", ":\" \"");
+  SYM_TEST_INSPECT("\n", ":\"\\n\"");
+  SYM_TEST_INSPECT("\r", ":\"\\r\"");
+  SYM_TEST_INSPECT("\t", ":\"\\t\"");
+  SYM_TEST_INSPECT("\v", ":\"\\v\"");
+  SYM_TEST_INSPECT("\"", ":\"\\\"\"");
   SYM_TEST_INSPECT(".", ":.");
   SYM_TEST_INSPECT("..", ":..");
   SYM_TEST_INSPECT("...", ":...");

@@ -131,10 +131,16 @@ void str_init_join_v (s_str *str, uw count, va_list ap)
 
 s_str * str_inspect (const s_str *src)
 {
-  s_str quote;
+  s_buf buf;
+  sw size;
   s_str *str;
-  str_init(&quote, false, 1, "\"");
-  str = str_new_join(3, &quote, src, &quote);
+  size = buf_inspect_str_size(src);
+  if (size <= 0)
+    return NULL;
+  buf_init_alloc(&buf, size);
+  buf_inspect_str(&buf, src);
+  assert(buf.wpos == size);
+  str = str_new(true, buf.size, buf.ptr.p);
   return str;
 }
 
