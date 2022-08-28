@@ -186,10 +186,10 @@ void str_test_inspect ()
   STR_TEST_INSPECT_1("éoà \n\r\t\v\"",
                      "\"éoà \\n\\r\\t\\v\\\"\"");
   STR_TEST_INSPECT_1("Π", "\"Π\"");
-  STR_TEST_INSPECT_1("ꀀ", "\"ꀀ\"");
+  STR_TEST_INSPECT_1("꒴", "\"꒴\"");
   STR_TEST_INSPECT_1("𐅀", "\"𐅀\"");
-  STR_TEST_INSPECT_1("ÉoàΠꀀ𐅀\n\r\t\v\\\"",
-                     "\"ÉoàΠꀀ𐅀\\n\\r\\t\\v\\\\\\\"\"");
+  STR_TEST_INSPECT_1("ÉoàΠ꒴𐅀\n\r\t\v\\\"",
+                     "\"ÉoàΠ꒴𐅀\\n\\r\\t\\v\\\\\\\"\"");
   STR_TEST_INSPECT_1("\xff", "\"\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");

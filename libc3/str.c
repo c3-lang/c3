@@ -52,15 +52,6 @@ void str_delete (s_str *str)
   free(str);
 }
 
-sw str_fputs (const s_str *str, FILE *fp)
-{
-  size_t r;
-  r = fwrite(str->ptr.p, str->size, 1, fp);
-  if (r == 1)
-    return str->size;
-  return -1;
-}
-
 bool str_has_reserved_characters (const s_str *src)
 {
   character c;
@@ -76,23 +67,37 @@ bool str_has_reserved_characters (const s_str *src)
   return false;
 }
 
-void str_init (s_str *str, bool free, uw size, s8 *p)
+s_str * str_init (s_str *str, bool free, uw size, s8 *p)
 {
   assert(str);
   str->free = free;
   str->size = size;
   str->ptr.p = p;
+  return str;
 }
 
-void str_init_1 (s_str *str, bool free, s8 *p)
+s_str * str_init_1 (s_str *str, bool free, s8 *p)
 {
   assert(str);
   str->free = free;
   str->size = strlen(p);
   str->ptr.p = p;
+  return str;
 }
 
-void str_init_dup (s_str *str, const s_str *src)
+s_str * str_init_alloc (s_str *str, uw size, const s8 *p)
+{
+  assert(str);
+  str->free = true;
+  str->size = size;
+  str->ptr.p = malloc(size);
+  if (! str->ptr.p)
+    err(1, "out of memory");
+  memcpy(str->ptr.p, p, size);
+  return str;
+}
+
+s_str * str_init_dup (s_str *str, const s_str *src)
 {
   assert(str);
   assert(src);
@@ -100,6 +105,7 @@ void str_init_dup (s_str *str, const s_str *src)
   str->size = src->size;
   str->ptr.p = malloc(src->size);
   memcpy((void *) str->ptr.p, src->ptr.p, str->size);
+  return str;
 }
 
 s_str * str_inspect (const s_str *src)
@@ -186,11 +192,6 @@ s_str * str_new_vf (const char *fmt, va_list ap)
   return str;
 }
 
-sw str_puts (const s_str *str)
-{
-  return str_fputs(str, stdout);
-}
-
 sw str_read_character (s_str *str, character *c)
 {
   sw size;
@@ -202,12 +203,6 @@ sw str_read_character (s_str *str, character *c)
   str->size -= size;
   str->ptr.p = (s8 *) str->ptr.p + size;
   return size;
-}
-
-void str_resize (s_str *str, uw size)
-{
-  str_clean(str);
-  str_init(str, true, size, calloc(size, 1));
 }
 
 sw str_to_character (const s_str *str, character *c)

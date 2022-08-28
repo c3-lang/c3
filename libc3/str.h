@@ -15,9 +15,10 @@
 #include "types.h"
 
 /* Stack allocation compatible functions */
-void str_init (s_str *str, bool free, uw size, s8 *p);
-void str_init_1 (s_str *str, bool free, s8 *p);
-void str_init_dup (s_str *str, const s_str *src);
+s_str * str_init (s_str *str, bool free, uw size, s8 *p);
+s_str * str_init_1 (s_str *str, bool free, s8 *p);
+s_str * str_init_alloc (s_str *str, uw size, const s8 *p);
+s_str * str_init_dup (s_str *str, const s_str *src);
 void str_clean (s_str *str);
 
 /* Constructors, call str_delete after use */
@@ -37,7 +38,6 @@ void str_delete (s_str *str);
 character     str_character_escape (character c);
 bool          str_character_is_reserved (character c);
 sw            str_cmp (const s_str *a, const s_str *b);
-sw            str_fputs (const s_str *src, FILE *fp);
 bool          str_has_reserved_characters (const s_str *str);
 sw            str_puts (const s_str *src);
 sw            str_to_character (const s_str *src, character *c);
@@ -46,6 +46,5 @@ const s_sym * str_to_sym (const s_str *src);
 
 /* Modifiers */
 sw        str_read_character (s_str *str, character *c);
-void      str_resize (s_str *str, uw size);
 
 #endif /* STR_H */

@@ -60,11 +60,23 @@
     TEST_EQ(c, result);                                                \
   } while (0)
 
+#define BUF_TEST_READ_N(test, n, result)                               \
+  do {                                                                 \
+    character c;                                                       \
+    s_buf buf;                                                         \
+    test_context("buf_read_n(" # test ", " # n ") -> " # result);      \
+    buf_init_1(&buf, false, test);                                     \
+    TEST_ASSERT(buf_read_n(&buf, &c) >= 0);                    \
+    TEST_EQ(c, result);                                                \
+  } while (0)
+
+void buf_test_f ();
 void buf_test_init_clean ();
 void buf_test_inspect_character ();
 void buf_test_inspect_str_character ();
 void buf_test_inspect_str_character_size ();
 void buf_test_new_delete ();
+void buf_test_new_alloc_delete ();
 void buf_test_peek ();
 void buf_test_peek_str ();
 void buf_test_read ();
@@ -76,6 +88,7 @@ void buf_test ()
 {
   buf_test_init_clean();
   buf_test_new_delete();
+  buf_test_new_alloc_delete();
   buf_test_peek();
   buf_test_peek_str();
   buf_test_read();
@@ -85,6 +98,23 @@ void buf_test ()
   buf_test_inspect_str_character_size();
   buf_test_inspect_str_character();
   buf_test_inspect_character();
+  buf_test_f();
+}
+
+#define BUF_TEST_F(test, expected) \
+  do {                             \
+  } while (0)
+
+void buf_test_f ()
+{
+  s_buf buf;
+  BUF_INIT_ALLOCA(&buf, 1024);
+  BUF_TEST_F("09AZaz", "09AZaz");
+  BUF_TEST_F("", "");
+  BUF_TEST_F("9", "9");
+  BUF_TEST_F("A", "A");
+  BUF_TEST_F("Z", "Z");
+  BUF_TEST_F("a", "a");
 }
 
 void buf_test_init_clean ()
@@ -126,7 +156,7 @@ void buf_test_inspect_character ()
   BUF_TEST_INSPECT_CHARACTER('z', "'z'");
   BUF_TEST_INSPECT_CHARACTER(928, "'Π'");
   BUF_TEST_INSPECT_CHARACTER(0xFF, "'ÿ'");
-  BUF_TEST_INSPECT_CHARACTER(40960, "'ꀀ'");
+  BUF_TEST_INSPECT_CHARACTER(42164, "'꒴'");
   BUF_TEST_INSPECT_CHARACTER(65856, "'𐅀'");
 }
 
@@ -145,7 +175,7 @@ void buf_test_inspect_str_character ()
   BUF_TEST_INSPECT_STR_CHARACTER('z', "z");
   BUF_TEST_INSPECT_STR_CHARACTER(928, "Π");
   BUF_TEST_INSPECT_STR_CHARACTER(0xFF, "ÿ");
-  BUF_TEST_INSPECT_STR_CHARACTER(40960, "ꀀ");
+  BUF_TEST_INSPECT_STR_CHARACTER(42164, "꒴");
   BUF_TEST_INSPECT_STR_CHARACTER(65856, "𐅀");
 }
 
@@ -164,7 +194,7 @@ void buf_test_inspect_str_character_size ()
   BUF_TEST_INSPECT_STR_CHARACTER_SIZE('z', 1);
   BUF_TEST_INSPECT_STR_CHARACTER_SIZE(928, 2);
   BUF_TEST_INSPECT_STR_CHARACTER_SIZE(0xFF, 2);
-  BUF_TEST_INSPECT_STR_CHARACTER_SIZE(40960, 3);
+  BUF_TEST_INSPECT_STR_CHARACTER_SIZE(42164, 3);
   BUF_TEST_INSPECT_STR_CHARACTER_SIZE(65856, 4);
 }
 
@@ -190,6 +220,21 @@ void buf_test_new_delete ()
   TEST_EQ(buf->rpos, 0);
   TEST_EQ(buf->wpos, 0);
   TEST_BUF_DELETE(buf);
+}
+
+void buf_test_new_alloc_delete ()
+{
+  size_t len;
+  s_buf *buf;
+  len = 1;
+  while (len < 16) {
+    TEST_ASSERT((buf = buf_new_alloc(len)));
+    TEST_EQ(buf->size, len);
+    TEST_EQ(buf->rpos, 0);
+    TEST_EQ(buf->wpos, 0);
+    TEST_BUF_DELETE(buf);
+    len++;
+  }
 }
 
 void buf_test_peek ()
@@ -246,7 +291,7 @@ void buf_test_read ()
 void buf_test_read_character ()
 {
   BUF_TEST_READ_CHARACTER("Π", 928);
-  BUF_TEST_READ_CHARACTER("ꀀ", 40960);
+  BUF_TEST_READ_CHARACTER("꒴", 42164);
   BUF_TEST_READ_CHARACTER("𐅀", 65856);
 }
 

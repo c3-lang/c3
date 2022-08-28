@@ -10,6 +10,8 @@
 #ifndef BUF_H
 #define BUF_H
 
+#include <assert.h>
+#include <err.h>
 #include <stdarg.h>
 #include "types.h"
 
@@ -25,13 +27,13 @@
   } while (0)
 
 /* Stack constructors, call buf_clean after use. */
-void buf_init (s_buf *buf, bool free, uw size, s8 *p);
-void buf_init_alloc (s_buf *buf, uw size);
+s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p);
+s_buf * buf_init_alloc (s_buf *buf, uw size);
 
 /* Read only stack contructors, do not write into.
    Call buf_clean after use. */
-void buf_init_1 (s_buf *buf, bool free, s8 *p);
-void buf_init_str (s_buf *buf, const s_str *src);
+s_buf * buf_init_1 (s_buf *buf, bool free, s8 *p);
+s_buf * buf_init_str (s_buf *buf, const s_str *src);
 
 /* Constructors, call buf_delete after use. */
 s_buf * buf_new (bool free, uw size, s8 *p);
@@ -68,6 +70,6 @@ sw buf_write (s_buf *buf, u8 v);
 sw buf_write_1 (s_buf *buf, s8 *p);
 sw buf_write_character (s_buf *buf, character c);
 sw buf_write_str (s_buf *buf, const s_str *src);
-sw buf_xfer (s_buf *buf, s_buf *src);
+sw buf_xfer (s_buf *buf, s_buf *src, uw size);
 
 #endif /* BUF_H */
