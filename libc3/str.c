@@ -12,13 +12,9 @@
 #include "str.h"
 #include "sym.h"
 
-bool str_character_reserved (character c)
+bool str_character_is_reserved (character c)
 {
-  return (! (character_is_digit(c) ||
-             character_is_uppercase(c) ||
-             character_is_lowercase(c) ||
-             c == '.' ||
-             c == '_'));
+  return (! character_is_printable(c)) || c == '"';
 }
 
 void str_clean (s_str *str)
@@ -55,6 +51,21 @@ sw str_fputs (const s_str *str, FILE *fp)
   if (r == 1)
     return str->size;
   return -1;
+}
+
+bool str_has_reserved_characters (const s_str *src)
+{
+  character c;
+  sw r;
+  s_str stra;
+  str_init(&stra, false, src->size, src->ptr.p);
+  while ((r = str_read_character(&stra, &c)) > 0) {
+    if (str_character_is_reserved(c))
+      return true;
+  }
+  if (r < 0)
+    return true;
+  return false;
 }
 
 void str_init (s_str *str, bool free, uw size, s8 *p)
@@ -222,9 +233,11 @@ sw str_puts (const s_str *str)
 sw str_read_character (s_str *str, character *c)
 {
   sw size;
+  if (str->size == 0)
+    return 0;
   size = str_to_character(str, c);
   if (size < 0)
-    return -1;
+    return size;
   str->size -= size;
   str->ptr.p = (s8 *) str->ptr.p + size;
   return size;
@@ -234,6 +247,71 @@ void str_resize (s_str *str, uw size)
 {
   str_clean(str);
   str_init(str, true, size, calloc(size, 1));
+}
+
+sw str_to_character (const s_str *str, character *c)
+{
+  assert(str);
+  assert(c);
+  const u8 *b;
+  u8 x[4];
+  const u8 _00000111 = 0x07;
+  const u8 _00001111 = 0x0F;
+  const u8 _00011111 = 0x1F;
+  const u8 _00111111 = 0x3F;
+  const u8 _10000000 = 0x80;
+  const u8 _11000000 = 0xC0;
+  const u8 _11100000 = 0xE0;
+  const u8 _11110000 = 0xF0;
+  const u8 _11111000 = 0xF8;
+  if (str->size <= 0)
+    return -1;
+  b = (const u8 *) str->ptr.p;
+  if ((b[0] & _10000000) == 0) {
+    *c = *b;
+    return 1;
+  }
+  if ((b[0] & _11100000) == _11000000) {
+    if (str->size < 2)
+      return -1;
+    if ((b[1] & _11000000) != _10000000)
+      return -1;
+    x[0] = b[0] & _00011111;
+    x[1] = b[1] & _00111111;
+    *c = (x[0] << 6) | x[1];
+    return 2;
+  }
+  if ((b[0] & _11110000) == _11100000) {
+    if (str->size < 3)
+      if (str->size < 3)
+        return -1;
+    if ((b[1] & _11000000) != _10000000)
+      return -1;
+    if ((b[2] & _11000000) != _10000000)
+      return -1;
+    x[0] = b[0] & _00001111;
+    x[1] = b[1] & _00111111;
+    x[2] = b[2] & _00111111;
+    *c = (x[0] << 12) | (x[1] << 6) | x[2];
+    return 3;
+  }
+  if ((b[0] & _11111000) == _11110000) {
+    if (str->size < 4)
+      return -1;
+    if ((b[1] & _11000000) != _10000000)
+      return -1;
+    if ((b[2] & _11000000) != _10000000)
+      return -1;
+    if ((b[3] & _11000000) != _10000000)
+      return -1;
+    x[0] = b[0] & _00000111;
+    x[1] = b[1] & _00111111;
+    x[2] = b[2] & _00111111;
+    x[3] = b[3] & _00111111;
+    *c = (x[0] << 18) | (x[1] << 12) | (x[2] << 6) | x[3];
+    return 4;
+  }
+  return -1;
 }
 
 s_str * str_to_hex (const s_str *src)

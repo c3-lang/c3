@@ -92,10 +92,11 @@ void sym_test_delete_all ()
 void sym_test_inspect ()
 {
   SYM_TEST_INSPECT("", ":\"\"");
-  SYM_TEST_INSPECT(" ", ":\"\\s\"");
+  SYM_TEST_INSPECT(" ", ":\" \"");
   SYM_TEST_INSPECT(".", ":.");
   SYM_TEST_INSPECT("..", ":..");
   SYM_TEST_INSPECT("...", ":...");
+  SYM_TEST_INSPECT(".. .", ":\".. .\"");
   SYM_TEST_INSPECT("t", ":t");
   SYM_TEST_INSPECT("T", "T");
   SYM_TEST_INSPECT("test", ":test");
@@ -103,16 +104,18 @@ void sym_test_inspect ()
   SYM_TEST_INSPECT("123", ":123");
   SYM_TEST_INSPECT("test123", ":test123");
   SYM_TEST_INSPECT("Test123", "Test123");
+  SYM_TEST_INSPECT("test 123", ":\"test 123\"");
+  SYM_TEST_INSPECT("Test 123", ":\"Test 123\"");
   SYM_TEST_INSPECT("test123.test456", ":test123.test456");
   SYM_TEST_INSPECT("Test123.Test456", "Test123.Test456");
   SYM_TEST_INSPECT("É", "É");
   SYM_TEST_INSPECT("Éo", "Éo");
   SYM_TEST_INSPECT("Éoà \n\r\t\v\"",
-                   ":\"Éoà\\s\\n\\r\\t\\v\\\"\"");
+                   ":\"Éoà \\n\\r\\t\\v\\\"\"");
   SYM_TEST_INSPECT("é", ":é");
   SYM_TEST_INSPECT("éo", ":éo");
   SYM_TEST_INSPECT("éoà \n\r\t\v\"",
-                   ":\"éoà\\s\\n\\r\\t\\v\\\"\"");
+                   ":\"éoà \\n\\r\\t\\v\\\"\"");
 }
 
 void sym_test ()

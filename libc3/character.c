@@ -29,7 +29,7 @@ bool character_is_lowercase (character c)
 bool character_is_printable (character c)
 {
   const u64 ucd_printable = UCD_LETTER | UCD_MARK | UCD_NUMBER |
-    UCD_PUNCTUATION | UCD_SYMBOL;
+    UCD_PUNCTUATION | UCD_SYMBOL | UCD_SEPARATOR_SPACE;
   return (c < UCD_MAX && g_ucd[c].flags & ucd_printable);
 }
 

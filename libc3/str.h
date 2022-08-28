@@ -23,6 +23,7 @@ void str_init_join_v (s_str *str, uw count, va_list ap);
 void str_clean (s_str *str);
 
 /* Constructors, call str_delete after use */
+s_str * str_inspect (const s_str *x);
 s_str * str_new (bool free, uw size, s8 *p);
 s_str * str_new_1 (bool free, char *s);
 s_str * str_new_cpy (uw size, const s8 *p);
@@ -38,11 +39,10 @@ void str_delete (s_str *str);
 
 /* Observers */
 character     str_character_escape (character c);
-bool          str_character_reserved (character c);
+bool          str_character_is_reserved (character c);
 sw            str_cmp (const s_str *a, const s_str *b);
-bool          str_has_reserved_characters (const s_str *str);
 sw            str_fputs (const s_str *src, FILE *fp);
-s_str *       str_inspect (const s_str *x);
+bool          str_has_reserved_characters (const s_str *str);
 sw            str_puts (const s_str *src);
 sw            str_to_character (const s_str *src, character *c);
 s_str *       str_to_hex (const s_str *src);

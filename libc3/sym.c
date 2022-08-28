@@ -13,7 +13,6 @@ void         sym_delete (s_sym *sym);
 s_str *      sym_inspect_reserved (const s_sym *sym);
 sw           sym_inspect_reserved_size (const s_sym *sym);
 s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next);
-bool         sym_character_reserved (character c);
 
 static s_sym_list * g_sym_list = NULL;
 
@@ -68,21 +67,41 @@ const s_sym * sym_find (const s_str *str)
   return NULL;
 }
 
-bool sym_reserved_character (character c)
+bool sym_character_is_reserved (character c)
 {
-  return str_character_reserved(c);
+  return str_character_is_reserved(c) || c == ' ';
 }
 
 bool sym_has_reserved_characters (const s_sym *sym)
 {
   character c;
+  sw r;
   s_str stra;
   str_init(&stra, false, sym->str.size, sym->str.ptr.p);
-  while (str_read_character(&stra, &c) > 0) {
-    if (sym_character_reserved(c))
+  while ((r = str_read_character(&stra, &c)) > 0) {
+    if (sym_character_is_reserved(c))
       return true;
   }
+  if (r < 0)
+    return true;
   return false;
+}
+
+s_str * sym_inspect (const s_sym *sym)
+{
+  sw size;
+  s_str *str;
+  s_buf tmp;
+  size = buf_inspect_sym_size(sym);
+  if (size < 0) {
+    assert(! "error");
+    return NULL;
+  }
+  buf_init_alloc(&tmp, size);
+  buf_inspect_sym(&tmp, sym);
+  assert(tmp.wpos == tmp.size);
+  str = str_new(true, tmp.size, tmp.ptr.p);
+  return str;
 }
 
 bool sym_is_module (const s_sym *sym)

@@ -26,6 +26,8 @@ void sym_delete_all ();
 /** @brief Find an existing symbol. */
 const s_sym * sym_find (const s_str *src);
 
+bool sym_has_reserved_characters (const s_sym *sym);
+
 s_str * sym_inspect (const s_sym *sym);
 
 /** @brief True iff sym is a module name (starts with a capital). */

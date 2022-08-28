@@ -40,10 +40,14 @@ void buf_delete (s_buf *buf);
 /* Modifiers */
 sw buf_f (s_buf *buf, const char *fmt, ...);
 sw buf_flush (s_buf *buf);
-sw buf_inspect_character_ (s_buf *buf, character c);
 sw buf_inspect_character (s_buf *buf, character c);
+sw buf_inspect_character_size (character c);
 sw buf_inspect_str (s_buf *buf, const s_str *str);
+sw buf_inspect_str_size (const s_str *str);
+sw buf_inspect_str_character (s_buf *buf, character c);
+sw buf_inspect_str_character_size (character c);
 sw buf_inspect_sym (s_buf *buf, const s_sym *sym);
+sw buf_inspect_sym_size (const s_sym *sym);
 sw buf_peek (s_buf *buf, u8 *p);
 sw buf_peek_character (s_buf *buf, character *p);
 sw buf_read (s_buf *buf, u8 *p);

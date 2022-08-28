@@ -33,6 +33,23 @@ void buf_delete (s_buf *buf)
   free(buf);
 }
 
+sw buf_f (s_buf *buf, const char *fmt, ...)
+{
+  va_list ap;
+  sw r;
+  va_start(ap, fmt);
+  r = buf_vf(buf, fmt, ap);
+  va_end(ap);
+  return r;
+}
+
+sw buf_flush (s_buf *buf)
+{
+  if (buf->flush)
+    return buf->flush(buf);
+  return 0;
+}
+
 void buf_init (s_buf *buf, bool free, uw size, s8 *p)
 {
   assert(buf);
@@ -58,86 +75,205 @@ void buf_init_alloc (s_buf *buf, uw size)
   buf_init(buf, true, size, p);
 }
 
-sw buf_inspect_character_ (s_buf *buf, character c)
-{
-  s_buf char_buf;
-  int i;
-  int j;
-  s_buf tmp;
-  if (character_is_printable(c))
-    return buf_write_character(buf, c);
-  BUF_INIT_ALLOCA(&tmp, 16);
-  buf_write(&tmp, '\\');
-  switch (c) {
-  case '\0': buf_write(&tmp, '0'); break;
-  case '\n': buf_write(&tmp, 'n'); break;
-  case '\r': buf_write(&tmp, 'r'); break;
-  case ' ':  buf_write(&tmp, 's'); break;
-  case '\t': buf_write(&tmp, 't'); break;
-  case '\v': buf_write(&tmp, 'v'); break;
-  case '\"': buf_write(&tmp, '"'); break;
-  case '\'': buf_write(&tmp, '\''); break;
-  case '\\': buf_write(&tmp, '\\'); break;
-  default:
-    BUF_INIT_ALLOCA(&char_buf, 4);
-    i = buf_write_character(&char_buf, c);
-    j = 0;
-    if (i-- > 0) {
-      buf_write(&tmp, 'x');
-      buf_f(&tmp, "%02x", char_buf.ptr.pu8[j++]);
-      while (i--) {
-        buf_write(&tmp, '\\');
-        buf_write(&tmp, 'x');
-        buf_f(&tmp, "%02x", char_buf.ptr.pu8[j++]);
-      }
-    }
-  }
-  return buf_xfer(buf, &tmp);
-}
-
 sw buf_inspect_character (s_buf *buf, character c)
 {
   s_buf tmp;
   BUF_INIT_ALLOCA(&tmp, 18);
   buf_write(&tmp, '\'');
-  buf_inspect_character_(&tmp, c);
+  buf_inspect_str_character(&tmp, c);
   buf_write(&tmp, '\'');
   return buf_xfer(buf, &tmp);
 }
 
+sw buf_inspect_character_size (character c)
+{
+  sw size;
+  size = buf_inspect_str_character_size(c);
+  if (size < 0)
+    return size;
+  size += 2;
+  return size;
+}
+
+sw buf_inspect_str (s_buf *buf, const s_str *str)
+{
+  sw size;
+  assert(buf);
+  assert(str);
+  if (str_has_reserved_characters(str))
+    return buf_inspect_str_reserved(buf, str);
+  size = str->size + 2;
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf_write(buf, '"');
+  buf_write_str(buf, str);
+  buf_write(buf, '"');
+  return size;
+}
+
+sw buf_inspect_str_character (s_buf *buf, character c)
+{
+  s_buf char_buf;
+  int i;
+  int j;
+  sw size;
+  size = buf_inspect_str_character_size(c);
+  if (size <= 0)
+    return size;
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  if (! str_character_is_reserved(c))
+    return buf_write_character(buf, c);
+  buf_write(buf, '\\');
+  switch (c) {
+  case '\0': buf_write(buf, '0'); break;
+  case '\n': buf_write(buf, 'n'); break;
+  case '\r': buf_write(buf, 'r'); break;
+  case ' ':  buf_write(buf, 's'); break;
+  case '\t': buf_write(buf, 't'); break;
+  case '\v': buf_write(buf, 'v'); break;
+  case '\"': buf_write(buf, '"'); break;
+  case '\'': buf_write(buf, '\''); break;
+  case '\\': buf_write(buf, '\\'); break;
+  default:
+    BUF_INIT_ALLOCA(&char_buf, 4);
+    i = buf_write_character(&char_buf, c);
+    j = 0;
+    if (i-- > 0) {
+      buf_write(buf, 'x');
+      buf_f(buf, "%02x", char_buf.ptr.pu8[j++]);
+      while (i--) {
+        buf_write(buf, '\\');
+        buf_write(buf, 'x');
+        buf_f(buf, "%02x", char_buf.ptr.pu8[j++]);
+      }
+    }
+  }
+  return size;
+}
+
+sw buf_inspect_str_character_size (character c)
+{
+  sw csize;
+  sw size;
+  if (character_is_printable(c))
+    return character_utf8_size(c);
+  size = 0;
+  switch (c) {
+  case '\0':
+  case '\n':
+  case '\r':
+  case '\t':
+  case '\v':
+  case '\"':
+  case '\'':
+  case '\\':
+    size += 2;
+    break;
+  default:
+    csize = character_utf8_size(c);
+    size += csize * 4;
+  }
+  return size;
+}
+
 sw buf_inspect_sym (s_buf *buf, const s_sym *sym)
 {
-  s_buf tmp;
+  sw size;
   assert(buf);
   assert(sym);
   if (sym->str.size == 0)
     return buf_write_1(buf, ":\"\"");
-  if (str_has_reserved_characters(&sym->str))
+  if (sym_has_reserved_characters(sym))
     return buf_inspect_sym_reserved(buf, sym);
   if (sym_is_module(sym))
     return buf_write_str(buf, &sym->str);
-  BUF_INIT_ALLOCA(&tmp, sym->str.size + 1);
-  buf_write(&tmp, ':');
-  buf_write_str(&tmp, &sym->str);
-  return buf_xfer(buf, &tmp);
+  size = sym->str.size + 1;
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf_write(buf, ':');
+  buf_write_str(buf, &sym->str);
+  return size;
+}
+
+sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
+{
+  character c;
+  sw size;
+  s_str stra;
+  size = buf_inspect_str_reserved_size(src);
+  if (size <= 0)
+    return size;
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf_write(buf, '"');
+  str_init(&stra, false, src->size, src->ptr.p);
+  while (str_read_character(&stra, &c) > 0) {
+    buf_inspect_str_character(buf, c);
+  }
+  buf_write(buf, '"');
+  return size;
+}
+
+sw buf_inspect_str_reserved_size (const s_str *src)
+{
+  character c;
+  const sw quote_size = 1;
+  sw size;
+  s_str stra;
+  size = 2 * quote_size;
+  str_init(&stra, false, src->size, src->ptr.p);
+  while (str_read_character(&stra, &c) > 0) {
+    const sw csize = buf_inspect_str_character_size(c);
+    if (csize < 0)
+      return csize;
+    size += csize;
+  }
+  return size;
+}
+
+sw buf_inspect_sym_size (const s_sym *sym)
+{
+  const sw colon_size = 1;
+  assert(sym);
+  if (sym->str.size == 0)
+    return 3;
+  if (sym_has_reserved_characters(sym))
+    return buf_inspect_sym_reserved_size(sym);
+  if (sym_is_module(sym))
+    return sym->str.size;
+  return sym->str.size + colon_size;
 }
 
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym)
 {
   sw  size;
-  s_buf tmp;
   size = buf_inspect_sym_reserved_size(sym);
-  BUF_INIT_ALLOCA(&tmp, size);
-  buf_write(&tmp, ':');
-  buf_inspect_str(&tmp, &sym->str);
-  return buf_xfer(buf, &tmp);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer_overflow");
+    return -1;
+  }
+  buf_write(buf, ':');
+  buf_inspect_str_reserved(buf, &sym->str);
+  return size;
 }
 
 sw buf_inspect_sym_reserved_size (const s_sym *sym)
 {
-  uw size;
+  const sw colon_size = 1;
+  sw size;
   size = buf_inspect_str_reserved_size(&sym->str);
-  size++;
+  if (size < 0)
+    return size;
+  size += colon_size;
   return size;
 }
 
@@ -159,13 +295,6 @@ s_buf * buf_new_alloc (uw size)
     err(1, "out of memory");
   buf_init_alloc(buf, size);
   return buf;
-}
-
-sw buf_flush (s_buf *buf)
-{
-  if (buf->flush)
-    return buf->flush(buf);
-  return 0;
 }
 
 sw buf_peek (s_buf *buf, u8 *p)
@@ -327,6 +456,16 @@ sw buf_refill (s_buf *buf)
   return 0;
 }
 
+sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
+{
+  sw r;
+  s_str *str;
+  str = str_new_vf(fmt, ap);
+  r = buf_write_str(buf, str);
+  str_delete(str);
+  return r;
+}
+
 sw buf_write (s_buf *buf, u8 v)
 {
   sw r;
@@ -351,6 +490,20 @@ sw buf_write_1 (s_buf *buf, s8 *p)
   return buf_write_str(buf, &stra);
 }
 
+sw buf_write_character (s_buf *buf, character c)
+{
+  sw size = character_utf8_size(c);
+  if (size <= 0)
+    return size;
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  character_utf8(c, buf->ptr.ps8 + buf->wpos);
+  buf->wpos += size;
+  return size;
+}
+
 sw buf_write_str (s_buf *buf, const s_str *src)
 {
   sw r;
@@ -367,26 +520,6 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   memcpy(((u8 *) buf->ptr.pu8) + buf->wpos, src->ptr.p, src->size);
   buf->wpos += src->size;
   return src->size;
-}
-
-sw buf_f (s_buf *buf, const char *fmt, ...)
-{
-  va_list ap;
-  sw r;
-  va_start(ap, fmt);
-  r = buf_vf(buf, fmt, ap);
-  va_end(ap);
-  return r;
-}
-
-sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
-{
-  sw r;
-  s_str *str;
-  str = str_new_vf(fmt, ap);
-  r = buf_write_str(buf, str);
-  str_delete(str);
-  return r;
 }
 
 sw buf_xfer (s_buf *buf, s_buf *src)
