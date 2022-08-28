@@ -7,6 +7,24 @@
 #include "../libc3/str.h"
 #include "test.h"
 
+#define STR_TEST_CMP(a, b, expected)                       \
+  do {                                                     \
+    sw tmp = str_cmp(a, b);                                \
+    if (tmp == expected) {                                 \
+      test_ok();                                           \
+    }                                                      \
+    else {                                                 \
+      test_ko();                                           \
+      printf("\n%sAssertion failed in %s:%d %s\n"          \
+             "str_cmp(%s, %s) == %s\n"                     \
+             "Expected %s got %ld.%s\n",                   \
+             TEST_COLOR_KO,                                \
+             __FILE__, __LINE__, __func__,                 \
+             # a, # b, # expected, # expected, tmp,        \
+             TEST_COLOR_RESET);                            \
+    }                                                      \
+  } while (0)
+
 #define STR_TEST_INSPECT_1(test, result)                        \
   do {                                                          \
     assert(test);                                               \
@@ -40,6 +58,7 @@
   } while (0)
 
 void str_test_character_is_reserved ();
+void str_test_cmp ();
 void str_test_init_clean ();
 void str_test_inspect ();
 void str_test_new_1 ();
@@ -76,6 +95,18 @@ void str_test_character_is_reserved ()
   TEST_ASSERT(! str_character_is_reserved('x'));
   TEST_ASSERT(! str_character_is_reserved('y'));
   TEST_ASSERT(! str_character_is_reserved('z'));
+}
+
+void str_test_cmp ()
+{
+  s_str *a;
+  TEST_EQ((a = str_new_empty(), str_cmp(a, a)), 0);
+  str_delete(a);
+  TEST_EQ((a = str_new_1(false, "abc"), str_cmp(a, a)), 0);
+  str_delete(a);
+  STR_TEST_CMP(str_new_empty(), str_new_empty(), -1);
+  STR_TEST_CMP(str_new_empty(), str_new_empty(), 0);
+  STR_TEST_CMP(str_new_empty(), str_new_empty(), 1);
 }
 
 void str_test_init_clean ()
@@ -305,6 +336,7 @@ void str_test ()
   str_test_init_clean();
   str_test_new_delete();
   str_test_new_1();
+  str_test_cmp();
   str_test_new_cpy();
   str_test_new_f();
   str_test_character_is_reserved();

@@ -10,15 +10,15 @@
 #define TEST_COLOR_OK "\033[92m"
 #define TEST_COLOR_RESET "\033[39m"
 
-#define TEST_ASSERT(pred)                               \
+#define TEST_ASSERT(test)                               \
   do {                                                  \
-    if (pred) {                                         \
+    if (test) {                                         \
       test_ok();                                        \
     }                                                   \
     else {                                              \
       test_ko();                                        \
       printf("\nAssertion failed in %s:%d %s\n%s\n",    \
-             __FILE__, __LINE__, __func__, # pred);     \
+             __FILE__, __LINE__, __func__, # test);     \
     }                                                   \
   } while(0)
 
@@ -31,7 +31,8 @@
     else {                                              \
       test_ko();                                        \
       printf("\nAssertion failed in %s:%d %s\n"         \
-             "%s == %s\nExpected %s got %lld",          \
+             "%s == %s\n"                               \
+             "Expected %s got %lld",                    \
              __FILE__, __LINE__, __func__,              \
              # test, # expected, # expected, tmp);      \
     }                                                   \
@@ -45,12 +46,12 @@
     }                                                   \
     else {                                              \
       test_ko();                                        \
-      printf("\nAssertion failed in %s:%d %s\n"         \
+      printf("\n%sAssertion failed in %s:%d %s\n"       \
              "strncmp(%s, %s, %ld) == 0\n",             \
+             TEST_COLOR_KO,                             \
              __FILE__, __LINE__, __func__,              \
              # test, # result, (long) bytes);           \
-      printf("%sExpected %s got \"",                    \
-             TEST_COLOR_KO,                             \
+      printf("Expected %s got \"",                      \
              # result);                                 \
       fwrite(tmp, bytes, 1, stdout);                    \
       printf("\".%s\n", TEST_COLOR_RESET);              \
