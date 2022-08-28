@@ -101,20 +101,30 @@ void buf_test ()
   buf_test_f();
 }
 
-#define BUF_TEST_F(test, expected) \
-  do {                             \
+#define BUF_TEST_F(test, expected)                   \
+  do {                                               \
+    u64 pos = buf.wpos;                              \
+    uw len = strlen(expected);                       \
+    test_context(# test " -> " # expected);          \
+    TEST_EQ(test, len);                              \
+    TEST_EQ(buf.wpos, pos + len);                    \
+    TEST_STRNCMP(buf.ptr.ps8 + pos, expected, len);  \
   } while (0)
 
 void buf_test_f ()
 {
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 1024);
-  BUF_TEST_F("09AZaz", "09AZaz");
-  BUF_TEST_F("", "");
-  BUF_TEST_F("9", "9");
-  BUF_TEST_F("A", "A");
-  BUF_TEST_F("Z", "Z");
-  BUF_TEST_F("a", "a");
+  BUF_INIT_ALLOCA(&buf, 32);
+  BUF_TEST_F(buf_f(&buf, "09AZaz"), "09AZaz");
+  BUF_TEST_F(buf_f(&buf, "%d", 0), "0");
+  BUF_TEST_F(buf_f(&buf, "%d", 42), "42");
+  BUF_TEST_F(buf_f(&buf, "%d", -1), "-1");
+  BUF_TEST_F(buf_f(&buf, "%s", ""), "");
+  BUF_TEST_F(buf_f(&buf, "%s", " "), " ");
+  TEST_EQ(buf_f(&buf, "%s", "ÉoàΠ꒴𐅀 \n\r\t\v\\\""), 0);
+  buf.wpos = 0;
+  BUF_TEST_F(buf_f(&buf, "%s", "ÉoàΠ꒴𐅀 \n\r\t\v\\\""),
+             "ÉoàΠ꒴𐅀 \n\r\t\v\\\"");
 }
 
 void buf_test_init_clean ()

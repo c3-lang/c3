@@ -24,8 +24,8 @@
 
 #define TEST_EQ(test, expected)                         \
   do {                                                  \
-    long long tmp = (long long) test;                   \
-    if (tmp == (long long) expected) {                  \
+    long long signed tmp = (long long signed) (test);   \
+    if (tmp == (long long signed) (expected)) {         \
       test_ok();                                        \
     }                                                   \
     else {                                              \
