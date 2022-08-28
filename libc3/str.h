@@ -18,8 +18,6 @@
 void str_init (s_str *str, bool free, uw size, s8 *p);
 void str_init_1 (s_str *str, bool free, s8 *p);
 void str_init_dup (s_str *str, const s_str *src);
-void str_init_join (s_str *str, uw count, ...);
-void str_init_join_v (s_str *str, uw count, va_list ap);
 void str_clean (s_str *str);
 
 /* Constructors, call str_delete after use */
@@ -30,8 +28,6 @@ s_str * str_new_cpy (uw size, const s8 *p);
 s_str * str_new_dup (const s_str *src);
 s_str * str_new_empty ();
 s_str * str_new_f (const char *fmt, ...);
-s_str * str_new_join (uw count, ...);
-s_str * str_new_join_v (uw count, va_list ap);
 s_str * str_new_vf (const char *fmt, va_list ap);
 
 /* Destructor */

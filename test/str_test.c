@@ -104,9 +104,24 @@ void str_test_cmp ()
   str_delete(a);
   TEST_EQ((a = str_new_1(false, "abc"), str_cmp(a, a)), 0);
   str_delete(a);
-  STR_TEST_CMP(str_new_empty(), str_new_empty(), -1);
   STR_TEST_CMP(str_new_empty(), str_new_empty(), 0);
-  STR_TEST_CMP(str_new_empty(), str_new_empty(), 1);
+  STR_TEST_CMP(str_new_empty(), str_new_1(false, "0"), -1);
+  STR_TEST_CMP(str_new_1(false, "0"), str_new_empty(), 1);
+  STR_TEST_CMP(str_new_1(false, "0"), str_new_1(false, "0"), 0);
+  STR_TEST_CMP(str_new_1(false, "0"), str_new_1(false, "A"), -1);
+  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "0"), 1);
+  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "01"), 0);
+  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "012"), -1);
+  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "02"), -1);
+  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "023"), -1);
+  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "ABC"), -1);
+  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "0"), 1);
+  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "01"), 1);
+  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "012"), 0);
+  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "0123"), -1);
+  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "013"), -1);
+  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "0134"), -1);
+  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "ABC"), -1);
 }
 
 void str_test_init_clean ()
@@ -164,6 +179,9 @@ void str_test_inspect ()
   STR_TEST_INSPECT_1("éo", "\"éo\"");
   STR_TEST_INSPECT_1("éoà \n\r\t\v\"",
                      "\"éoà \\n\\r\\t\\v\\\"\"");
+  STR_TEST_INSPECT_1("Π", "\"Π\"");
+  STR_TEST_INSPECT_1("ꀀ", "\"ꀀ\"");
+  STR_TEST_INSPECT_1("𐅀", "\"𐅀\"");
   STR_TEST_INSPECT_1("\xff", "\"\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");

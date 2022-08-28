@@ -27,6 +27,7 @@ void str_clean (s_str *str)
 
 sw str_cmp (const s_str *a, const s_str *b)
 {
+  sw r;
   assert(a);
   assert(b);
   if (a == b)
@@ -35,7 +36,12 @@ sw str_cmp (const s_str *a, const s_str *b)
     return -1;
   if (a->size > b->size)
     return 1;
-  return memcmp(a->ptr.p, b->ptr.p, a->size);
+  r = memcmp(a->ptr.p, b->ptr.p, a->size);
+  if (r < 0)
+    return -1;
+  if (r > 0)
+    return 1;
+  return 0;
 }
 
 void str_delete (s_str *str)
@@ -92,41 +98,6 @@ void str_init_dup (s_str *str, const s_str *src)
   str->size = src->size;
   str->ptr.p = malloc(src->size);
   memcpy((void *) str->ptr.p, src->ptr.p, str->size);
-}
-
-void str_init_join (s_str *str, uw count, ...)
-{
-  va_list ap;
-  va_start(ap, count);
-  str_init_join_v(str, count, ap);
-  va_end(ap);
-}
-
-void str_init_join_v (s_str *str, uw count, va_list ap)
-{
-  va_list ap2;
-  s_buf buf;
-  uw size;
-  uw c;
-  s_str *s;
-  va_copy(ap2, ap);
-  size = 0;
-  c = count;
-  while (c--) {
-    s = va_arg(ap, s_str *);
-    size += s->size;
-  }
-  buf_init_alloc(&buf, size);
-  c = count;
-  while (c--) {
-    s = va_arg(ap2, s_str *);
-    buf_write_str(&buf, s);
-  }
-  va_end(ap2);
-  assert(buf.wpos == size);
-  str->free = true;
-  str->size = size;
-  str->ptr.p = buf.ptr.p;
 }
 
 s_str * str_inspect (const s_str *src)
@@ -198,24 +169,6 @@ s_str * str_new_f (const char *fmt, ...)
   va_start(ap, fmt);
   str = str_new_vf(fmt, ap);
   va_end(ap);
-  return str;
-}
-
-s_str * str_new_join (uw count, ...)
-{
-  va_list ap;
-  s_str *str;
-  va_start(ap, count);
-  str = str_new_join_v(count, ap);
-  va_end(ap);
-  return str;
-}
-
-s_str * str_new_join_v (uw count, va_list ap)
-{
-  s_str *str;
-  str = str_new(false, 0, NULL);
-  str_init_join_v(str, count, ap);
   return str;
 }
 
