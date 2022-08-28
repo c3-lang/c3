@@ -89,12 +89,16 @@ void buf_init_str (s_buf *buf, const s_str *src)
 
 sw buf_inspect_character (s_buf *buf, character c)
 {
-  s_buf tmp;
-  BUF_INIT_ALLOCA(&tmp, 18);
-  buf_write(&tmp, '\'');
-  buf_inspect_str_character(&tmp, c);
-  buf_write(&tmp, '\'');
-  return buf_xfer(buf, &tmp);
+  sw size;
+  size = buf_inspect_character_size(c);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf_write(buf, '\'');
+  buf_inspect_str_character(buf, c);
+  buf_write(buf, '\'');
+  return size;
 }
 
 sw buf_inspect_character_size (character c)
@@ -103,6 +107,8 @@ sw buf_inspect_character_size (character c)
   size = buf_inspect_str_character_size(c);
   if (size < 0)
     return size;
+  if (size == 0)
+    return -1;
   size += 2;
   return size;
 }

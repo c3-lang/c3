@@ -19,16 +19,16 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details test.html
 
 test: c3_test
-	./c3_test
+	time ./c3_test
 
 test_asan: c3_test.asan
-	./c3_test.asan
+	time ./c3_test.asan
 
 test_cov: c3_test.cov
-	./c3_test.cov
+	time ./c3_test.cov
 
 test_debug: c3_test.debug
-	./c3_test.debug
+	time ./c3_test.debug
 
 .PHONY: all asan cov debug clean clean_cov test test_asan test_cov test_debug
 
