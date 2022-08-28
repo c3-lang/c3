@@ -23,6 +23,7 @@ const char **g_test_targets = {NULL};
 void test_context (const char *context)
 {
   g_test_context = context;
+  /* printf("test_context(%s)\n", context); */
 }
 
 void test_init (int argc, char **argv)

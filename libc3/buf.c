@@ -133,7 +133,6 @@ sw buf_inspect_str_character (s_buf *buf, character c)
   case '\0': buf_write(buf, '0'); break;
   case '\n': buf_write(buf, 'n'); break;
   case '\r': buf_write(buf, 'r'); break;
-  case ' ':  buf_write(buf, 's'); break;
   case '\t': buf_write(buf, 't'); break;
   case '\v': buf_write(buf, 'v'); break;
   case '\"': buf_write(buf, '"'); break;
@@ -160,7 +159,7 @@ sw buf_inspect_str_character_size (character c)
 {
   sw csize;
   sw size;
-  if (character_is_printable(c))
+  if (! str_character_is_reserved(c))
     return character_utf8_size(c);
   size = 0;
   switch (c) {
@@ -178,27 +177,6 @@ sw buf_inspect_str_character_size (character c)
     csize = character_utf8_size(c);
     size += csize * 4;
   }
-  return size;
-}
-
-sw buf_inspect_sym (s_buf *buf, const s_sym *sym)
-{
-  sw size;
-  assert(buf);
-  assert(sym);
-  if (sym->str.size == 0)
-    return buf_write_1(buf, ":\"\"");
-  if (sym_has_reserved_characters(sym))
-    return buf_inspect_sym_reserved(buf, sym);
-  if (sym_is_module(sym))
-    return buf_write_str(buf, &sym->str);
-  size = sym->str.size + 1;
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write(buf, ':');
-  buf_write_str(buf, &sym->str);
   return size;
 }
 
@@ -240,6 +218,37 @@ sw buf_inspect_str_reserved_size (const s_str *src)
   return size;
 }
 
+sw buf_inspect_str_size (const s_str *str)
+{
+  const sw quote_size = 1;
+  sw size;
+  if (str_has_reserved_characters(str))
+    return buf_inspect_str_reserved_size(str);
+  size = str->size + 2 * quote_size;
+  return size;
+}
+
+sw buf_inspect_sym (s_buf *buf, const s_sym *sym)
+{
+  sw size;
+  assert(buf);
+  assert(sym);
+  if (sym->str.size == 0)
+    return buf_write_1(buf, ":\"\"");
+  if (sym_has_reserved_characters(sym))
+    return buf_inspect_sym_reserved(buf, sym);
+  if (sym_is_module(sym))
+    return buf_write_str(buf, &sym->str);
+  size = sym->str.size + 1;
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf_write(buf, ':');
+  buf_write_str(buf, &sym->str);
+  return size;
+}
+
 sw buf_inspect_sym_size (const s_sym *sym)
 {
   const sw colon_size = 1;
@@ -257,12 +266,14 @@ sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym)
 {
   sw  size;
   size = buf_inspect_sym_reserved_size(sym);
+  if (size <= 0)
+    return size;
   if (buf->wpos + size > buf->size) {
     assert(! "buffer_overflow");
     return -1;
   }
   buf_write(buf, ':');
-  buf_inspect_str_reserved(buf, &sym->str);
+  buf_inspect_str(buf, &sym->str);
   return size;
 }
 
@@ -270,7 +281,7 @@ sw buf_inspect_sym_reserved_size (const s_sym *sym)
 {
   const sw colon_size = 1;
   sw size;
-  size = buf_inspect_str_reserved_size(&sym->str);
+  size = buf_inspect_str_size(&sym->str);
   if (size < 0)
     return size;
   size += colon_size;
@@ -524,7 +535,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
 
 sw buf_xfer (s_buf *buf, s_buf *src)
 {
-  u64 size;
+  sw size;
   assert(buf);
   assert(src);
   size = src->wpos - src->rpos;
