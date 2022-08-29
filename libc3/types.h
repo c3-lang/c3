@@ -81,10 +81,12 @@ typedef enum tag_type {
   TAG_F64,
   TAG_S64,
   TAG_U64,
+  TAG_TAG
 } e_tag_type;
 
 typedef struct tag {
   e_tag_type type;
+  u64 count;
   s_str str;
 } s_tag;
 
