@@ -219,8 +219,8 @@ sw buf_inspect_str_character_size (character c)
     break;
   default:
     csize = character_utf8_size(c);
-    if (csize < 0)
-      csize = 1;
+    if (csize <= 0)
+      return -1;
     size += csize * 4;
   }
   return size;

@@ -1,3 +1,4 @@
 #!/bin/sh
 rm -rf ~/Downloads/c3_gcovr/
-find . -name '*.html' -or -name '*.css' | cpio -pd ~/Downloads/c3_gcovr/
+find libc3 test -name '*.html' -or -name '*.css' | \
+    cpio -pd ~/Downloads/c3_gcovr/

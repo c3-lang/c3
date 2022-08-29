@@ -7,6 +7,7 @@
 #include "test.h"
 
 void character_test_character_1 ();
+void character_test_character_is_lowercase ();
 void character_test_character_is_uppercase ();
 void character_test_character_utf8 ();
 void character_test_character_utf8_size ();
@@ -14,6 +15,7 @@ void character_test_character_utf8_size ();
 void character_test ()
 {
   character_test_character_1();
+  character_test_character_is_lowercase();
   character_test_character_is_uppercase();
   character_test_character_utf8_size();
   character_test_character_utf8();
@@ -52,28 +54,60 @@ void character_test_character_1 ()
   TEST_EQ(character_1("é"), 233);
 }
 
+void character_test_character_is_lowercase ()
+{
+  character c;
+  for (c = -10; c < 40; c++)
+    TEST_ASSERT(! character_is_lowercase(c));
+  TEST_ASSERT(! character_is_lowercase('0'));
+  TEST_ASSERT(! character_is_lowercase('0'));
+  TEST_ASSERT(! character_is_lowercase('0'));
+  TEST_ASSERT(! character_is_lowercase('1'));
+  TEST_ASSERT(! character_is_lowercase('8'));
+  TEST_ASSERT(! character_is_lowercase('9'));
+  TEST_ASSERT(! character_is_lowercase('A'));
+  TEST_ASSERT(! character_is_lowercase('B'));
+  TEST_ASSERT(! character_is_lowercase('C'));
+  TEST_ASSERT(! character_is_lowercase('X'));
+  TEST_ASSERT(! character_is_lowercase('Y'));
+  TEST_ASSERT(! character_is_lowercase('Z'));
+  TEST_ASSERT(! character_is_lowercase(character_1("À")));
+  TEST_ASSERT(! character_is_lowercase(character_1("É")));
+  TEST_ASSERT(character_is_lowercase('a'));
+  TEST_ASSERT(character_is_lowercase('b'));
+  TEST_ASSERT(character_is_lowercase('c'));
+  TEST_ASSERT(character_is_lowercase('x'));
+  TEST_ASSERT(character_is_lowercase('y'));
+  TEST_ASSERT(character_is_lowercase('z'));
+  TEST_ASSERT(character_is_lowercase(character_1("à")));
+  TEST_ASSERT(character_is_lowercase(character_1("é")));
+}
+
 void character_test_character_is_uppercase ()
 {
+  character c;
+  for (c = -10; c < 40; c++)
+    TEST_ASSERT(! character_is_uppercase(c));
   TEST_ASSERT(! character_is_uppercase('0'));
   TEST_ASSERT(! character_is_uppercase('1'));
   TEST_ASSERT(! character_is_uppercase('8'));
   TEST_ASSERT(! character_is_uppercase('9'));
-  TEST_ASSERT(character_is_uppercase('A'));
-  TEST_ASSERT(character_is_uppercase('B'));
-  TEST_ASSERT(character_is_uppercase('C'));
-  TEST_ASSERT(character_is_uppercase('X'));
-  TEST_ASSERT(character_is_uppercase('Y'));
-  TEST_ASSERT(character_is_uppercase('Z'));
   TEST_ASSERT(! character_is_uppercase('a'));
   TEST_ASSERT(! character_is_uppercase('b'));
   TEST_ASSERT(! character_is_uppercase('c'));
   TEST_ASSERT(! character_is_uppercase('x'));
   TEST_ASSERT(! character_is_uppercase('y'));
   TEST_ASSERT(! character_is_uppercase('z'));
-  TEST_ASSERT(character_is_uppercase(character_1("À")));
-  TEST_ASSERT(character_is_uppercase(character_1("É")));
   TEST_ASSERT(! character_is_uppercase(character_1("à")));
   TEST_ASSERT(! character_is_uppercase(character_1("é")));
+  TEST_ASSERT(character_is_uppercase('A'));
+  TEST_ASSERT(character_is_uppercase('B'));
+  TEST_ASSERT(character_is_uppercase('C'));
+  TEST_ASSERT(character_is_uppercase('X'));
+  TEST_ASSERT(character_is_uppercase('Y'));
+  TEST_ASSERT(character_is_uppercase('Z'));
+  TEST_ASSERT(character_is_uppercase(character_1("À")));
+  TEST_ASSERT(character_is_uppercase(character_1("É")));
 }
 
 void character_test_character_utf8 ()
@@ -82,6 +116,9 @@ void character_test_character_utf8 ()
 
 void character_test_character_utf8_size ()
 {
+  character c;
+  for (c = -10; c < 0; c++)
+    TEST_EQ(character_utf8_size(c), -1);
   TEST_EQ(character_utf8_size('0'), 1);
   TEST_EQ(character_utf8_size('1'), 1);
   TEST_EQ(character_utf8_size('2'), 1);

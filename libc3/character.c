@@ -23,19 +23,25 @@ bool character_is_digit (character c)
 
 bool character_is_lowercase (character c)
 {
-  return (c < UCD_MAX && g_ucd[c].flags & UCD_LETTER_LOWERCASE);
+  return (c >= 0 &&
+          c < UCD_MAX &&
+          g_ucd[c].flags & UCD_LETTER_LOWERCASE);
 }
 
 bool character_is_printable (character c)
 {
   const u64 ucd_printable = UCD_LETTER | UCD_MARK | UCD_NUMBER |
     UCD_PUNCTUATION | UCD_SYMBOL | UCD_SEPARATOR_SPACE;
-  return (c < UCD_MAX && g_ucd[c].flags & ucd_printable);
+  return (c >= 0 &&
+          c < UCD_MAX &&
+          g_ucd[c].flags & ucd_printable);
 }
 
 bool character_is_uppercase (character c)
 {
-  return (c < UCD_MAX && g_ucd[c].flags & UCD_LETTER_UPPERCASE);
+  return (c >= 0 &&
+          c < UCD_MAX &&
+          g_ucd[c].flags & UCD_LETTER_UPPERCASE);
 }
 
 sw character_utf8 (character c, s8 *dest)
