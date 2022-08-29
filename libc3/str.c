@@ -12,7 +12,7 @@
 #include "str.h"
 #include "sym.h"
 
-bool str_character_is_reserved (character c)
+e_bool str_character_is_reserved (character c)
 {
   return ! character_is_printable(c) ||
     c == '"' ||
@@ -52,7 +52,7 @@ void str_delete (s_str *str)
   free(str);
 }
 
-bool str_has_reserved_characters (const s_str *src)
+e_bool str_has_reserved_characters (const s_str *src)
 {
   character c;
   sw r;
@@ -67,7 +67,7 @@ bool str_has_reserved_characters (const s_str *src)
   return false;
 }
 
-s_str * str_init (s_str *str, bool free, uw size, s8 *p)
+s_str * str_init (s_str *str, e_bool free, uw size, s8 *p)
 {
   assert(str);
   str->free = free;
@@ -76,7 +76,7 @@ s_str * str_init (s_str *str, bool free, uw size, s8 *p)
   return str;
 }
 
-s_str * str_init_1 (s_str *str, bool free, s8 *p)
+s_str * str_init_1 (s_str *str, e_bool free, s8 *p)
 {
   assert(str);
   str->free = free;
@@ -123,7 +123,7 @@ s_str * str_inspect (const s_str *src)
   return str;
 }
 
-s_str * str_new (bool free, uw size, s8 *p)
+s_str * str_new (e_bool free, uw size, s8 *p)
 {
   s_str *str;
   str = malloc(sizeof(s_str));
@@ -133,7 +133,7 @@ s_str * str_new (bool free, uw size, s8 *p)
   return str;
 }
 
-s_str * str_new_1 (bool free, char *s)
+s_str * str_new_1 (e_bool free, char *s)
 {
   size_t len = strlen(s);
   s_str *str = str_new(free, len, s);

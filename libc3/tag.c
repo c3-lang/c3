@@ -27,3 +27,13 @@ void tag_delete (s_tag *tag)
   tag_clean(tag);
   free(tag);
 }
+
+s_tag * tag_new (e_tag_type type, e_bool free, uw size, s8 *p)
+{
+  s_tag *tag;
+  tag = malloc(sizeof(s_tag));
+  if (! tag)
+    err(1, "out of memory");
+  tag_init(tag, type, free, size, p);
+  return tag;
+}
