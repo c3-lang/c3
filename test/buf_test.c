@@ -300,6 +300,12 @@ void buf_test_read ()
 
 void buf_test_read_character ()
 {
+  BUF_TEST_READ_CHARACTER("0", '0');
+  BUF_TEST_READ_CHARACTER("9", '9');
+  BUF_TEST_READ_CHARACTER("A", 'A');
+  BUF_TEST_READ_CHARACTER("Z", 'Z');
+  BUF_TEST_READ_CHARACTER("a", 'a');
+  BUF_TEST_READ_CHARACTER("z", 'z');
   BUF_TEST_READ_CHARACTER("Π", 928);
   BUF_TEST_READ_CHARACTER("꒴", 42164);
   BUF_TEST_READ_CHARACTER("𐅀", 65856);
