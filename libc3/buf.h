@@ -26,6 +26,8 @@
     buf_init((buf), false, (size), p);          \
   } while (0)
 
+  extern const sw buf_u8_to_hex_size;
+
 /* Stack constructors, call buf_clean after use. */
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p);
 s_buf * buf_init_alloc (s_buf *buf, uw size);
@@ -64,7 +66,6 @@ sw buf_refill (s_buf *buf);
 sw buf_str_to_hex (s_buf *buf, const s_str *src);
 sw buf_str_to_hex_size (const s_str *src);
 sw buf_u8_to_hex (s_buf *buf, u8 x);
-const sw buf_u8_to_hex_size;
 sw buf_vf (s_buf *buf, const char *fmt, va_list ap);
 sw buf_write (s_buf *buf, u8 v);
 sw buf_write_1 (s_buf *buf, s8 *p);
