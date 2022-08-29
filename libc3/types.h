@@ -72,4 +72,19 @@ struct buf {
   sw (*refill) (s_buf *buf);
 };
 
+typedef enum tag_type {
+  TAG_NULL = 0,
+  TAG_CHARACTER,
+  TAG_STR,
+  TAG_SYM,
+  TAG_U64,
+  TAG_S64,
+  TAG_IEEE_DOUBLE,
+} e_tag_type;
+
+typedef struct tag {
+  e_tag_type type;
+  s_str str;
+} s_tag;
+
 #endif
