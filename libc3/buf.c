@@ -410,7 +410,7 @@ sw buf_peek_character (s_buf *buf, character *c)
     return -1;
   b = (const u8 *) buf->ptr.pu8 + buf->rpos;
   if ((b[0] & _10000000) == 0) {
-    *c = *b;
+    *c = b[0];
     return 1;
   }
   if ((b[0] & _11100000) == _11000000) {
