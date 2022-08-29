@@ -4,6 +4,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+/* Basic integer types. */
 typedef char               s8;
 typedef short              s16;
 typedef int                s32;
@@ -15,7 +16,12 @@ typedef unsigned int       u32;
 typedef unsigned long      uw;
 typedef unsigned long long u64;
 
-typedef sw bool;
+/* IEEE 754 floating point numbers. */
+typedef float  f32;
+typedef double f64;
+
+/* Boolean : true or false. */
+typedef s64 bool;
 
 typedef enum {
   false = 0,

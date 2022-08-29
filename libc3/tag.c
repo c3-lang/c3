@@ -11,8 +11,8 @@ s_tag * tag_init (s_tag *tag, e_tag_type type, bool free, uw size,
                   s8 *p)
 {
   assert(tag);
-  tag->type = type;
-  tag->str = str_init(&tag->str, free, size, p);
+  tag->type.type = type;
+  str_init(&tag->str, free, size, p);
   return tag;
 }
 
