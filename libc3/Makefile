@@ -1,7 +1,7 @@
 ## c3
 ## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
 
-CLEANFILES = *.a *.gcno libc3.la *.la .libs *.lo *.o
+CLEANFILES = *.a *.gcno *.la libc3.la .libs *.lo *.o
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
