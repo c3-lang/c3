@@ -74,12 +74,13 @@ struct buf {
 
 typedef enum tag_type {
   TAG_NULL = 0,
+  TAG_BOOL,
   TAG_CHARACTER,
   TAG_STR,
   TAG_SYM,
-  TAG_U64,
+  TAG_F64,
   TAG_S64,
-  TAG_IEEE_DOUBLE,
+  TAG_U64,
 } e_tag_type;
 
 typedef struct tag {
