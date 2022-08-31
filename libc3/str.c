@@ -22,8 +22,8 @@ e_bool str_character_is_reserved (character c)
 void str_clean (s_str *str)
 {
   assert(str);
-  if (str->free) {
-    free(str->ptr.p);
+  if (str->free.p) {
+    free(str->free.p);
   }
 }
 
@@ -67,19 +67,19 @@ e_bool str_has_reserved_characters (const s_str *src)
   return false;
 }
 
-s_str * str_init (s_str *str, e_bool free, uw size, s8 *p)
+s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p)
 {
   assert(str);
-  str->free = free;
+  str->free.p = free;
   str->size = size;
   str->ptr.p = p;
   return str;
 }
 
-s_str * str_init_1 (s_str *str, e_bool free, s8 *p)
+s_str * str_init_1 (s_str *str, s8 *free, const s8 *p)
 {
   assert(str);
-  str->free = free;
+  str->free.p = free;
   str->size = strlen(p);
   str->ptr.p = p;
   return str;
@@ -88,12 +88,12 @@ s_str * str_init_1 (s_str *str, e_bool free, s8 *p)
 s_str * str_init_alloc (s_str *str, uw size, const s8 *p)
 {
   assert(str);
-  str->free = true;
+  str->free.p = malloc(size);
   str->size = size;
-  str->ptr.p = malloc(size);
+  str->ptr.p = str->free.p;
   if (! str->ptr.p)
     err(1, "out of memory");
-  memcpy(str->ptr.p, p, size);
+  memcpy(str->free.p, p, size);
   return str;
 }
 
@@ -101,10 +101,10 @@ s_str * str_init_dup (s_str *str, const s_str *src)
 {
   assert(str);
   assert(src);
-  str->free = 1;
+  str->free.p = malloc(src->size);
   str->size = src->size;
-  str->ptr.p = malloc(src->size);
-  memcpy(str->ptr.p, src->ptr.p, str->size);
+  str->ptr.p = str->free.p;
+  memcpy(str->free.p, src->ptr.p, str->size);
   return str;
 }
 
@@ -119,11 +119,11 @@ s_str * str_inspect (const s_str *src)
   buf_init_alloc(&buf, size);
   buf_inspect_str(&buf, src);
   assert(buf.wpos == (u64) size);
-  str = str_new(true, buf.size, buf.ptr.p);
+  str = str_new(buf.ptr.p, buf.size, buf.ptr.p);
   return str;
 }
 
-s_str * str_new (e_bool free, uw size, s8 *p)
+s_str * str_new (s8 *free, uw size, const s8 *p)
 {
   s_str *str;
   str = malloc(sizeof(s_str));
@@ -133,7 +133,7 @@ s_str * str_new (e_bool free, uw size, s8 *p)
   return str;
 }
 
-s_str * str_new_1 (e_bool free, char *s)
+s_str * str_new_1 (s8 *free, const s8 *s)
 {
   size_t len = strlen(s);
   s_str *str = str_new(free, len, s);
@@ -148,7 +148,7 @@ s_str * str_new_cpy (uw size, const s8 *p)
   if (! a)
     err(1, "out of memory");
   memcpy(a, p, size);
-  str = str_new(true, size, a);
+  str = str_new(a, size, a);
   return str;
 }
 
@@ -159,14 +159,14 @@ s_str * str_new_dup (const s_str *src)
   assert(src);
   n = malloc(src->size);
   memcpy(n, src->ptr.p, src->size);
-  str = str_new(true, src->size, n);
+  str = str_new(n, src->size, n);
   return str;
 }
 
 s_str * str_new_empty ()
 {
   s_str *str;
-  str = str_new(true, 0, NULL);
+  str = str_new(NULL, 0, NULL);
   return str;
 }
 
@@ -188,7 +188,7 @@ s_str * str_new_vf (const char *fmt, va_list ap)
   len = vasprintf(&s, fmt, ap);
   if (len < 0)
     err(1, "vasprintf");
-  str = str_new(true, len, s);
+  str = str_new(s, len, s);
   return str;
 }
 
@@ -280,7 +280,7 @@ s_str * str_to_hex (const s_str *src)
   size = src->size * 2;
   buf_init_alloc(&buf, size);
   buf_str_to_hex(&buf, src);
-  hex = str_new(true, buf.size, buf.ptr.p);
+  hex = str_new(buf.ptr.p, buf.size, buf.ptr.p);
   return hex;
 }
 

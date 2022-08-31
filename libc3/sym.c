@@ -21,7 +21,7 @@ const s_sym * sym_1 (const s8 *p)
   const s_sym *found;
   s_str stra;
   s_sym *sym;
-  str_init_1(&stra, false, (void *) p);
+  str_init_1(&stra, false, p);
   found = sym_find(&stra);
   if (found)
     return found;
@@ -100,7 +100,7 @@ s_str * sym_inspect (const s_sym *sym)
   buf_init_alloc(&tmp, size);
   buf_inspect_sym(&tmp, sym);
   assert(tmp.wpos == tmp.size);
-  str = str_new(true, tmp.size, tmp.ptr.p);
+  str = str_new(tmp.ptr.p, tmp.size, tmp.ptr.p);
   return str;
 }
 

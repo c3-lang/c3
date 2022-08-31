@@ -31,9 +31,9 @@ typedef enum {
 typedef s64 character;
 
 typedef union ptr {
-  void *p;
-  s8   *ps8;
-  u8   *pu8;
+  const void *p;
+  const s8   *ps8;
+  const u8   *pu8;
   u64   u64;
 } u_ptr;
 
@@ -45,7 +45,7 @@ typedef union ptr_w {
 } u_ptr_w;
 
 typedef struct str {
-  bool  free;           /**< Should ptr be free'd ? */
+  u_ptr_w  free;        /**< Pointer to free ? */
   u64   size;           /**< Size in bytes. */
   u_ptr ptr;            /**< Pointer to memory. */
 } s_str;

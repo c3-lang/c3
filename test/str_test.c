@@ -144,7 +144,7 @@ void str_test_init_clean ()
   m = malloc(len);
   assert(m);
   memcpy(m, "test", len);
-  str_init(&stra, true, len, m);
+  str_init(&stra, m, len, m);
   TEST_EQ(stra.size, len);
   TEST_STRNCMP(stra.ptr.p, "test", len);
   str_clean(&stra);
@@ -260,7 +260,7 @@ void str_test_new_delete ()
   len = 4;
   m = malloc(len);
   memcpy(m, "test", len);
-  TEST_ASSERT((str = str_new(true, len, m)));
+  TEST_ASSERT((str = str_new(m, len, m)));
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);

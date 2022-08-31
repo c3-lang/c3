@@ -39,7 +39,7 @@ s_tag * tag_init_s64 (s_tag *tag, s64 i)
     return tag;
 }
 
-s_tag * tag_init_str (s_tag *tag, e_bool free, uw size, s8 *p)
+s_tag * tag_init_str (s_tag *tag, s8 * free, uw size, const s8 *p)
 {
   assert(tag);
   tag->type.type = TAG_STR;
@@ -59,7 +59,6 @@ s_tag * tag_init_sym (s_tag *tag, const s_sym *p)
 s_tag * tag_init_u64 (s_tag *tag, u64 i)
 {
     assert(tag);
-    assert(p);
     tag->type.type = TAG_U64;
     tag->data.u64 = i;
     return tag;

@@ -18,11 +18,11 @@ void buf_refill_move (s_buf *buf);
 void buf_clean (s_buf *buf)
 {
   assert(buf);
+  buf->size = 0;
   if (buf->free)
     free(buf->ptr.p);
   buf->free = false;
   buf->ptr.p = NULL;
-  buf->size = 0;
 }
 
 void buf_delete (s_buf *buf)
@@ -83,15 +83,6 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   if (!p)
     err(1, "out of memory");
   buf_init(buf, true, size, p);
-  return buf;
-}
-
-s_buf * buf_init_str (s_buf *buf, const s_str *src)
-{
-  assert(buf);
-  assert(src);
-  buf_init(buf, src->free, src->size, src->ptr.p);
-  buf->wpos = src->size;
   return buf;
 }
 
@@ -246,7 +237,7 @@ sw buf_refill (s_buf *buf)
 
 sw buf_str_to_hex (s_buf *buf, const s_str *src)
 {
-  u8 *b;
+  const u8 *b;
   sw size;
   uw i;
   if (src->size == 0)
