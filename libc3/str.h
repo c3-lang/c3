@@ -19,6 +19,7 @@ s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p);
 s_str * str_init_1 (s_str *str, s8 *free, const s8 *p);
 s_str * str_init_alloc (s_str *str, uw size, const s8 *p);
 s_str * str_init_dup (s_str *str, const s_str *src);
+s_str * str_init_str (s_str *str, const s_str *src);
 void str_clean (s_str *str);
 
 /* Constructors, call str_delete after use */
@@ -45,6 +46,7 @@ s_str *       str_to_hex (const s_str *src);
 const s_sym * str_to_sym (const s_str *src);
 
 /* Modifiers */
-sw        str_read_character (s_str *str, character *c);
+sw str_read (s_str *str, u8 *p);
+sw str_read_character (s_str *str, character *c);
 
 #endif /* STR_H */

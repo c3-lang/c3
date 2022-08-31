@@ -147,7 +147,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
   character c;
   sw r;
   sw size;
-  s_buf src_buf;
+  s_str s;
   size = buf_inspect_str_reserved_size(src);
   if (size <= 0)
     return size;
@@ -156,11 +156,11 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
     return -1;
   }
   buf_write(buf, '"');
-  buf_init_str(&src_buf, src);
+  str_init_str(&s, src);
   while (1) {
-    if ((r = buf_read_character(&src_buf, &c)) > 0)
+    if ((r = str_read_character(&s, &c)) > 0)
       buf_inspect_str_character(buf, c);
-    else if (r && (r = buf_read(&src_buf, &b)) == 1)
+    else if (r && (r = str_read(&s, &b)) == 1)
       buf_inspect_str_byte(buf, b);
     else if (r < 0)
       return -1;

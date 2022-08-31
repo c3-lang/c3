@@ -108,6 +108,16 @@ s_str * str_init_dup (s_str *str, const s_str *src)
   return str;
 }
 
+s_str * str_init_str (s_str *str, const s_str *src)
+{
+  assert(str);
+  assert(src);
+  str->free = src->free;
+  str->size = src->size;
+  str->ptr = src->ptr;
+  return str;
+}
+
 s_str * str_inspect (const s_str *src)
 {
   s_buf buf;
