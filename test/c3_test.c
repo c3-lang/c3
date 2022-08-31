@@ -8,6 +8,7 @@ void character_test ();
 void str_test ();
 void sym_test ();
 void buf_test ();
+void buf_inspect_test ();
 void sha1_test ();
 
 int main (int argc, char **argv)
@@ -23,6 +24,8 @@ int main (int argc, char **argv)
     sym_test();
   if (test_target("buf"))
     buf_test();
+  if (test_target("buf_inspect"))
+    buf_inspect_test();
   if (test_target("sha1"))
     sha1_test();
   test_summary();

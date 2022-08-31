@@ -68,7 +68,9 @@ void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type.type) {
-  case TAG_STR: str_clean(&tag->data.str); break;
+  case TAG_STR:
+    str_clean(&tag->data.str);
+    break;
   default:
     ;
   }
