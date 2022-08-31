@@ -217,6 +217,24 @@ sw buf_read_u8 (s_buf *buf, u8 *p)
   return r;
 }
 
+sw buf_read_u16 (s_buf *buf, u16 *p)
+{
+  sw r;
+  r = buf_peek_u16(buf, p);
+  if (r == 1)
+    buf->rpos++;
+  return r;
+}
+
+sw buf_read_u16 (s_buf *buf, u16 *p)
+{
+  sw r;
+  r = buf_peek_u32(buf, p);
+  if (r == 1)
+    buf->rpos++;
+  return r;
+}
+
 sw buf_read_character (s_buf *buf, character *p)
 {
   sw r;
