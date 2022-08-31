@@ -172,48 +172,62 @@ sw buf_peek_character (s_buf *buf, character *c)
 
 sw buf_peek_u8 (s_buf *buf, u8 *p)
 {
-  sw r;
+  const sw size = sizeof(u8);
   assert(buf);
   assert(p);
-  assert(buf->rpos <= buf->wpos);
-  assert(buf->wpos <= buf->size);
-  if (r <= 0)
-    return r;
-  if (buf->rpos == buf->wpos)
-    return 0;
-  if (buf->rpos >= buf->size) {
-    assert(! "buffer overflow");
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
+    assert(! "buf error");
     return -1;
   }
+  if (buf->rpos + size > buf->wpos)
+    return 0;
   *p = buf->ptr.pu8[buf->rpos];
-  return 1;
+  return size;
 }
 
 sw buf_peek_u16 (s_buf *buf, u16 *p)
 {
-  sw r;
+  const sw size = sizeof(u16);
   assert(buf);
   assert(p);
   assert(buf->rpos <= buf->wpos);
   assert(buf->wpos <= buf->size);
-  if (r <= 0)
-    return r;
-  if (buf->rpos == buf->wpos)
-    return 0;
-  if (buf->rpos >= buf->size) {
+  if (buf->rpos + size > buf->size) {
     assert(! "buffer overflow");
     return -1;
   }
-  *p = buf->ptr.pu16[buf->rpos];
-  return 1;
+  if (buf->rpos + size > buf->wpos)
+    return 0;
+  *p = *((u16 *) (buf->ptr.pu8 + buf->rpos));
+  return size;
+}
+
+sw buf_peek_u32 (s_buf *buf, u32 *p)
+{
+  const sw size = sizeof(u32);
+  assert(buf);
+  assert(p);
+  assert(buf->rpos <= buf->wpos);
+  assert(buf->wpos <= buf->size);
+  if (buf->rpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  if (buf->rpos + size > buf->wpos)
+    return 0;
+  *p = *((u32 *) (buf->ptr.pu8 + buf->rpos));
+  return size;
 }
 
 sw buf_read_u8 (s_buf *buf, u8 *p)
 {
   sw r;
   r = buf_peek_u8(buf, p);
-  if (r == 1)
-    buf->rpos++;
+  if (r > 0) {
+    assert(r == sizeof(u8));
+    buf->rpos += r;
+  }
   return r;
 }
 
@@ -221,17 +235,21 @@ sw buf_read_u16 (s_buf *buf, u16 *p)
 {
   sw r;
   r = buf_peek_u16(buf, p);
-  if (r == 1)
-    buf->rpos++;
+  if (r > 0) {
+    assert(r == sizeof(u16));
+    buf->rpos += r;
+  }
   return r;
 }
 
-sw buf_read_u16 (s_buf *buf, u16 *p)
+sw buf_read_u32 (s_buf *buf, u32 *p)
 {
   sw r;
   r = buf_peek_u32(buf, p);
-  if (r == 1)
-    buf->rpos++;
+  if (r > 0) {
+    assert(r == sizeof(u32));
+    buf->rpos += r;
+  }
   return r;
 }
 
