@@ -191,10 +191,9 @@ sw buf_peek_u16 (s_buf *buf, u16 *p)
   const sw size = sizeof(u16);
   assert(buf);
   assert(p);
-  assert(buf->rpos <= buf->wpos);
-  assert(buf->wpos <= buf->size);
-  if (buf->rpos + size > buf->size) {
-    assert(! "buffer overflow");
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
+    assert(! "buf error");
     return -1;
   }
   if (buf->rpos + size > buf->wpos)
@@ -208,10 +207,9 @@ sw buf_peek_u32 (s_buf *buf, u32 *p)
   const sw size = sizeof(u32);
   assert(buf);
   assert(p);
-  assert(buf->rpos <= buf->wpos);
-  assert(buf->wpos <= buf->size);
-  if (buf->rpos + size > buf->size) {
-    assert(! "buffer overflow");
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
+    assert(! "buf error");
     return -1;
   }
   if (buf->rpos + size > buf->wpos)
