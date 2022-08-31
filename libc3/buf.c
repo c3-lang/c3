@@ -232,7 +232,7 @@ sw buf_refill (s_buf *buf)
         uw size;
         size = buf->wpos - buf->rpos;
         assert(size < buf->size);
-        memmove((void *) buf->ptr.p,
+        memmove(buf->ptr.p,
                 buf->ptr.ps8 + buf->rpos,
                 size);
         buf->rpos = 0;
@@ -344,7 +344,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
     assert(! "buffer overflow");
     return -1;
   }
-  memcpy(buf->ptr.pu8) + buf->wpos, src->ptr.p, src->size);
+  memcpy(buf->ptr.pu8 + buf->wpos, src->ptr.p, src->size);
   buf->wpos += src->size;
   return src->size;
 }
