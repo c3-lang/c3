@@ -57,7 +57,7 @@ e_bool str_has_reserved_characters (const s_str *src)
   character c;
   sw r;
   s_str stra;
-  str_init(&stra, false, src->size, src->ptr.p);
+  str_init(&stra, NULL, src->size, src->ptr.p);
   while ((r = str_read_character(&stra, &c)) > 0) {
     if (str_character_is_reserved(c))
       return true;

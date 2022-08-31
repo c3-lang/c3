@@ -29,7 +29,7 @@
   do {                                                          \
     assert(test);                                               \
     assert(result);                                             \
-    STR_TEST_INSPECT(str_new_1(false, test), result);           \
+    STR_TEST_INSPECT(str_new_1(NULL, test), result);           \
   } while (0)
 
 #define STR_TEST_INSPECT(test, result)                          \
@@ -107,26 +107,26 @@ void str_test_cmp ()
   s_str *a;
   TEST_EQ((a = str_new_empty(), str_cmp(a, a)), 0);
   str_delete(a);
-  TEST_EQ((a = str_new_1(false, "abc"), str_cmp(a, a)), 0);
+  TEST_EQ((a = str_new_1(NULL, "abc"), str_cmp(a, a)), 0);
   str_delete(a);
   STR_TEST_CMP(str_new_empty(), str_new_empty(), 0);
-  STR_TEST_CMP(str_new_empty(), str_new_1(false, "0"), -1);
-  STR_TEST_CMP(str_new_1(false, "0"), str_new_empty(), 1);
-  STR_TEST_CMP(str_new_1(false, "0"), str_new_1(false, "0"), 0);
-  STR_TEST_CMP(str_new_1(false, "0"), str_new_1(false, "A"), -1);
-  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "0"), 1);
-  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "01"), 0);
-  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "012"), -1);
-  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "02"), -1);
-  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "023"), -1);
-  STR_TEST_CMP(str_new_1(false, "01"), str_new_1(false, "ABC"), -1);
-  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "0"), 1);
-  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "01"), 1);
-  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "012"), 0);
-  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "0123"), -1);
-  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "013"), -1);
-  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "0134"), -1);
-  STR_TEST_CMP(str_new_1(false, "012"), str_new_1(false, "ABC"), -1);
+  STR_TEST_CMP(str_new_empty(), str_new_1(NULL, "0"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "0"), str_new_empty(), 1);
+  STR_TEST_CMP(str_new_1(NULL, "0"), str_new_1(NULL, "0"), 0);
+  STR_TEST_CMP(str_new_1(NULL, "0"), str_new_1(NULL, "A"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "0"), 1);
+  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "01"), 0);
+  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "012"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "02"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "023"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "ABC"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "0"), 1);
+  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "01"), 1);
+  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "012"), 0);
+  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "0123"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "013"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "0134"), -1);
+  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "ABC"), -1);
 }
 
 void str_test_init_clean ()
@@ -135,7 +135,7 @@ void str_test_init_clean ()
   char *m;
   s_str stra;
   len = 4;
-  str_init(&stra, false, len, "test");
+  str_init(&stra, NULL, len, "test");
   TEST_EQ(stra.size, len);
   TEST_STRNCMP(stra.ptr.p, "test", len);
   str_clean(&stra);
@@ -203,31 +203,31 @@ void str_test_inspect ()
                      "\"\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff\xff\xff\xff\xff\xff\xff",
                      "\"\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\"");
-  STR_TEST_INSPECT(str_new(false,  1, zero), "\"\\0\"");
-  STR_TEST_INSPECT(str_new(false,  2, zero), "\"\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false,  3, zero), "\"\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false,  4, zero), "\"\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false,  5, zero), "\"\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false,  6, zero), "\"\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false,  7, zero),
+  STR_TEST_INSPECT(str_new(NULL,  1, zero), "\"\\0\"");
+  STR_TEST_INSPECT(str_new(NULL,  2, zero), "\"\\0\\0\"");
+  STR_TEST_INSPECT(str_new(NULL,  3, zero), "\"\\0\\0\\0\"");
+  STR_TEST_INSPECT(str_new(NULL,  4, zero), "\"\\0\\0\\0\\0\"");
+  STR_TEST_INSPECT(str_new(NULL,  5, zero), "\"\\0\\0\\0\\0\\0\"");
+  STR_TEST_INSPECT(str_new(NULL,  6, zero), "\"\\0\\0\\0\\0\\0\\0\"");
+  STR_TEST_INSPECT(str_new(NULL,  7, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false,  8, zero),
+  STR_TEST_INSPECT(str_new(NULL,  8, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false,  9, zero),
+  STR_TEST_INSPECT(str_new(NULL,  9, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false, 10, zero),
+  STR_TEST_INSPECT(str_new(NULL, 10, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false, 11, zero),
+  STR_TEST_INSPECT(str_new(NULL, 11, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false, 12, zero),
+  STR_TEST_INSPECT(str_new(NULL, 12, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false, 13, zero),
+  STR_TEST_INSPECT(str_new(NULL, 13, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false, 14, zero),
+  STR_TEST_INSPECT(str_new(NULL, 14, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false, 15, zero),
+  STR_TEST_INSPECT(str_new(NULL, 15, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(false, 16, zero),
+  STR_TEST_INSPECT(str_new(NULL, 16, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
                    "\\0\"");
 }
@@ -235,7 +235,7 @@ void str_test_inspect ()
 void str_test_new_1 ()
 {
   s_str *str;
-  TEST_ASSERT((str = str_new_1(false, "test")));
+  TEST_ASSERT((str = str_new_1(NULL, "test")));
   str_delete(str);
 }
 
@@ -252,7 +252,7 @@ void str_test_new_delete ()
   char *m;
   s_str *str;
   len = 4;
-  TEST_ASSERT((str = str_new(false, len, "test")));
+  TEST_ASSERT((str = str_new(NULL, len, "test")));
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);
@@ -281,78 +281,78 @@ void str_test_new_f ()
 void str_test_to_hex ()
 {
   s8 zero[32] = {0};
-  STR_TEST_TO_HEX(str_new_1(false, ""), "");
-  STR_TEST_TO_HEX(str_new(false,  1, zero), "00");
-  STR_TEST_TO_HEX(str_new(false,  2, zero), "0000");
-  STR_TEST_TO_HEX(str_new(false,  3, zero), "000000");
-  STR_TEST_TO_HEX(str_new(false,  4, zero), "00000000");
-  STR_TEST_TO_HEX(str_new(false,  5, zero), "0000000000");
-  STR_TEST_TO_HEX(str_new(false,  6, zero), "000000000000");
-  STR_TEST_TO_HEX(str_new(false,  7, zero), "00000000000000");
-  STR_TEST_TO_HEX(str_new(false,  8, zero), "0000000000000000");
-  STR_TEST_TO_HEX(str_new(false,  9, zero), "000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 10, zero), "00000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 11, zero), "0000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 12, zero),
+  STR_TEST_TO_HEX(str_new_1(NULL, ""), "");
+  STR_TEST_TO_HEX(str_new(NULL,  1, zero), "00");
+  STR_TEST_TO_HEX(str_new(NULL,  2, zero), "0000");
+  STR_TEST_TO_HEX(str_new(NULL,  3, zero), "000000");
+  STR_TEST_TO_HEX(str_new(NULL,  4, zero), "00000000");
+  STR_TEST_TO_HEX(str_new(NULL,  5, zero), "0000000000");
+  STR_TEST_TO_HEX(str_new(NULL,  6, zero), "000000000000");
+  STR_TEST_TO_HEX(str_new(NULL,  7, zero), "00000000000000");
+  STR_TEST_TO_HEX(str_new(NULL,  8, zero), "0000000000000000");
+  STR_TEST_TO_HEX(str_new(NULL,  9, zero), "000000000000000000");
+  STR_TEST_TO_HEX(str_new(NULL, 10, zero), "00000000000000000000");
+  STR_TEST_TO_HEX(str_new(NULL, 11, zero), "0000000000000000000000");
+  STR_TEST_TO_HEX(str_new(NULL, 12, zero),
                   "000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 13, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 13, zero),
                   "00000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 14, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 14, zero),
                   "0000000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 15, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 15, zero),
                   "000000000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 16, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 16, zero),
                   "00000000000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 17, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 17, zero),
                   "00000000000000000000000000000000"
                   "00");
-  STR_TEST_TO_HEX(str_new(false, 18, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 18, zero),
                   "00000000000000000000000000000000"
                   "0000");
-  STR_TEST_TO_HEX(str_new(false, 19, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 19, zero),
                   "00000000000000000000000000000000"
                   "000000");
-  STR_TEST_TO_HEX(str_new(false, 20, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 20, zero),
                   "00000000000000000000000000000000"
                   "00000000");
-  STR_TEST_TO_HEX(str_new(false, 21, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 21, zero),
                   "00000000000000000000000000000000"
                   "0000000000");
-  STR_TEST_TO_HEX(str_new(false, 22, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 22, zero),
                   "00000000000000000000000000000000"
                   "000000000000");
-  STR_TEST_TO_HEX(str_new(false, 23, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 23, zero),
                   "00000000000000000000000000000000"
                   "00000000000000");
-  STR_TEST_TO_HEX(str_new(false, 24, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 24, zero),
                   "00000000000000000000000000000000"
                   "0000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 25, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 25, zero),
                   "00000000000000000000000000000000"
                   "000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 26, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 26, zero),
                   "00000000000000000000000000000000"
                   "00000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 27, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 27, zero),
                   "00000000000000000000000000000000"
                   "0000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 28, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 28, zero),
                   "00000000000000000000000000000000"
                   "000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 29, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 29, zero),
                   "00000000000000000000000000000000"
                   "00000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 30, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 30, zero),
                   "00000000000000000000000000000000"
                   "0000000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 31, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 31, zero),
                   "00000000000000000000000000000000"
                   "000000000000000000000000000000");
-  STR_TEST_TO_HEX(str_new(false, 32, zero),
+  STR_TEST_TO_HEX(str_new(NULL, 32, zero),
                   "00000000000000000000000000000000"
                   "00000000000000000000000000000000");
-  STR_TEST_TO_HEX(str_new_1(false, "abc"), "616263");
-  STR_TEST_TO_HEX(str_new_1(false, "abcdefghijklmnopqrstuvwxyz"),
+  STR_TEST_TO_HEX(str_new_1(NULL, "abc"), "616263");
+  STR_TEST_TO_HEX(str_new_1(NULL, "abcdefghijklmnopqrstuvwxyz"),
                   "6162636465666768696A6B6C6D6E6F70"
                   "7172737475767778797A");
 }
@@ -361,28 +361,28 @@ void str_test_to_sym ()
 {
   s_str *test;
   const s_sym *result;
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, ""))));
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, ""))));
   STR_TEST_CMP(&result->str, test, 0);
   str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "0"))));
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "0"))));
   STR_TEST_CMP(&result->str, test, 0);
   str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "012"))));
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "012"))));
   STR_TEST_CMP(&result->str, test, 0);
   str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "A"))));
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "A"))));
   STR_TEST_CMP(&result->str, test, 0);
   str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "ABC"))));
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "ABC"))));
   STR_TEST_CMP(&result->str, test, 0);
   str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "Abc"))));
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "Abc"))));
   STR_TEST_CMP(&result->str, test, 0);
   str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "a"))));
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "a"))));
   STR_TEST_CMP(&result->str, test, 0);
   str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(false, "abc"))));
+  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "abc"))));
   STR_TEST_CMP(&result->str, test, 0);
   str_delete(test);
 }

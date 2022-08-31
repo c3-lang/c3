@@ -304,7 +304,7 @@ sw buf_write (s_buf *buf, u8 v)
 sw buf_write_1 (s_buf *buf, s8 *p)
 {
   s_str stra;
-  str_init_1(&stra, false, p);
+  str_init_1(&stra, NULL, p);
   return buf_write_str(buf, &stra);
 }
 

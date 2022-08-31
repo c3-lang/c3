@@ -10,7 +10,7 @@
   do {                                              \
     s_str *hash;                                    \
     s_str stra;                                     \
-    str_init_1(&stra, false, test);                \
+    str_init_1(&stra, NULL, test);                \
     hash = sha1(&stra);                             \
     TEST_STRNCMP(hash->ptr.p, result, hash->size);  \
     str_delete(hash);                               \
