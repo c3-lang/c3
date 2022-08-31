@@ -202,30 +202,7 @@ s_str * str_new_vf (const char *fmt, va_list ap)
   return str;
 }
 
-sw str_read (s_str *str, u8 *c)
-{
-  if (str->size <= 0)
-    return 0;
-  str->size--;
-  *c = *str->ptr.pu8;
-  str->ptr.pu8++;
-  return 1;
-}
-
-sw str_read_character (s_str *str, character *c)
-{
-  sw size;
-  if (str->size == 0)
-    return 0;
-  size = str_to_character(str, c);
-  if (size < 0)
-    return size;
-  str->size -= size;
-  str->ptr.p = str->ptr.ps8 + size;
-  return size;
-}
-
-sw str_to_character (const s_str *str, character *c)
+sw str_peek_character (const s_str *str, character *c)
 {
   assert(str);
   assert(c);
@@ -288,6 +265,29 @@ sw str_to_character (const s_str *str, character *c)
     return 4;
   }
   return -1;
+}
+
+sw str_read (s_str *str, u8 *c)
+{
+  if (str->size <= 0)
+    return 0;
+  str->size--;
+  *c = *str->ptr.pu8;
+  str->ptr.pu8++;
+  return 1;
+}
+
+sw str_read_character (s_str *str, character *c)
+{
+  sw size;
+  if (str->size == 0)
+    return 0;
+  size = str_peek_character(str, c);
+  if (size < 0)
+    return size;
+  str->size -= size;
+  str->ptr.p = str->ptr.ps8 + size;
+  return size;
 }
 
 s_str * str_to_hex (const s_str *src)

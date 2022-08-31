@@ -107,7 +107,7 @@ s_str * sym_inspect (const s_sym *sym)
 bool sym_is_module (const s_sym *sym)
 {
   character c;
-  if (str_to_character(&sym->str, &c) > 0)
+  if (str_peek_character(&sym->str, &c) > 0)
     return character_is_uppercase(c);
   return false;
 }
