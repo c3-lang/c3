@@ -177,11 +177,8 @@ sw buf_peek_u8 (s_buf *buf, u8 *p)
   assert(p);
   assert(buf->rpos <= buf->wpos);
   assert(buf->wpos <= buf->size);
-  if (buf->rpos == buf->wpos) {
-    r = buf_refill(buf);
-    if (r <= 0)
-      return r;
-  }
+  if (r <= 0)
+    return r;
   if (buf->rpos == buf->wpos)
     return 0;
   if (buf->rpos >= buf->size) {
@@ -189,6 +186,25 @@ sw buf_peek_u8 (s_buf *buf, u8 *p)
     return -1;
   }
   *p = buf->ptr.pu8[buf->rpos];
+  return 1;
+}
+
+sw buf_peek_u16 (s_buf *buf, u16 *p)
+{
+  sw r;
+  assert(buf);
+  assert(p);
+  assert(buf->rpos <= buf->wpos);
+  assert(buf->wpos <= buf->size);
+  if (r <= 0)
+    return r;
+  if (buf->rpos == buf->wpos)
+    return 0;
+  if (buf->rpos >= buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  *p = buf->ptr.pu16[buf->rpos];
   return 1;
 }
 
