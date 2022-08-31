@@ -18,6 +18,6 @@ s_str *sha1 (s_str *src)
   assert(str);
   SHA1Init(&ctx);
   SHA1Update(&ctx, src->ptr.p, src->size);
-  SHA1Final((u8 *) str->ptr.p, &ctx);
+  SHA1Final( str->ptr.p, &ctx);
   return str;
 }

@@ -104,7 +104,7 @@ s_str * str_init_dup (s_str *str, const s_str *src)
   str->free = 1;
   str->size = src->size;
   str->ptr.p = malloc(src->size);
-  memcpy((void *) str->ptr.p, src->ptr.p, str->size);
+  memcpy(str->ptr.p, src->ptr.p, str->size);
   return str;
 }
 
@@ -201,7 +201,7 @@ sw str_read_character (s_str *str, character *c)
   if (size < 0)
     return size;
   str->size -= size;
-  str->ptr.p = (s8 *) str->ptr.p + size;
+  str->ptr.p = str->ptr.ps8 + size;
   return size;
 }
 

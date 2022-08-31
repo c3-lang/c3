@@ -598,7 +598,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
     assert(! "buffer overflow");
     return -1;
   }
-  memcpy(((u8 *) buf->ptr.pu8) + buf->wpos, src->ptr.p, src->size);
+  memcpy(buf->ptr.pu8) + buf->wpos, src->ptr.p, src->size);
   buf->wpos += src->size;
   return src->size;
 }
