@@ -559,7 +559,7 @@ sw buf_write (s_buf *buf, u8 v)
     assert(! "buffer overflow");
     return -1;
   }
-  ((u8 *) buf->ptr.pu8)[buf->wpos] = v;
+  buf->ptr.pu8[buf->wpos] = v;
   buf->wpos++;
   return 1;
 }
