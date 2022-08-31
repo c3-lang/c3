@@ -163,10 +163,6 @@ void buf_test_peek ()
 {
 }
 
-void buf_test_peek_str ()
-{
-}
-
 void buf_test_read ()
 {
   char a[8] = "ABCDEFGH";
