@@ -7,7 +7,7 @@
 #include "../libc3/str.h"
 #include "test.h"
 
-#define TEST_BUF_CLEAN(bufa)                    \
+#define BUF_TEST_CLEAN(bufa)                    \
   do {                                          \
     buf_clean(&bufa);                           \
     TEST_EQ(bufa.size, 0);                      \
@@ -19,11 +19,21 @@
     TEST_ASSERT(bufa.refill == NULL);           \
   } while(0)
 
-#define TEST_BUF_DELETE(buf) \
+#define BUF_TEST_DELETE(buf) \
   do {                       \
     buf_delete(buf);         \
     test_ok();               \
   } while(0)
+
+#define BUF_TEST_F(test, expected)                   \
+  do {                                               \
+    u64 pos = buf.wpos;                              \
+    uw len = strlen(expected);                       \
+    test_context(# test " -> " # expected);          \
+    TEST_EQ(test, len);                              \
+    TEST_EQ(buf.wpos, pos + len);                    \
+    TEST_STRNCMP(buf.ptr.ps8 + pos, expected, len);  \
+  } while (0)
 
 #define BUF_TEST_READ_CHARACTER(test, result)                          \
   do {                                                                 \
@@ -50,7 +60,6 @@ void buf_test_init_clean ();
 void buf_test_new_delete ();
 void buf_test_new_alloc_delete ();
 void buf_test_peek ();
-void buf_test_peek_str ();
 void buf_test_read ();
 void buf_test_read_character ();
 void buf_test_write ();
@@ -62,23 +71,12 @@ void buf_test ()
   buf_test_new_delete();
   buf_test_new_alloc_delete();
   buf_test_peek();
-  buf_test_peek_str();
   buf_test_read();
   buf_test_read_character();
   buf_test_write();
   buf_test_write_str();
   buf_test_f();
 }
-
-#define BUF_TEST_F(test, expected)                   \
-  do {                                               \
-    u64 pos = buf.wpos;                              \
-    uw len = strlen(expected);                       \
-    test_context(# test " -> " # expected);          \
-    TEST_EQ(test, len);                              \
-    TEST_EQ(buf.wpos, pos + len);                    \
-    TEST_STRNCMP(buf.ptr.ps8 + pos, expected, len);  \
-  } while (0)
 
 void buf_test_f ()
 {
@@ -108,7 +106,7 @@ void buf_test_init_clean ()
   TEST_EQ(strncmp(bufa.ptr.p, "test", len), 0);
   TEST_EQ(bufa.rpos, 0);
   TEST_EQ(bufa.wpos, 0);
-  TEST_BUF_CLEAN(bufa);
+  BUF_TEST_CLEAN(bufa);
   len = 4;
   m = malloc(len);
   memcpy(m, "test", len);
@@ -117,7 +115,7 @@ void buf_test_init_clean ()
   TEST_EQ(strncmp(bufa.ptr.p, "test", len), 0);
   TEST_EQ(bufa.rpos, 0);
   TEST_EQ(bufa.wpos, 0);
-  TEST_BUF_CLEAN(bufa);
+  BUF_TEST_CLEAN(bufa);
 }
 
 void buf_test_new_delete ()
@@ -132,7 +130,7 @@ void buf_test_new_delete ()
   TEST_EQ(strncmp(buf->ptr.p, "test", len), 0);
   TEST_EQ(buf->rpos, 0);
   TEST_EQ(buf->wpos, 0);
-  TEST_BUF_DELETE(buf);
+  BUF_TEST_DELETE(buf);
   len = 4;
   m = malloc(len);
   memcpy(m, "test", len);
@@ -141,7 +139,7 @@ void buf_test_new_delete ()
   TEST_EQ(strncmp(buf->ptr.p, "test", len), 0);
   TEST_EQ(buf->rpos, 0);
   TEST_EQ(buf->wpos, 0);
-  TEST_BUF_DELETE(buf);
+  BUF_TEST_DELETE(buf);
 }
 
 void buf_test_new_alloc_delete ()
@@ -154,7 +152,7 @@ void buf_test_new_alloc_delete ()
     TEST_EQ(buf->size, len);
     TEST_EQ(buf->rpos, 0);
     TEST_EQ(buf->wpos, 0);
-    TEST_BUF_DELETE(buf);
+    BUF_TEST_DELETE(buf);
     len++;
   }
 }

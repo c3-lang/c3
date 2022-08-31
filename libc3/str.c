@@ -202,6 +202,16 @@ s_str * str_new_vf (const char *fmt, va_list ap)
   return str;
 }
 
+sw str_read (s_str *str, u8 *c)
+{
+  if (str->size <= 0)
+    return 0;
+  str->size--;
+  *c = *str->ptr.pu8;
+  str->ptr.pu8++;
+  return 1;
+}
+
 sw str_read_character (s_str *str, character *c)
 {
   sw size;

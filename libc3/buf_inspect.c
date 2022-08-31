@@ -178,14 +178,14 @@ sw buf_inspect_str_reserved_size (const s_str *src)
   character c;
   const sw quote_size = 1;
   sw r;
+  s_str s;
   sw size;
-  s_buf src_buf;
   size = 2 * quote_size;
-  buf_init_str(&src_buf, src);
+  str_init_str(&s, src);
   while (1) {
-    if ((r = buf_read_character(&src_buf, &c)) > 0)
+    if ((r = str_read_character(&s, &c)) > 0)
       size += buf_inspect_str_character_size(c);
-    else if (r && (r = buf_read(&src_buf, &b)) == 1)
+    else if (r && (r = str_read(&s, &b)) == 1)
       size += buf_inspect_str_byte_size;
     else if (r < 0)
       return -1;
