@@ -32,15 +32,24 @@
     TEST_EQ(buf_inspect_str_character_size(test), result);             \
   } while (0)
 
+#define BUF_INSPECT_TEST_STR(test, result)                             \
+  do {                                                                 \
+    test_context("buf_inspect_str(" # test ") -> " # result);          \
+    buf_init(&buf, false, sizeof(b), b);                               \
+    TEST_EQ(buf_inspect_str(&buf, test), strlen(result));              \
+  } while (0)
+
 void buf_inspect_test_character ();
 void buf_inspect_test_str_character ();
 void buf_inspect_test_str_character_size ();
+void buf_inspect_test_str ();
 
 void buf_inspect_test ()
 {
   buf_inspect_test_str_character_size();
   buf_inspect_test_str_character();
   buf_inspect_test_character();
+  buf_inspect_test_str();
 }
 
 void buf_inspect_test_character ()
@@ -99,3 +108,11 @@ void buf_inspect_test_str_character_size ()
   BUF_INSPECT_TEST_STR_CHARACTER_SIZE(42164, 3);
   BUF_INSPECT_TEST_STR_CHARACTER_SIZE(65856, 4);
 }
+
+void buf_inspect_test_str ()
+{
+  s8 b[32];
+  s_buf buf;
+  (void) b;
+  (void) buf;
+ }
