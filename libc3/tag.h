@@ -17,7 +17,7 @@
 /* Stack allocation compatible functions */
 s_tag * tag_init_str (s_tag *tag, e_bool free, uw size, s8 *p);
 s_tag * tag_init_bool (s_tag *tag, bool p);
-s_tag * tag_init_character (s_tag *tag, character p);
+s_tag * tag_init_character (s_tag *tag, character c);
 s_tag * tag_init_f64 (s_tag *tag, f64 f);
 s_tag * tag_init_s64 (s_tag *tag, s64 i);
 s_tag * tag_init_sym (s_tag *tag, const s_sym *p);
