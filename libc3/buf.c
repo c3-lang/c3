@@ -305,6 +305,58 @@ sw buf_write_character (s_buf *buf, character c)
   return size;
 }
 
+sw buf_write_s8 (s_buf *buf, s8 x)
+{
+  const sw size = 1;
+  assert(buf);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf->ptr.ps8[buf->wpos] = x;
+  buf->wpos += size;
+  return size;
+}
+
+sw buf_write_s16 (s_buf *buf, s16 x)
+{
+  const sw size = 2;
+  assert(buf);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  *((s16 *) (buf->ptr.pu8 + buf->wpos)) = x;
+  buf->wpos += size;
+  return size;
+}
+
+sw buf_write_s32 (s_buf *buf, s32 x)
+{
+  const sw size = 4;
+  assert(buf);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  *((s32 *) (buf->ptr.pu8 + buf->wpos)) = x;
+  buf->wpos += size;
+  return size;
+}
+
+sw buf_write_s64 (s_buf *buf, s64 v)
+{
+  const sw size = 8;
+  assert(buf);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  *((s64 *) (buf->ptr.pu8 + buf->wpos)) = v;
+  buf->wpos += size;
+  return size;
+}
+
 sw buf_write_str (s_buf *buf, const s_str *src)
 {
   sw r;
@@ -323,21 +375,56 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   return src->size;
 }
 
-sw buf_write_u8 (s_buf *buf, u8 v)
+sw buf_write_u8 (s_buf *buf, u8 x)
 {
-  sw r;
+  const sw size = 1;
   assert(buf);
-  assert(buf->wpos <= buf->size);
-  if (buf->wpos == buf->size &&
-      (r = buf_flush(buf)) < 0)
-    return r;
-  if (buf->wpos >= buf->size) {
+  if (buf->wpos + size > buf->size) {
     assert(! "buffer overflow");
     return -1;
   }
-  buf->ptr.pu8[buf->wpos] = v;
-  buf->wpos++;
-  return 1;
+  buf->ptr.pu8[buf->wpos] = x;
+  buf->wpos += size;
+  return size;
+}
+
+sw buf_write_u16 (s_buf *buf, u16 x)
+{
+  const sw size = 2;
+  assert(buf);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  *((u16 *) (buf->ptr.pu8 + buf->wpos)) = x;
+  buf->wpos += size;
+  return size;
+}
+
+sw buf_write_u32 (s_buf *buf, u32 x)
+{
+  const sw size = 4;
+  assert(buf);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  *((u32 *) (buf->ptr.pu8 + buf->wpos)) = x;
+  buf->wpos += size;
+  return size;
+}
+
+sw buf_write_u64 (s_buf *buf, u64 v)
+{
+  const sw size = 8;
+  assert(buf);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  *((u64 *) (buf->ptr.pu8 + buf->wpos)) = v;
+  buf->wpos += size;
+  return size;
 }
 
 sw buf_xfer (s_buf *buf, s_buf *src, uw size)

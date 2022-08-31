@@ -88,6 +88,9 @@ sw buf_write_1 (s_buf *buf, s8 *p);
 sw buf_write_character (s_buf *buf, character c);
 sw buf_write_str (s_buf *buf, const s_str *src);
 sw buf_write_u8 (s_buf *buf, u8 i);
+sw buf_write_u16 (s_buf *buf, u16 i);
+sw buf_write_u32 (s_buf *buf, u32 i);
+sw buf_write_u64 (s_buf *buf, u64 i);
 sw buf_xfer (s_buf *buf, s_buf *src, uw size);
 
 #endif /* BUF_H */
