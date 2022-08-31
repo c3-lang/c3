@@ -82,10 +82,10 @@ typedef enum tag_type {
   TAG_NULL = 0,
   TAG_BOOL,
   TAG_CHARACTER,
-  TAG_STR,
-  TAG_SYM,
   TAG_F64,
   TAG_S64,
+  TAG_STR,
+  TAG_SYM,
   TAG_U64,
   TAG_TAG
 } e_tag_type;
@@ -95,10 +95,19 @@ typedef union tag_type_ {
   u64 u64;
 } u_tag_type;
 
+typedef union tag_data {
+  bool bool;
+  character character;
+  f64 f64;
+  s_str str;
+  const s_sym *sym;
+  s64 s64;
+  u64 u64;
+} u_tag_data;
+
 typedef struct tag {
   u_tag_type type;
-  u64 count;
-  s_str str;
+  u_tag_data data;
 } s_tag;
 
 #endif

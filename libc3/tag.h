@@ -15,28 +15,23 @@
 #include "types.h"
 
 /* Stack allocation compatible functions */
-s_tag * tag_init (s_tag *tag, e_tag_type type, bool free, uw size,
-                  s8 *p);
-s_tag * tag_init_bool (s_tag *tag, bool free, bool *p);
-s_tag * tag_init_character (s_tag *tag, bool free, character *p);
-s_tag * tag_init_str (s_tag *tag, bool free, s_str *p);
-s_tag * tag_init_sym (s_tag *tag, bool free, s_sym *p);
-s_tag * tag_init_f64 (s_tag *tag, bool free, f64 *p);
-s_tag * tag_init_s64 (s_tag *tag, bool free, s64 *p);
-s_tag * tag_init_u64 (s_tag *tag, bool free, u64 *p);
+s_tag * tag_init_str (s_tag *tag, e_bool free, uw size, s8 *p);
+s_tag * tag_init_bool (s_tag *tag, bool p);
+s_tag * tag_init_character (s_tag *tag, character p);
+s_tag * tag_init_f64 (s_tag *tag, f64 f);
+s_tag * tag_init_s64 (s_tag *tag, s64 i);
+s_tag * tag_init_sym (s_tag *tag, const s_sym *p);
+s_tag * tag_init_u64 (s_tag *tag, u64 i);
 
 /* Constructors, call tag_delete after use */
 s_tag * tag_new (e_tag_type type, e_bool free, uw size, s8 *p);
-s_tag * tag_new_str (e_bool free, s_str *src);
-s_tag * tag_new_bool (e_bool free, bool *p);
-s_tag * tag_new_character (e_bool free, character *p);
-s_tag * tag_new_sym (e_bool free, const s_sym *sym);
-s_tag * tag_new_f64 (e_bool free, f64 *f);
-s_tag * tag_new_s64 (e_bool free, s64 *i);
-s_tag * tag_new_u64 (e_bool free, u64 *i);
-
-/* Call str_delete after use. */
-s_str * tag_inspect (const s_tag *x);
+s_tag * tag_new_str (e_bool free, uw size, s8 *p);
+s_tag * tag_new_bool (bool p);
+s_tag * tag_new_character (character c);
+s_tag * tag_new_sym (const s_sym *sym);
+s_tag * tag_new_f64 (f64 f);
+s_tag * tag_new_s64 (s64 i);
+s_tag * tag_new_u64 (u64 i);
 
 /* Destructor */
 void tag_delete (s_tag *tag);
@@ -44,6 +39,9 @@ void tag_delete (s_tag *tag);
 /* Observers */
 sw tag_size (const s_tag *tag);
 sw tag_type_size (e_tag_type type);
+
+/* Call str_delete after use. */
+s_str * tag_inspect (const s_tag *x);
 
 /* Modifiers */
 
