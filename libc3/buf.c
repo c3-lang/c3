@@ -226,6 +226,7 @@ sw buf_inspect_str_character_size (character c)
   return size;
 }
 
+/* XXX keep in sync with buf_inspect_str_reserved_size */
 sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
 {
   u8 b;
@@ -256,6 +257,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
   return size;
 }
 
+/* XXX keep in sync with buf_inspect_str_reserved */
 sw buf_inspect_str_reserved_size (const s_str *src)
 {
   u8 b;
@@ -323,6 +325,7 @@ sw buf_inspect_sym_size (const s_sym *sym)
   return sym->str.size + colon_size;
 }
 
+/* XXX keep in sync with buf_inspect_sym_reserved_size */
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym)
 {
   sw  size;
@@ -338,6 +341,7 @@ sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym)
   return size;
 }
 
+/* XXX keep in sync with buf_inspect_sym_reserved */
 sw buf_inspect_sym_reserved_size (const s_sym *sym)
 {
   const sw colon_size = 1;

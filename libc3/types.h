@@ -5,20 +5,20 @@
 #define TYPES_H
 
 /* Basic integer types. */
-typedef char               s8;
-typedef short              s16;
-typedef int                s32;
-typedef long               sw;
-typedef long long          s64;
-typedef unsigned char      u8;
-typedef unsigned short     u16;
-typedef unsigned int       u32;
-typedef unsigned long      uw;
-typedef unsigned long long u64;
+typedef char                s8;
+typedef short               s16;
+typedef int                 s32;
+typedef long                sw;
+typedef long long           s64;
+typedef unsigned char       u8;
+typedef unsigned short      u16;
+typedef unsigned int        u32;
+typedef unsigned long       uw;
+typedef unsigned long long  u64;
 
 /* IEEE 754 floating point numbers. */
-typedef float  f32;
-typedef double f64;
+typedef float               f32;
+typedef double              f64;
 
 /* Boolean : true or false. */
 typedef s64 bool;
