@@ -78,6 +78,14 @@ struct buf {
   sw (*refill) (s_buf *buf);
 };
 
+typedef struct tag      s_tag;
+typedef struct tag_list s_tag_list;
+
+struct tag_list {
+  s_tag *tag;
+  s_tag_list *next;
+};
+
 typedef enum tag_type {
   TAG_NULL = 0,
   TAG_BOOL,
@@ -87,7 +95,7 @@ typedef enum tag_type {
   TAG_STR,
   TAG_SYM,
   TAG_U64,
-  TAG_TAG
+  TAG_LIST
 } e_tag_type;
 
 typedef union tag_type_ {
@@ -99,15 +107,16 @@ typedef union tag_data {
   bool bool;
   character character;
   f64 f64;
+  s_tag_list list;
   s_str str;
   const s_sym *sym;
   s64 s64;
   u64 u64;
 } u_tag_data;
 
-typedef struct tag {
+struct tag {
   u_tag_type type;
   u_tag_data data;
-} s_tag;
+};
 
 #endif
