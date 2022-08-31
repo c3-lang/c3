@@ -22,9 +22,9 @@ sw buf_inspect_character (s_buf *buf, character c)
     assert(! "buffer overflow");
     return -1;
   }
-  buf_write(buf, '\'');
+  buf_write_u8(buf, '\'');
   buf_inspect_str_character(buf, c);
-  buf_write(buf, '\'');
+  buf_write_u8(buf, '\'');
   return size;
 }
 
@@ -52,9 +52,9 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
     assert(! "buffer overflow");
     return -1;
   }
-  buf_write(buf, '"');
+  buf_write_u8(buf, '"');
   buf_write_str(buf, str);
-  buf_write(buf, '"');
+  buf_write_u8(buf, '"');
   return size;
 }
 
@@ -65,8 +65,8 @@ sw buf_inspect_str_byte (s_buf *buf, u8 b)
     assert(! "buffer overflow");
     return -1;
   }
-  buf_write(buf, '\\');
-  buf_write(buf, 'x');
+  buf_write_u8(buf, '\\');
+  buf_write_u8(buf, 'x');
   buf_u8_to_hex(buf, b);
   return size;
 }
@@ -86,26 +86,26 @@ sw buf_inspect_str_character (s_buf *buf, character c)
   }
   if (! str_character_is_reserved(c))
     return buf_write_character(buf, c);
-  buf_write(buf, '\\');
+  buf_write_u8(buf, '\\');
   switch (c) {
-  case '\0': buf_write(buf, '0'); break;
-  case '\n': buf_write(buf, 'n'); break;
-  case '\r': buf_write(buf, 'r'); break;
-  case '\t': buf_write(buf, 't'); break;
-  case '\v': buf_write(buf, 'v'); break;
-  case '\"': buf_write(buf, '"'); break;
-  case '\'': buf_write(buf, '\''); break;
-  case '\\': buf_write(buf, '\\'); break;
+  case '\0': buf_write_u8(buf, '0'); break;
+  case '\n': buf_write_u8(buf, 'n'); break;
+  case '\r': buf_write_u8(buf, 'r'); break;
+  case '\t': buf_write_u8(buf, 't'); break;
+  case '\v': buf_write_u8(buf, 'v'); break;
+  case '\"': buf_write_u8(buf, '"'); break;
+  case '\'': buf_write_u8(buf, '\''); break;
+  case '\\': buf_write_u8(buf, '\\'); break;
   default:
     BUF_INIT_ALLOCA(&char_buf, 4);
     i = buf_write_character(&char_buf, c);
     j = 0;
     if (i-- > 0) {
-      buf_write(buf, 'x');
+      buf_write_u8(buf, 'x');
       buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
       while (i--) {
-        buf_write(buf, '\\');
-        buf_write(buf, 'x');
+        buf_write_u8(buf, '\\');
+        buf_write_u8(buf, 'x');
         buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
       }
     }
@@ -155,7 +155,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
     assert(! "buffer overflow");
     return -1;
   }
-  buf_write(buf, '"');
+  buf_write_u8(buf, '"');
   str_init_str(&s, src);
   while (1) {
     if ((r = str_read_character(&s, &c)) > 0)
@@ -167,7 +167,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
     else if (r == 0)
       break;
   }
-  buf_write(buf, '"');
+  buf_write_u8(buf, '"');
   return size;
 }
 
@@ -221,7 +221,7 @@ sw buf_inspect_sym (s_buf *buf, const s_sym *sym)
     assert(! "buffer overflow");
     return -1;
   }
-  buf_write(buf, ':');
+  buf_write_u8(buf, ':');
   buf_write_str(buf, &sym->str);
   return size;
 }
@@ -250,7 +250,7 @@ sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym)
     assert(! "buffer_overflow");
     return -1;
   }
-  buf_write(buf, ':');
+  buf_write_u8(buf, ':');
   buf_inspect_str(buf, &sym->str);
   return size;
 }
