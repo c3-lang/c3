@@ -26,7 +26,8 @@
     buf_init((buf), false, (size), p);          \
   } while (0)
 
-  extern const sw buf_u8_to_hex_size;
+extern const sw buf_u8_to_hex_size;
+extern const sw buf_inspect_str_byte_size;
 
 /* Stack constructors, call buf_clean after use. */
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p);
