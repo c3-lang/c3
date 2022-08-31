@@ -90,10 +90,17 @@ typedef enum tag_type {
   TAG_NULL = 0,
   TAG_BOOL,
   TAG_CHARACTER,
+  TAG_F32,
   TAG_F64,
+  TAG_S8,
+  TAG_S16,
+  TAG_S32,
   TAG_S64,
   TAG_STR,
   TAG_SYM,
+  TAG_U8,
+  TAG_U16,
+  TAG_U32,
   TAG_U64,
   TAG_LIST
 } e_tag_type;
