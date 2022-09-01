@@ -61,6 +61,7 @@ void buf_test_new_delete ();
 void buf_test_new_alloc_delete ();
 void buf_test_peek ();
 void buf_test_read_u8 ();
+void buf_test_read_u16 ();
 void buf_test_read_character ();
 void buf_test_write_u8 ();
 void buf_test_write_str ();
@@ -71,7 +72,7 @@ void buf_test ()
   buf_test_new_delete();
   buf_test_new_alloc_delete();
   buf_test_peek();
-  buf_test_read_u8();
+  buf_test_read_u16();
   buf_test_read_character();
   buf_test_write_u8();
   buf_test_write_str();
