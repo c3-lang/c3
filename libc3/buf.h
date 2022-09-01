@@ -58,6 +58,8 @@ sw buf_inspect_str_character_size (character c);
 sw buf_inspect_sym (s_buf *buf, const s_sym *sym);
 sw buf_inspect_sym_size (const s_sym *sym);
 sw buf_peek_character (s_buf *buf, character *p);
+sw buf_peek_f8 (s_buf *buf, f8 *p);
+sw buf_peek_f16 (s_buf *buf, f16 *p);
 sw buf_peek_f32 (s_buf *buf, f32 *p);
 sw buf_peek_f64 (s_buf *buf, f64 *p);
 sw buf_peek_s8 (s_buf *buf, s8 *p);

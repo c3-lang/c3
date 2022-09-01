@@ -170,6 +170,38 @@ sw buf_peek_character (s_buf *buf, character *c)
   return -1;
 }
 
+sw buf_peek_f8 (s_buf *buf, f8 *p)
+{
+    const sw size = sizeof(f8);
+    assert(buf);
+    assert(p);
+    if (buf->rpos > buf->wpos ||
+        buf->wpos > buf->size) {
+        assert(! "buf error");
+        return -1;
+    }
+    if (buf->rpos + size > buf->wpos)
+        return 0;
+    *p = *((f8 *) (buf->ptr.pu8 + buf->rpos));
+    return size;
+}
+
+sw buf_peek_f16 (s_buf *buf, f16 *p)
+{
+    const sw size = sizeof(f16);
+    assert(buf);
+    assert(p);
+    if (buf->rpos > buf->wpos ||
+        buf->wpos > buf->size) {
+        assert(! "buf error");
+        return -1;
+    }
+    if (buf->rpos + size > buf->wpos)
+        return 0;
+    *p = *((f16 *) (buf->ptr.pu8 + buf->rpos));
+    return size;
+}
+
 sw buf_peek_f32 (s_buf *buf, f32 *p)
 {
   const sw size = sizeof(f32);
@@ -215,6 +247,22 @@ sw buf_peek_s8 (s_buf *buf, s8 *p)
     if (buf->rpos + size > buf->wpos)
         return 0;
     *p = *((s8 *) (buf->ptr.pu8 + buf->rpos));
+    return size;
+}
+
+sw buf_peek_s16 (s_buf *buf, s16 *p)
+{
+    const sw size = sizeof(s16);
+    assert(buf);
+    assert(p);
+    if (buf->rpos > buf->wpos ||
+        buf->wpos > buf->size) {
+        assert(! "buf error");
+        return -1;
+    }
+    if (buf->rpos + size > buf->wpos)
+        return 0;
+    *p = *((s16 *) (buf->ptr.pu8 + buf->rpos));
     return size;
 }
 
