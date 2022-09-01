@@ -21,7 +21,7 @@ typedef float               f32;
 typedef double              f64;
 
 /* Boolean : true or false. */
-typedef s32 bool;
+typedef sw bool;
 
 typedef enum {
   false = 0,
