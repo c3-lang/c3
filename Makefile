@@ -34,7 +34,6 @@ debug:
 	${MAKE} -C test debug
 
 gcovr: test_cov
-	${MAKE} -C libtommath gcovr
 	${MAKE} -C libc3 gcovr
 	${MAKE} -C test gcovr
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
