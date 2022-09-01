@@ -251,6 +251,76 @@ sw buf_read_u32 (s_buf *buf, u32 *p)
   return r;
 }
 
+sw buf_read_u64 (s_buf *buf, u64 *p)
+{
+  sw r;
+  r = buf_peek_u64(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(u64));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+sw buf_read_f32 (s_buf *buf, f32 *p)
+{
+  sw r;
+  r = buf_peek_f32(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(f32));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+sw buf_read_u64 (s_buf *buf, f64 *p)
+{
+  sw r;
+  r = buf_peek_f64(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(f64));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+sw buf_read_s16(s_buf *buf, s16 *p)
+{
+  sw r;
+  r = buf_peek_s16(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(s16));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+sw buf_read_s32(s_buf *buf, s32 *p)
+{
+  sw r;
+  r = buf_peek_s32(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(s32));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+sw buf_read_s64(s_buf *buf, s64 *p)
+{
+  sw r;
+  r = buf_peek_s64(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(s64));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+
+
+
+
 sw buf_read_character (s_buf *buf, character *p)
 {
   sw r;
