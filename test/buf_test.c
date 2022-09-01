@@ -43,6 +43,7 @@
     buf_init_1(&buf, (test));                                          \
     TEST_ASSERT(buf_read_character(&buf, &c) >= 0);                    \
     TEST_EQ(c, result);                                                \
+    test_context(NULL);                                                \
   } while (0)
 
 #define BUF_TEST_READ_N(test, n, result)                               \
@@ -219,6 +220,24 @@ void buf_test_read_character ()
 
 void buf_test_write_u8 ()
 {
+  s_buf buf;
+  BUF_INIT_ALLOCA(&buf, 4);
+  TEST_EQ(buf_write_u8(&buf, 0x00), 1);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 1);
+  TEST_EQ(buf.ptr.pu8[0], 0x00);
+  TEST_EQ(buf_write_u8(&buf, 0x01), 1);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 2);
+  TEST_EQ(buf.ptr.pu8[1], 0x01);
+  TEST_EQ(buf_write_u8(&buf, 0xFE), 1);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 3);
+  TEST_EQ(buf.ptr.pu8[2], 0xFE);
+  TEST_EQ(buf_write_u8(&buf, 0xFF), 1);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 4);
+  TEST_EQ(buf.ptr.pu8[3], 0xFF);
 }
 
 void buf_test_write_str ()
