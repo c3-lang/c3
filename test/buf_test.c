@@ -199,9 +199,10 @@ void buf_test_peek_u8 ()
 {
   char a[4] = "ABCD";
   s_buf buf;
-  s8 p;
+  u8 byte;
   buf_init(&buf, false, sizeof(a), a);
-  TEST_EQ(buf_peek_u8(&buf, &p), -1);
+  TEST_EQ(buf_peek_u8(&buf, &byte), 0);
+  buf_clean(&buf);
 }
 
 void buf_test_read_s8 ()
