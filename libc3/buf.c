@@ -369,7 +369,7 @@ sw buf_read_f32 (s_buf *buf, f32 *p)
   return r;
 }
 
-sw buf_read_u64 (s_buf *buf, f64 *p)
+sw buf_read_f64 (s_buf *buf, f64 *p)
 {
   sw r;
   r = buf_peek_f64(buf, p);
