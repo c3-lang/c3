@@ -21,7 +21,7 @@ typedef float               f32;
 typedef double              f64;
 
 /* Boolean : true or false. */
-typedef s64 bool;
+typedef s32 bool;
 
 typedef enum {
   false = 0,
@@ -87,8 +87,8 @@ struct tag_list {
 };
 
 typedef enum tag_type {
-  TAG_NULL = 0,
-  TAG_BOOL,
+  TAG_VOID = 0,
+  TAG_BOOL = 1,
   TAG_CHARACTER,
   TAG_F32,
   TAG_F64,
