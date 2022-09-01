@@ -380,6 +380,17 @@ sw buf_read_f64 (s_buf *buf, f64 *p)
   return r;
 }
 
+sw buf_read_s8(s_buf *buf, s8 *p)
+{
+  sw r;
+  r = buf_peek_s8(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(s8));
+    buf->rpos += r;
+  }
+  return r;
+}
+
 sw buf_read_s16(s_buf *buf, s16 *p)
 {
   sw r;
