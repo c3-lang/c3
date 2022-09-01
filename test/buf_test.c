@@ -98,7 +98,6 @@ void buf_test ()
   buf_test_init_clean();
   buf_test_new_delete();
   buf_test_new_alloc_delete();
-  buf_test_peek();
   buf_test_read_s8();
   buf_test_read_u8();
   buf_test_read_character();
