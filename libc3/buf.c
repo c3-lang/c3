@@ -341,6 +341,14 @@ sw buf_peek_u64 (s_buf *buf, u64 *p)
     return size;
 }
 
+sw buf_read_1 (s_buf *buf, const s8 *p)
+{
+  s_str stra;
+  assert(buf);
+  str_init_1(&stra, NULL, p);
+  return buf_read_str(buf, &stra);
+}
+
 sw buf_read_character (s_buf *buf, character *p)
 {
   sw r;

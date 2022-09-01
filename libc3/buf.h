@@ -31,9 +31,9 @@ extern const sw buf_inspect_str_byte_size;
 
 /* Stack constructors, call buf_clean after use. */
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p);
-s_buf * buf_init_alloc (s_buf *buf, uw size);
-
 s_buf * buf_init_1 (s_buf *buf, const s8 *p);
+s_buf * buf_init_alloc (s_buf *buf, uw size);
+s_buf * buf_init_str (s_buf *buf, const s_str *src);
 
 /* Constructors, call buf_delete after use. */
 s_buf * buf_new (bool free, uw size, s8 *p);
@@ -67,12 +67,14 @@ sw buf_peek_u16 (s_buf *buf, u16 *p);
 sw buf_peek_u32 (s_buf *buf, u32 *p);
 sw buf_peek_u64 (s_buf *buf, u64 *p);
 sw buf_read_character (s_buf *buf, character *p);
+sw buf_read_1 (s_buf *buf, const s8 *p);
 sw buf_read_f32 (s_buf *buf, f32 *p);
 sw buf_read_f64 (s_buf *buf, f64 *p);
 sw buf_read_s8 (s_buf *buf, s8 *p);
 sw buf_read_s16 (s_buf *buf, s16 *p);
 sw buf_read_s32 (s_buf *buf, s32 *p);
 sw buf_read_s64 (s_buf *buf, s64 *p);
+sw buf_read_str (s_buf *buf, const s_str *src);
 sw buf_read_u8 (s_buf *buf, u8 *p);
 sw buf_read_u16 (s_buf *buf, u16 *p);
 sw buf_read_u32 (s_buf *buf, u32 *p);
