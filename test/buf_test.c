@@ -98,6 +98,10 @@ void buf_test ()
   buf_test_init_clean();
   buf_test_new_delete();
   buf_test_new_alloc_delete();
+  buf_test_peek();
+  buf_test_read_s8();
+  buf_test_read_u8();
+  buf_test_read_character();
   buf_test_write_u8();
   buf_test_write_u16();
   buf_test_write_u32();
@@ -194,11 +198,16 @@ void buf_test_new_alloc_delete ()
 
 void buf_test_peek_u8 ()
 {
+  char a[4] = "ABCD";
+  s_buf buf;
+  s8 p;
+  buf_init(&buf, false, sizeof(a), a);
+  TEST_EQ(buf_peek(&buf, &p), -1);
 }
 
 void buf_test_read_s8 ()
 {
-  char a[9] = "ABCDEFGH";
+  char a[8] = "ABCDEFGH";
   s_buf buf;
   s8 byte;
   buf_init(&buf, false, sizeof(a), a);
