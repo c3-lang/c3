@@ -201,7 +201,7 @@ void buf_test_peek_u8 ()
   s_buf buf;
   s8 p;
   buf_init(&buf, false, sizeof(a), a);
-  TEST_EQ(buf_peek(&buf, &p), -1);
+  TEST_EQ(buf_peek_u8(&buf, &p), -1);
 }
 
 void buf_test_read_s8 ()
