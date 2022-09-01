@@ -267,6 +267,16 @@ sw buf_peek_s64 (s_buf *buf, s64 *p)
   return size;
 }
 
+sw buf_peek_str (s_buf *buf, const s_str *src)
+{
+  assert(buf);
+  assert(src);
+  if (buf->rpos + src->size > buf->size ||
+      memcmp(buf->ptr.p, src->ptr.p, src->size))
+    return 0;
+  return src->size;
+}
+
 sw buf_peek_u8 (s_buf *buf, u8 *p)
 {
   const sw size = sizeof(u8);
@@ -331,47 +341,12 @@ sw buf_peek_u64 (s_buf *buf, u64 *p)
     return size;
 }
 
-sw buf_read_u8 (s_buf *buf, u8 *p)
+sw buf_read_character (s_buf *buf, character *p)
 {
   sw r;
-  r = buf_peek_u8(buf, p);
-  if (r > 0) {
-    assert(r == sizeof(u8));
+  r = buf_peek_character(buf, p);
+  if (r > 0)
     buf->rpos += r;
-  }
-  return r;
-}
-
-sw buf_read_u16 (s_buf *buf, u16 *p)
-{
-  sw r;
-  r = buf_peek_u16(buf, p);
-  if (r > 0) {
-    assert(r == sizeof(u16));
-    buf->rpos += r;
-  }
-  return r;
-}
-
-sw buf_read_u32 (s_buf *buf, u32 *p)
-{
-  sw r;
-  r = buf_peek_u32(buf, p);
-  if (r > 0) {
-    assert(r == sizeof(u32));
-    buf->rpos += r;
-  }
-  return r;
-}
-
-sw buf_read_u64 (s_buf *buf, u64 *p)
-{
-  sw r;
-  r = buf_peek_u64(buf, p);
-  if (r > 0) {
-    assert(r == sizeof(u64));
-    buf->rpos += r;
-  }
   return r;
 }
 
@@ -430,12 +405,56 @@ sw buf_read_s64(s_buf *buf, s64 *p)
   return r;
 }
 
-sw buf_read_character (s_buf *buf, character *p)
+sw buf_read_str (s_buf *buf, const s_str *src)
 {
   sw r;
-  r = buf_peek_character(buf, p);
+  r = buf_peek_str(buf, src);
   if (r > 0)
     buf->rpos += r;
+  return r;
+}
+
+sw buf_read_u8 (s_buf *buf, u8 *p)
+{
+  sw r;
+  r = buf_peek_u8(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(u8));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+sw buf_read_u16 (s_buf *buf, u16 *p)
+{
+  sw r;
+  r = buf_peek_u16(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(u16));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+sw buf_read_u32 (s_buf *buf, u32 *p)
+{
+  sw r;
+  r = buf_peek_u32(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(u32));
+    buf->rpos += r;
+  }
+  return r;
+}
+
+sw buf_read_u64 (s_buf *buf, u64 *p)
+{
+  sw r;
+  r = buf_peek_u64(buf, p);
+  if (r > 0) {
+    assert(r == sizeof(u64));
+    buf->rpos += r;
+  }
   return r;
 }
 
