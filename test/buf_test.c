@@ -40,7 +40,7 @@
     character c;                                                       \
     s_buf buf;                                                         \
     test_context("buf_read_character(" # test ") -> " # result);       \
-    buf_init_1(&buf, false, test);                                     \
+    buf_init_1(&buf, (test));                                          \
     TEST_ASSERT(buf_read_character(&buf, &c) >= 0);                    \
     TEST_EQ(c, result);                                                \
   } while (0)
@@ -50,8 +50,8 @@
     character c;                                                       \
     s_buf buf;                                                         \
     test_context("buf_read_n(" # test ", " # n ") -> " # result);      \
-    buf_init_1(&buf, false, test);                                     \
-    TEST_ASSERT(buf_read_n(&buf, &c) >= 0);                    \
+    buf_init_1(&buf, (test));                                          \
+    TEST_ASSERT(buf_read_n(&buf, &c) >= 0);                            \
     TEST_EQ(c, result);                                                \
   } while (0)
 

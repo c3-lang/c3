@@ -33,9 +33,7 @@ extern const sw buf_inspect_str_byte_size;
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p);
 s_buf * buf_init_alloc (s_buf *buf, uw size);
 
-/* Read only stack contructors, do not write into.
-   Call buf_clean after use. */
-s_buf * buf_init_1 (s_buf *buf, bool free, s8 *p);
+s_buf * buf_init_1 (s_buf *buf, const s8 *p);
 
 /* Constructors, call buf_delete after use. */
 s_buf * buf_new (bool free, uw size, s8 *p);

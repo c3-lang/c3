@@ -64,12 +64,13 @@ s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
   return buf;
 }
 
-s_buf * buf_init_1 (s_buf *buf, bool free, s8 *p)
+s_buf * buf_init_1 (s_buf *buf, const s8 *p)
 {
   uw size;
   assert(p);
   size = strlen(p);
-  buf_init(buf, free, size, p);
+  buf_init_alloc(buf, size);
+  memcpy(buf->ptr.p, p, size);
   buf->wpos = size;
   return buf;
 }
@@ -428,10 +429,6 @@ sw buf_read_s64(s_buf *buf, s64 *p)
   }
   return r;
 }
-
-
-
-
 
 sw buf_read_character (s_buf *buf, character *p)
 {
