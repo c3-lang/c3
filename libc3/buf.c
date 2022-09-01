@@ -170,6 +170,86 @@ sw buf_peek_character (s_buf *buf, character *c)
   return -1;
 }
 
+sw buf_peek_f32 (s_buf *buf, f32 *p)
+{
+  const sw size = sizeof(f32);
+  assert(buf);
+  assert(p);
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
+    assert(! "buf error");
+    return -1;
+  }
+  if (buf->rpos + size > buf->wpos)
+    return 0;
+  *p = *((f32 *) (buf->ptr.pu8 + buf->rpos));
+  return size;
+}
+
+sw buf_peek_f64 (s_buf *buf, f64 *p)
+{
+  const sw size = sizeof(f64);
+  assert(buf);
+  assert(p);
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
+    assert(! "buf error");
+    return -1;
+  }
+  if (buf->rpos + size > buf->wpos)
+    return 0;
+  *p = *((f64 *) (buf->ptr.pu8 + buf->rpos));
+  return size;
+}
+
+sw buf_peek_s8 (s_buf *buf, s8 *p)
+{
+    const sw size = sizeof(s8);
+    assert(buf);
+    assert(p);
+    if (buf->rpos > buf->wpos ||
+        buf->wpos > buf->size) {
+        assert(! "buf error");
+        return -1;
+    }
+    if (buf->rpos + size > buf->wpos)
+        return 0;
+    *p = *((s8 *) (buf->ptr.pu8 + buf->rpos));
+    return size;
+}
+
+sw buf_peek_s32 (s_buf *buf, s32 *p)
+{
+  const sw size = sizeof(s32);
+  assert(buf);
+  assert(p);
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
+    assert(! "buf error");
+    return -1;
+  }
+  if (buf->rpos + size > buf->wpos)
+    return 0;
+  *p = *((s32 *) (buf->ptr.pu8 + buf->rpos));
+  return size;
+}
+
+sw buf_peek_s64 (s_buf *buf, s64 *p)
+{
+  const sw size = sizeof(s64);
+  assert(buf);
+  assert(p);
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
+    assert(! "buf error");
+    return -1;
+  }
+  if (buf->rpos + size > buf->wpos)
+    return 0;
+  *p = *((s64 *) (buf->ptr.pu8 + buf->rpos));
+  return size;
+}
+
 sw buf_peek_u8 (s_buf *buf, u8 *p)
 {
   const sw size = sizeof(u8);
@@ -216,6 +296,22 @@ sw buf_peek_u32 (s_buf *buf, u32 *p)
     return 0;
   *p = *((u32 *) (buf->ptr.pu8 + buf->rpos));
   return size;
+}
+
+sw buf_peek_u64 (s_buf *buf, u64 *p)
+{
+    const sw size = sizeof(u64);
+    assert(buf);
+    assert(p);
+    if (buf->rpos > buf->wpos ||
+        buf->wpos > buf->size) {
+        assert(! "buf error");
+        return -1;
+    }
+    if (buf->rpos + size > buf->wpos)
+        return 0;
+    *p = *((u64 *) (buf->ptr.pu8 + buf->rpos));
+    return size;
 }
 
 sw buf_read_u8 (s_buf *buf, u8 *p)
