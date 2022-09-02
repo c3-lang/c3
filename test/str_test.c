@@ -49,11 +49,11 @@
 
 #define STR_TEST_TO_HEX(test, result)                     \
   do {                                                    \
-    s_str *str;                                           \
+    s_str str;                                            \
     test_context("str_to_hex(" # test ") -> " # result);  \
-    str = str_to_hex(test);                               \
-    TEST_STRNCMP(str->ptr.p, result, str->size);          \
-    str_delete(str);                                      \
+    str_to_hex(test, &str);                               \
+    TEST_STRNCMP(str.ptr.p, result, str.size);            \
+    str_clean(&str);                                      \
     str_delete(test);                                     \
   } while (0)
 

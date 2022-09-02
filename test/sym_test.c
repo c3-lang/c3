@@ -88,7 +88,7 @@ void sym_test_delete_all ()
     str_delete(str);                                    \
     test_context(NULL);                                 \
   } while (0)
-  
+
 void sym_test_inspect ()
 {
   SYM_TEST_INSPECT("", ":\"\"");

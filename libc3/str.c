@@ -9,6 +9,7 @@
 #include <string.h>
 #include "buf.h"
 #include "character.h"
+#include "ident.h"
 #include "str.h"
 #include "sym.h"
 
@@ -105,6 +106,15 @@ s_str * str_init_dup (s_str *str, const s_str *src)
   str->size = src->size;
   str->ptr.p = str->free.p;
   memcpy(str->free.p, src->ptr.p, str->size);
+  return str;
+}
+
+s_str * str_init_empty (s_str *str)
+{
+  assert(str);
+  str->free.p = NULL;
+  str->size = 0;
+  str->ptr.p = 0;
   return str;
 }
 
@@ -290,18 +300,25 @@ sw str_read_character (s_str *str, character *c)
   return size;
 }
 
-s_str * str_to_hex (const s_str *src)
+s_str * str_to_hex (const s_str *src, s_str *dest)
 {
   s_buf buf;
-  s_str *hex;
   sw size;
+  assert(src);
+  assert(dest);
   if (src->size == 0)
-    return str_new_empty();
+    return str_init_empty(dest);
   size = src->size * 2;
   buf_init_alloc(&buf, size);
   buf_str_to_hex(&buf, src);
-  hex = str_new(buf.ptr.p, buf.size, buf.ptr.p);
-  return hex;
+  return buf_to_str(&buf, dest);
+}
+
+s_ident * str_to_ident (const s_str *src, s_ident *ident)
+{
+  const s_sym *sym;
+  sym = str_to_sym(src);
+  return ident_init(ident, sym);
 }
 
 const s_sym * str_to_sym (const s_str *src)

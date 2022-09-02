@@ -19,6 +19,7 @@ s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p);
 s_str * str_init_1 (s_str *str, s8 *free, const s8 *p);
 s_str * str_init_alloc (s_str *str, uw size, const s8 *p);
 s_str * str_init_dup (s_str *str, const s_str *src);
+s_str * str_init_empty (s_str *str);
 s_str * str_init_str (s_str *str, const s_str *src);
 void str_clean (s_str *str);
 
@@ -55,8 +56,8 @@ sw            str_peek_u16 (const s_str *src, u16 *p);
 sw            str_peek_u32 (const s_str *src, u32 *p);
 sw            str_peek_u64 (const s_str *src, u64 *p);
 sw            str_peek_tag_list (const s_str *src, s_tag_list *p);
-s_str *       str_to_hex (const s_str *src);
-void          str_to_ident (const s_str *src, s_ident *dest);
+s_str *       str_to_hex (const s_str *src, s_str *dest);
+s_ident *     str_to_ident (const s_str *src, s_ident *dest);
 const s_sym * str_to_sym (const s_str *src);
 
 /* Modifiers */

@@ -529,6 +529,15 @@ sw buf_str_to_hex (s_buf *buf, const s_str *src)
   return size;
 }
 
+s_str * buf_to_str (const s_buf *buf, s_str *str)
+{
+  void *free;
+  assert(buf);
+  assert(str);
+  free = buf->free ? buf->ptr.p : NULL;
+  return str_init(str, free, buf->size, buf->ptr.p);
+}
+
 sw buf_u8_to_hex (s_buf *buf, u8 x)
 {
   u8 digit;
