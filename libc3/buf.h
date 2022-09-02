@@ -86,6 +86,8 @@ sw buf_u8_to_hex (s_buf *buf, u8 x);
 sw buf_vf (s_buf *buf, const char *fmt, va_list ap);
 sw buf_write_1 (s_buf *buf, s8 *p);
 sw buf_write_character (s_buf *buf, character c);
+sw buf_write_f32 (s_buf *buf, f32 x);
+sw buf_write_f64 (s_buf *buf, f64 x);
 sw buf_write_s8 (s_buf *buf, s8 i);
 sw buf_write_s16 (s_buf *buf, s16 i);
 sw buf_write_s32 (s_buf *buf, s32 i);
