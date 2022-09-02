@@ -107,6 +107,14 @@ s_buf * buf_new_alloc (uw size)
   return buf;
 }
 
+sw buf_peek_1 (s_buf *buf, const s8 *p)
+{
+  s_str stra;
+  assert(buf);
+  str_init_1(&stra, NULL, p);
+  return buf_peek_str(buf, &stra);
+}
+
 sw buf_peek_character (s_buf *buf, character *c)
 {
   assert(buf);

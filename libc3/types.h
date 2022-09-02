@@ -1,4 +1,4 @@
-/* types
+/* c3
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
 #ifndef TYPES_H
@@ -45,9 +45,9 @@ typedef union ptr_w {
 } u_ptr_w;
 
 typedef struct str {
-  u_ptr_w  free;        /**< Pointer to free ? */
-  u64   size;           /**< Size in bytes. */
-  u_ptr ptr;            /**< Pointer to memory. */
+  u_ptr_w free;        /**< Pointer to free or NULL. */
+  u64     size;        /**< Size in bytes. */
+  u_ptr   ptr;         /**< Pointer to memory. */
 } s_str;
 
 typedef struct sym_list s_sym_list;
@@ -65,6 +65,10 @@ struct sym_list {
   s_sym *sym;
   u_sym_list_ptr next;
 };
+
+typedef struct ident {
+  const s_sym *sym;
+} s_ident;
 
 typedef struct buf s_buf;
 
