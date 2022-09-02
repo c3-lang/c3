@@ -99,8 +99,9 @@ void buf_test ()
   buf_test_new_delete();
   buf_test_new_alloc_delete();
   buf_test_read_s8();
-  buf_test_read_u8();
+  buf_test_read_s16();
   buf_test_read_f32();
+  buf_test_read_u8();
   buf_test_read_u16();
   buf_test_read_u32();
   buf_test_read_u64();
@@ -248,6 +249,29 @@ void buf_test_read_s8 ()
   TEST_EQ(byte, 'H');
   TEST_EQ(buf.rpos, 8);
   TEST_EQ(buf_read_s8(&buf, &byte), 0);
+  buf_clean(&buf);
+}
+
+void buf_test_read_s16 ()
+{
+  s_buf buf;
+  s16 val;
+  BUF_INIT_ALLOCA(&buf, 8);
+  TEST_EQ(buf_write_s16(&buf, 0), 2);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 2);
+  TEST_EQ(buf_read_s16(&buf, &val), 2);
+  TEST_EQ(val, 0x0000);
+  TEST_EQ(buf_write_s16(&buf, 0x0001), 2);
+  TEST_EQ(buf.rpos, 2);
+  TEST_EQ(buf.wpos, 4);
+  TEST_EQ(buf_read_s16(&buf, &val), 2);
+  TEST_EQ(val, 0x0001);
+  TEST_EQ(buf_write_s16(&buf, 0x0100), 2);
+  TEST_EQ(buf.rpos, 4);
+  TEST_EQ(buf.wpos, 6);
+  TEST_EQ(buf_read_s16(&buf, &val), 2);
+  TEST_EQ(val, 0x0100);
   buf_clean(&buf);
 }
 
