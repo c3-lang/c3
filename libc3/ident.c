@@ -2,10 +2,11 @@
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
 #include "str.h"
+#include "sym.h"
 
 bool ident_character_is_reserved (character c)
 {
-  return str_character_is_reserved(c) || c == ' ';
+  return sym_character_is_reserved(c);
 }
 
 bool ident_has_reserved_characters (const s_ident *ident)
