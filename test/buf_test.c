@@ -100,6 +100,10 @@ void buf_test ()
   buf_test_new_alloc_delete();
   buf_test_read_s8();
   buf_test_read_u8();
+  buf_test_read_f32();
+  buf_test_read_u16();
+  buf_test_read_u32();
+  buf_test_read_u64();
   buf_test_read_character();
   buf_test_write_u8();
   buf_test_write_u16();
@@ -111,7 +115,6 @@ void buf_test ()
   buf_test_write_s64();
   buf_test_write_str();
   buf_test_peek_u8();
-  buf_test_read_u8();
   buf_test_read_character();
   buf_test_f();
 }
@@ -248,6 +251,24 @@ void buf_test_read_s8 ()
   buf_clean(&buf);
 }
 
+void buf_test_read_f32()
+{
+  s_buf buf;
+  f32 f;
+  BUF_INIT_ALLOCA(&buf, 16);
+  TEST_EQ(buf_write_f32(&buf, 1.0f), 4);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 4);
+  TEST_EQ(buf_read_f32(&buf, &f), 4);
+  TEST_EQ(f, 1.0f);
+  TEST_EQ(buf_write_f32(&buf, 2.0f), 4);
+  TEST_EQ(buf.rpos, 4);
+  TEST_EQ(buf.wpos, 8);
+  TEST_EQ(buf_read_f32(&buf, &f), 4);
+  TEST_EQ(f, 2.0f);
+  buf_clean(&buf);
+}
+
 void buf_test_read_u8 ()
 {
   char a[8] = "ABCDEFGH";
@@ -316,6 +337,62 @@ void buf_test_read_u16()
   TEST_EQ(buf.wpos, 8);
   TEST_EQ(buf_read_u16(&buf, &val), 2);
   TEST_EQ(val, 0xFFFF);
+  buf_clean(&buf);
+}
+
+void buf_test_read_u32()
+{
+  s_buf buf;
+  u32 val;
+  BUF_INIT_ALLOCA(&buf, 16);
+  TEST_EQ(buf_write_u32(&buf, 0x00000000), 4);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 4);
+  TEST_EQ(buf_read_u32(&buf, &val), 4);
+  TEST_EQ(val, 0x00000000);
+  TEST_EQ(buf_write_u32(&buf, 0x00000001), 4);
+  TEST_EQ(buf.rpos, 4);
+  TEST_EQ(buf.wpos, 8);
+  TEST_EQ(buf_read_u32(&buf, &val), 4);
+  TEST_EQ(val, 0x00000001);
+  TEST_EQ(buf_write_u32(&buf, 0xFF000000), 4);
+  TEST_EQ(buf.rpos, 8);
+  TEST_EQ(buf.wpos, 12);
+  TEST_EQ(buf_read_u32(&buf, &val), 4);
+  TEST_EQ(val, 0xFF000000);
+  TEST_EQ(buf_write_u32(&buf, 0xFFFFFFFF), 4);
+  TEST_EQ(buf.rpos, 12);
+  TEST_EQ(buf.wpos, 16);
+  TEST_EQ(buf_read_u32(&buf, &val), 4);
+  TEST_EQ(val, 0xFFFFFFFF);
+  buf_clean(&buf);
+}
+
+void buf_test_read_u64()
+{
+  s_buf buf;
+  u64 val;
+  BUF_INIT_ALLOCA(&buf, 32);
+  TEST_EQ(buf_write_u64(&buf, 0x0000000000000000), 8);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 8);
+  TEST_EQ(buf_read_u64(&buf, &val), 8);
+  TEST_EQ(val, 0x0000000000000000);
+  TEST_EQ(buf_write_u64(&buf, 0x0000000000000001), 8);
+  TEST_EQ(buf.rpos, 8);
+  TEST_EQ(buf.wpos, 16);
+  TEST_EQ(buf_read_u64(&buf, &val), 8);
+  TEST_EQ(val, 0x0000000000000001);
+  TEST_EQ(buf_write_u64(&buf, 0xFF00000000000000), 8);
+  TEST_EQ(buf.rpos, 16);
+  TEST_EQ(buf.wpos, 24);
+  TEST_EQ(buf_read_u64(&buf, &val), 8);
+  TEST_EQ(val, 0xFF00000000000000);
+  TEST_EQ(buf_write_u64(&buf, 0xFFFFFFFFFFFFFFFF), 8);
+  TEST_EQ(buf.rpos, 24);
+  TEST_EQ(buf.wpos, 32);
+  TEST_EQ(buf_read_u64(&buf, &val), 8);
+  TEST_EQ(val, 0xFFFFFFFFFFFFFFFF);
   buf_clean(&buf);
 }
 
