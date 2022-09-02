@@ -72,13 +72,13 @@ void buf_test_peek_u8 ();
 void buf_test_peek_u16 ();
 void buf_test_peek_u32 ();
 void buf_test_peek_u64 ();
+void buf_test_read_character ();
 void buf_test_read_f32 ();
 void buf_test_read_f64 ();
 void buf_test_read_s8 ();
 void buf_test_read_s16 ();
 void buf_test_read_s32 ();
 void buf_test_read_s64 ();
-void buf_test_read_character ();
 void buf_test_read_u8 ();
 void buf_test_read_u16 ();
 void buf_test_read_u32 ();
@@ -252,6 +252,74 @@ void buf_test_peek_u8 ()
   TEST_EQ(buf.wpos, 1);
 }
 
+void buf_test_read_character ()
+{
+  BUF_TEST_READ_CHARACTER("0", '0');
+  BUF_TEST_READ_CHARACTER("9", '9');
+  BUF_TEST_READ_CHARACTER("A", 'A');
+  BUF_TEST_READ_CHARACTER("Z", 'Z');
+  BUF_TEST_READ_CHARACTER("a", 'a');
+  BUF_TEST_READ_CHARACTER("z", 'z');
+  BUF_TEST_READ_CHARACTER("Π", 928);
+  BUF_TEST_READ_CHARACTER("꒴", 42164);
+  BUF_TEST_READ_CHARACTER("𐅀", 65856);
+}
+
+void buf_test_read_f32()
+{
+  s_buf buf;
+  f32 f;
+  BUF_INIT_ALLOCA(&buf, 16);
+  TEST_EQ(buf_write_f32(&buf, 1.0f), 4);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 4);
+  TEST_EQ(buf_read_f32(&buf, &f), 4);
+  TEST_FLOAT_EQ(f, 1.0f);
+  TEST_EQ(buf_write_f32(&buf, 2.0f), 4);
+  TEST_EQ(buf.rpos, 4);
+  TEST_EQ(buf.wpos, 8);
+  TEST_EQ(buf_read_f32(&buf, &f), 4);
+  TEST_FLOAT_EQ(f, 2.0f);
+  TEST_EQ(buf_write_f32(&buf, 3402823466.0f), 4);
+  TEST_EQ(buf.rpos, 8);
+  TEST_EQ(buf.wpos, 12);
+  TEST_EQ(buf_read_f32(&buf, &f), 4);
+  TEST_FLOAT_EQ(f, 3402823466.0f);
+  TEST_EQ(buf_write_f32(&buf, FLT_MAX), 4);
+  TEST_EQ(buf.rpos, 12);
+  TEST_EQ(buf.wpos, 16);
+  TEST_EQ(buf_read_f32(&buf, &f), 4);
+  TEST_FLOAT_EQ(f, FLT_MAX);
+  buf_clean(&buf);
+}
+
+void buf_test_read_f64 ()
+{
+ s_buf buf;
+ f64 f;
+ BUF_INIT_ALLOCA(&buf, 32);
+ TEST_EQ(buf_write_f64(&buf, 1.0), 8);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 8);
+  TEST_EQ(buf_read_f64(&buf, &f), 8);
+  TEST_EQ(f, 1.0);
+  TEST_EQ(buf_write_f64(&buf, 2.0), 8);
+  TEST_EQ(buf.rpos, 8);
+  TEST_EQ(buf.wpos, 16);
+  TEST_EQ(buf_read_f64(&buf, &f), 8);
+  TEST_EQ(f, 2.0);
+  TEST_FLOAT_EQ(buf_write_f64(&buf, DBL_MIN), 8);
+  TEST_EQ(buf.rpos, 16);
+  TEST_EQ(buf.wpos, 24);
+  TEST_EQ(buf_read_f64(&buf, &f), 8);
+  TEST_FLOAT_EQ(f, DBL_MIN);
+  TEST_EQ(buf_write_f64(&buf, DBL_MAX), 8);
+  TEST_EQ(buf.rpos, 24);
+  TEST_EQ(buf.wpos, 32);
+  TEST_EQ(buf_read_f64(&buf, &f), 8);
+  TEST_FLOAT_EQ(f, DBL_MAX);
+}
+
 void buf_test_read_s8 ()
 {
   char a[8] = "ABCDEFGH";
@@ -305,7 +373,7 @@ void buf_test_read_s16 ()
   TEST_EQ(buf.wpos, 2);
   TEST_EQ(buf_read_s16(&buf, &val), 2);
   TEST_EQ(val, 0x0000);
-  TEST_EQ(buf_write_s16(&buf, 0x0001), 2);
+  TEST_EQ(buf_write_s16(&buf, 1), 2);
   TEST_EQ(buf.rpos, 2);
   TEST_EQ(buf.wpos, 4);
   TEST_EQ(buf_read_s16(&buf, &val), 2);
@@ -333,15 +401,16 @@ void buf_test_read_s32()
   TEST_EQ(buf.wpos, 8);
   TEST_EQ(buf_read_s32(&buf, &val), 4);
   TEST_EQ(val, 0x00000001);
-  TEST_EQ(buf_write_s32(&buf, 0x00010000), 4);
+  TEST_EQ(buf_write_s32(&buf, SHRT_MIN), 4);
   TEST_EQ(buf.rpos, 8);
   TEST_EQ(buf.wpos, 12);
   TEST_EQ(buf_read_s32(&buf, &val), 4);
-  TEST_EQ(val, 0x00010000);
-  TEST_EQ(buf_write_s32(&buf, 0x01000000), 4);
+  TEST_EQ(val, SHRT_MIN);
+  TEST_EQ(buf_write_s32(&buf, SHRT_MAX), 4);
   TEST_EQ(buf.rpos, 12);
   TEST_EQ(buf.wpos, 16);
   TEST_EQ(buf_read_s32(&buf, &val), 4);
+  TEST_EQ(val, SHRT_MAX);
   buf_clean(&buf);
 }
 
@@ -360,72 +429,17 @@ void buf_test_read_s64()
   TEST_EQ(buf.wpos, 16);
   TEST_EQ(buf_read_s64(&buf, &val), 8);
   TEST_EQ(val, 0x0000000000000001);
-  TEST_EQ(buf_write_s64(&buf, 0x0000000000010000), 8);
+  TEST_EQ(buf_write_s64(&buf, -65536), 8);
   TEST_EQ(buf.rpos, 16);
   TEST_EQ(buf.wpos, 24);
   TEST_EQ(buf_read_s64(&buf, &val), 8);
-  TEST_EQ(val, 0x0000000000010000);
-  TEST_EQ(buf_write_s64(&buf, 0x1000000000000000), 8);
+  TEST_EQ(val, -65536);
+  TEST_EQ(buf_write_s64(&buf, 65534), 8);
   TEST_EQ(buf.rpos, 24);
   TEST_EQ(buf.wpos, 32);
   TEST_EQ(buf_read_s64(&buf, &val), 8);
-  TEST_EQ(val, 0x1000000000000000);
+  TEST_EQ(val, 65534);
   buf_clean(&buf);
-}
-
-void buf_test_read_f32()
-{
-  s_buf buf;
-  f32 f;
-  BUF_INIT_ALLOCA(&buf, 16);
-  TEST_EQ(buf_write_f32(&buf, 1.0f), 4);
-  TEST_EQ(buf.rpos, 0);
-  TEST_EQ(buf.wpos, 4);
-  TEST_EQ(buf_read_f32(&buf, &f), 4);
-  TEST_FLOAT_EQ(f, 1.0f);
-  TEST_EQ(buf_write_f32(&buf, 2.0f), 4);
-  TEST_EQ(buf.rpos, 4);
-  TEST_EQ(buf.wpos, 8);
-  TEST_EQ(buf_read_f32(&buf, &f), 4);
-  TEST_FLOAT_EQ(f, 2.0f);
-  TEST_EQ(buf_write_f32(&buf, 3402823466.0f), 4);
-  TEST_EQ(buf.rpos, 8);
-  TEST_EQ(buf.wpos, 12);
-  TEST_EQ(buf_read_f32(&buf, &f), 4);
-  TEST_FLOAT_EQ(f, 3402823466.0f);
-  TEST_EQ(buf_write_f32(&buf, FLT_MAX), 4);
-  TEST_EQ(buf.rpos, 12);
-  TEST_EQ(buf.wpos, 16);
-  TEST_EQ(buf_read_f32(&buf, &f), 4);
-  TEST_FLOAT_EQ(f, FLT_MAX);
-  buf_clean(&buf);
-}
-
-void buf_test_read_f64 ()
-{
- s_buf buf;
- f64 f;
- BUF_INIT_ALLOCA(&buf, 32);
- TEST_EQ(buf_write_f64(&buf, 1.0), 8);
-  TEST_EQ(buf.rpos, 0);
-  TEST_EQ(buf.wpos, 8);
-  TEST_EQ(buf_read_f64(&buf, &f), 8);
-  TEST_EQ(f, 1.0);
-  TEST_EQ(buf_write_f64(&buf, 2.0), 8);
-  TEST_EQ(buf.rpos, 8);
-  TEST_EQ(buf.wpos, 16);
-  TEST_EQ(buf_read_f64(&buf, &f), 8);
-  TEST_EQ(f, 2.0);
-  TEST_FLOAT_EQ(buf_write_f64(&buf, 340282346634028234663402823466.0), 8);
-  TEST_EQ(buf.rpos, 16);
-  TEST_EQ(buf.wpos, 24);
-  TEST_EQ(buf_read_f64(&buf, &f), 8);
-  TEST_FLOAT_EQ(f, 340282346634028234663402823466.0);
-  TEST_EQ(buf_write_f64(&buf, DBL_MAX), 8);
-  TEST_EQ(buf.rpos, 24);
-  TEST_EQ(buf.wpos, 32);
-  TEST_EQ(buf_read_f64(&buf, &f), 8);
-  TEST_FLOAT_EQ(f, DBL_MAX);
 }
 
 void buf_test_read_u8 ()
@@ -553,19 +567,6 @@ void buf_test_read_u64()
   TEST_EQ(buf_read_u64(&buf, &val), 8);
   TEST_EQ(val, 0xFFFFFFFFFFFFFFFF);
   buf_clean(&buf);
-}
-
-void buf_test_read_character ()
-{
-  BUF_TEST_READ_CHARACTER("0", '0');
-  BUF_TEST_READ_CHARACTER("9", '9');
-  BUF_TEST_READ_CHARACTER("A", 'A');
-  BUF_TEST_READ_CHARACTER("Z", 'Z');
-  BUF_TEST_READ_CHARACTER("a", 'a');
-  BUF_TEST_READ_CHARACTER("z", 'z');
-  BUF_TEST_READ_CHARACTER("Π", 928);
-  BUF_TEST_READ_CHARACTER("꒴", 42164);
-  BUF_TEST_READ_CHARACTER("𐅀", 65856);
 }
 
 void buf_test_write_s8 ()
