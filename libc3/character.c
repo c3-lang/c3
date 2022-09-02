@@ -38,6 +38,13 @@ e_bool character_is_printable (character c)
           g_ucd[c].flags & ucd_printable);
 }
 
+e_bool character_is_space (character c)
+{
+  return (c >= 0 &&
+          c < UCD_MAX &&
+          g_ucd[c].flags & UCD_SEPARATOR_SPACE);
+}
+
 e_bool character_is_uppercase (character c)
 {
   return (c >= 0 &&

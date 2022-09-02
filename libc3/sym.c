@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include <string.h>
 #include "buf.h"
 #include "character.h"
 #include "str.h"
@@ -67,12 +68,14 @@ const s_sym * sym_find (const s_str *str)
   return NULL;
 }
 
-bool sym_character_is_reserved (character c)
+e_bool sym_character_is_reserved (character c)
 {
-  return str_character_is_reserved(c) || c == ' ';
+  return str_character_is_reserved(c) ||
+    character_is_space(c) ||
+    (c <= 0xFF && strchr("#%(),.;{}~", c));
 }
 
-bool sym_has_reserved_characters (const s_sym *sym)
+e_bool sym_has_reserved_characters (const s_sym *sym)
 {
   character c;
   sw r;
