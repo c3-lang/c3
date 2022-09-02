@@ -52,6 +52,11 @@ void character_test_character_1 ()
   TEST_EQ(character_1("É"), 201);
   TEST_EQ(character_1("à"), 224);
   TEST_EQ(character_1("é"), 233);
+  TEST_EQ(character_1("Π"), 928);
+  TEST_EQ(character_1("π"), 960);
+  TEST_EQ(character_1("꒴"), 42164);
+  TEST_EQ(character_1("Ꝝ"), 42844);
+  TEST_EQ(character_1("ꝝ"), 42845);
 }
 
 void character_test_character_is_lowercase ()
@@ -73,6 +78,8 @@ void character_test_character_is_lowercase ()
   TEST_ASSERT(! character_is_lowercase('Z'));
   TEST_ASSERT(! character_is_lowercase(character_1("À")));
   TEST_ASSERT(! character_is_lowercase(character_1("É")));
+  TEST_ASSERT(! character_is_lowercase(character_1("Π")));
+  TEST_ASSERT(! character_is_lowercase(character_1("Ꝝ")));
   TEST_ASSERT(character_is_lowercase('a'));
   TEST_ASSERT(character_is_lowercase('b'));
   TEST_ASSERT(character_is_lowercase('c'));
@@ -81,6 +88,8 @@ void character_test_character_is_lowercase ()
   TEST_ASSERT(character_is_lowercase('z'));
   TEST_ASSERT(character_is_lowercase(character_1("à")));
   TEST_ASSERT(character_is_lowercase(character_1("é")));
+  TEST_ASSERT(character_is_lowercase(character_1("π")));
+  TEST_ASSERT(character_is_lowercase(character_1("ꝝ")));
 }
 
 void character_test_character_is_uppercase ()
@@ -100,6 +109,8 @@ void character_test_character_is_uppercase ()
   TEST_ASSERT(! character_is_uppercase('z'));
   TEST_ASSERT(! character_is_uppercase(character_1("à")));
   TEST_ASSERT(! character_is_uppercase(character_1("é")));
+  TEST_ASSERT(! character_is_uppercase(character_1("π")));
+  TEST_ASSERT(! character_is_uppercase(character_1("ꝝ")));
   TEST_ASSERT(character_is_uppercase('A'));
   TEST_ASSERT(character_is_uppercase('B'));
   TEST_ASSERT(character_is_uppercase('C'));
@@ -108,6 +119,8 @@ void character_test_character_is_uppercase ()
   TEST_ASSERT(character_is_uppercase('Z'));
   TEST_ASSERT(character_is_uppercase(character_1("À")));
   TEST_ASSERT(character_is_uppercase(character_1("É")));
+  TEST_ASSERT(character_is_uppercase(character_1("Π")));
+  TEST_ASSERT(character_is_uppercase(character_1("Ꝝ")));
 }
 
 void character_test_character_utf8 ()
@@ -141,4 +154,7 @@ void character_test_character_utf8_size ()
   TEST_EQ(character_utf8_size(character_1("É")), 2);
   TEST_EQ(character_utf8_size(character_1("à")), 2);
   TEST_EQ(character_utf8_size(character_1("é")), 2);
+  TEST_EQ(character_utf8_size(character_1("Π")), 2);
+  TEST_EQ(character_utf8_size(character_1("꒴")), 3);
+  TEST_EQ(character_utf8_size(character_1("𐅀")), 4);
 }
