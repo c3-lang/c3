@@ -16,19 +16,20 @@ character character_1 (const s8 *p)
   return c;
 }
 
-bool character_is_digit (character c)
+e_bool character_is_digit (character c)
 {
   return ('0' <= c && c <= '9');
 }
 
-bool character_is_lowercase (character c)
+
+e_bool character_is_lowercase (character c)
 {
   return (c >= 0 &&
           c < UCD_MAX &&
           g_ucd[c].flags & UCD_LETTER_LOWERCASE);
 }
 
-bool character_is_printable (character c)
+e_bool character_is_printable (character c)
 {
   const u64 ucd_printable = UCD_LETTER | UCD_MARK | UCD_NUMBER |
     UCD_PUNCTUATION | UCD_SYMBOL | UCD_SEPARATOR_SPACE;
@@ -37,7 +38,7 @@ bool character_is_printable (character c)
           g_ucd[c].flags & ucd_printable);
 }
 
-bool character_is_uppercase (character c)
+e_bool character_is_uppercase (character c)
 {
   return (c >= 0 &&
           c < UCD_MAX &&

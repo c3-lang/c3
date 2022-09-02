@@ -3,11 +3,15 @@
  */
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include "buf.h"
 #include "character.h"
+#include "ident.h"
 #include "str.h"
 #include "sym.h"
 
+sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *str);
+sw buf_inspect_ident_reserved_size (const s_ident *str);
 sw buf_inspect_str_byte (s_buf *buf, u8 b);
 sw buf_inspect_str_reserved (s_buf *buf, const s_str *str);
 sw buf_inspect_str_reserved_size (const s_str *str);
@@ -26,6 +30,51 @@ sw buf_inspect_character (s_buf *buf, character c)
   buf_inspect_str_character(buf, c);
   buf_write_u8(buf, '\'');
   return size;
+}
+
+sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *ident)
+{
+  sw size;
+  assert(buf);
+  assert(ident);
+  size = buf_inspect_ident_reserved_size(ident);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf_write_1(buf, "~i");
+  buf_inspect_str_reserved(buf, &ident->sym->str);
+  return size;
+}
+
+sw buf_inspect_ident_reserved_size (const s_ident *ident)
+{
+  sw size;
+  assert(ident);
+  size = strlen("~i");
+  size += buf_inspect_str_reserved_size(&ident->sym->str);
+  return size;
+}
+
+sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
+{
+  assert(buf);
+  assert(ident);
+  if (ident->sym->str.size == 0)
+    return buf_write_1(buf, "~i\"\"");
+  if (ident_has_reserved_characters(ident))
+    return buf_inspect_ident_reserved(buf, ident);
+  return buf_write_str(buf, &ident->sym->str);
+}
+
+sw buf_inspect_ident_size (const s_ident *ident)
+{
+  assert(ident);
+  if (ident->sym->str.size == 0)
+    return strlen("~i\"\"");
+  if (ident_has_reserved_characters(ident))
+    return buf_inspect_ident_reserved_size(ident);
+  return ident->sym->str.size;
 }
 
 sw buf_inspect_character_size (character c)
