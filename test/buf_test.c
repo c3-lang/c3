@@ -118,6 +118,8 @@ void buf_test ()
   buf_test_write_s32();
   buf_test_write_s64();
   buf_test_write_str();
+  buf_test_peek_s8 ();
+  buf_test_peek_s16 ();
   buf_test_peek_u8();
   buf_test_read_character();
   buf_test_f();
@@ -202,14 +204,49 @@ void buf_test_new_alloc_delete ()
   }
 }
 
+void buf_test_peek_s8 ()
+{
+  char a[4] = "ABCD";
+  s_buf buf;
+  s8 byte;
+  buf_init(&buf, false, sizeof(a), a);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf_peek_s8(&buf, &byte), 0);
+  TEST_EQ(buf.rpos, 0);
+  buf.wpos = 1;
+  TEST_EQ(buf_peek_s8(&buf, &byte), 1);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(byte, 'A');
+  TEST_EQ(buf.wpos, 1);
+}
+
+void buf_test_peek_s16 ()
+{
+  s_buf buf;
+  s16 val;
+  BUF_INIT_ALLOCA(&buf, 8);
+  TEST_EQ(buf_write_s16(&buf, 0), 2);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 2);
+  TEST_EQ(buf_peek_s16(&buf, &val), 2);
+  TEST_EQ(val, 0x0000);
+  TEST_EQ(buf.rpos, 0);
+}
+
 void buf_test_peek_u8 ()
 {
   char a[4] = "ABCD";
   s_buf buf;
   u8 byte;
   buf_init(&buf, false, sizeof(a), a);
+  TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf_peek_u8(&buf, &byte), 0);
-  buf_clean(&buf);
+  TEST_EQ(buf.rpos, 0);
+  buf.wpos = 1;
+  TEST_EQ(buf_peek_u8(&buf, &byte), 1);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(byte, 'A');
+  TEST_EQ(buf.wpos, 1);
 }
 
 void buf_test_read_s8 ()
