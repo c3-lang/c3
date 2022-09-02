@@ -3,6 +3,8 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
+#include <float.h>
 #include "../libc3/buf.h"
 #include "../libc3/str.h"
 #include "test.h"
@@ -101,6 +103,7 @@ void buf_test ()
   buf_test_read_s8();
   buf_test_read_s16();
   buf_test_read_f32();
+  buf_test_read_f64();
   buf_test_read_u8();
   buf_test_read_u16();
   buf_test_read_u32();
@@ -284,13 +287,50 @@ void buf_test_read_f32()
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
   TEST_EQ(buf_read_f32(&buf, &f), 4);
-  TEST_EQ(f, 1.0f);
+  TEST_FLOAT_EQ(f, 1.0f);
   TEST_EQ(buf_write_f32(&buf, 2.0f), 4);
   TEST_EQ(buf.rpos, 4);
   TEST_EQ(buf.wpos, 8);
   TEST_EQ(buf_read_f32(&buf, &f), 4);
-  TEST_EQ(f, 2.0f);
+  TEST_FLOAT_EQ(f, 2.0f);
+  TEST_EQ(buf_write_f32(&buf, 3402823466.0f), 4);
+  TEST_EQ(buf.rpos, 8);
+  TEST_EQ(buf.wpos, 12);
+  TEST_EQ(buf_read_f32(&buf, &f), 4);
+  TEST_FLOAT_EQ(f, 3402823466.0f);
+  TEST_EQ(buf_write_f32(&buf, FLT_MAX), 4);
+  TEST_EQ(buf.rpos, 12);
+  TEST_EQ(buf.wpos, 16);
+  TEST_EQ(buf_read_f32(&buf, &f), 4);
+  TEST_FLOAT_EQ(f, FLT_MAX);
   buf_clean(&buf);
+}
+
+void buf_test_read_f64 ()
+{
+ s_buf buf;
+ f64 f;
+ BUF_INIT_ALLOCA(&buf, 32);
+ TEST_EQ(buf_write_f64(&buf, 1.0), 8);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 8);
+  TEST_EQ(buf_read_f64(&buf, &f), 8);
+  TEST_EQ(f, 1.0);
+  TEST_EQ(buf_write_f64(&buf, 2.0), 8);
+  TEST_EQ(buf.rpos, 8);
+  TEST_EQ(buf.wpos, 16);
+  TEST_EQ(buf_read_f64(&buf, &f), 8);
+  TEST_EQ(f, 2.0);
+  TEST_FLOAT_EQ(buf_write_f64(&buf, 340282346634028234663402823466.0), 8);
+  TEST_EQ(buf.rpos, 16);
+  TEST_EQ(buf.wpos, 24);
+  TEST_EQ(buf_read_f64(&buf, &f), 8);
+  TEST_FLOAT_EQ(f, 340282346634028234663402823466.0);
+  TEST_EQ(buf_write_f64(&buf, DBL_MAX), 8);
+  TEST_EQ(buf.rpos, 24);
+  TEST_EQ(buf.wpos, 32);
+  TEST_EQ(buf_read_f64(&buf, &f), 8);
+  TEST_FLOAT_EQ(f, DBL_MAX);
 }
 
 void buf_test_read_u8 ()
