@@ -2,16 +2,9 @@
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
 #include <assert.h>
+#include "buf.h"
 #include "str.h"
 #include "sym.h"
-
-s_ident * ident_1 (s_ident *ident, const s8 *p)
-{
-  s_str tmp;
-  str_init_1(&tmp, NULL, p);
-  str_to_ident(&tmp, ident);
-  return ident;
-}
 
 bool ident_character_is_reserved (character c)
 {
@@ -39,4 +32,26 @@ s_ident * ident_init (s_ident *ident, const s_sym *sym)
   assert(sym);
   ident->sym = sym;
   return ident;
+}
+
+s_ident * ident_init_1 (s_ident *ident, const s8 *p)
+{
+  s_str tmp;
+  str_init_1(&tmp, NULL, p);
+  str_to_ident(&tmp, ident);
+  return ident;
+}
+
+s_str * ident_inspect (const s_ident *ident, s_str *p)
+{
+  sw r;
+  sw size;
+  s_buf buf;
+  size = buf_inspect_ident_size(ident);
+  if (size < 0)
+    return NULL;
+  r = buf_inspect_ident(&buf, ident);
+  assert(r == size);
+  (void) r;
+  return buf_to_str(&buf, p);
 }

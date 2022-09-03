@@ -10,7 +10,7 @@
 #define IDENT_MAX 1024
 
 /* Constructors, call ident_clean after use. */
-s_ident * ident_1 (s_ident *ident, const s8 *p);
+s_ident * ident_init_1 (s_ident *ident, const s8 *p);
 
 /* Observers */
 
@@ -21,5 +21,7 @@ e_bool ident_character_is_reserved (character c);
 e_bool ident_has_reserved_characters (const s_ident *ident);
 
 s_ident * ident_init (s_ident *ident, const s_sym *sym);
+
+s_str * ident_inspect (const s_ident *ident, s_str *dest);
 
 #endif

@@ -37,13 +37,13 @@
     TEST_STRNCMP(buf.ptr.ps8 + pos, expected, len);  \
   } while (0)
 
-#define BUF_TEST_READ_CHARACTER(test, result)                          \
+#define BUF_TEST_READ_CHARACTER_UTF8(test, result)                     \
   do {                                                                 \
     character c;                                                       \
     s_buf buf;                                                         \
-    test_context("buf_read_character(" # test ") -> " # result);       \
+    test_context("buf_read_character_utf8(" # test ") -> " # result);  \
     buf_init_1(&buf, (test));                                          \
-    TEST_ASSERT(buf_read_character(&buf, &c) >= 0);                    \
+    TEST_ASSERT(buf_read_character_utf8(&buf, &c) >= 0);               \
     TEST_EQ(c, result);                                                \
     test_context(NULL);                                                \
   } while (0)
@@ -72,7 +72,7 @@ void buf_test_peek_u8 ();
 void buf_test_peek_u16 ();
 void buf_test_peek_u32 ();
 void buf_test_peek_u64 ();
-void buf_test_read_character ();
+void buf_test_read_character_utf8 ();
 void buf_test_read_f32 ();
 void buf_test_read_f64 ();
 void buf_test_read_s8 ();
@@ -111,7 +111,7 @@ void buf_test ()
   buf_test_read_u16();
   buf_test_read_u32();
   buf_test_read_u64();
-  buf_test_read_character();
+  buf_test_read_character_utf8();
   buf_test_write_u8();
   buf_test_write_u16();
   buf_test_write_u32();
@@ -124,7 +124,7 @@ void buf_test ()
   buf_test_peek_s8 ();
   buf_test_peek_s16 ();
   buf_test_peek_u8();
-  buf_test_read_character();
+  buf_test_read_character_utf8();
   buf_test_f();
 }
 
@@ -252,17 +252,17 @@ void buf_test_peek_u8 ()
   TEST_EQ(buf.wpos, 1);
 }
 
-void buf_test_read_character ()
+void buf_test_read_character_utf8 ()
 {
-  BUF_TEST_READ_CHARACTER("0", '0');
-  BUF_TEST_READ_CHARACTER("9", '9');
-  BUF_TEST_READ_CHARACTER("A", 'A');
-  BUF_TEST_READ_CHARACTER("Z", 'Z');
-  BUF_TEST_READ_CHARACTER("a", 'a');
-  BUF_TEST_READ_CHARACTER("z", 'z');
-  BUF_TEST_READ_CHARACTER("Π", 928);
-  BUF_TEST_READ_CHARACTER("꒴", 42164);
-  BUF_TEST_READ_CHARACTER("𐅀", 65856);
+  BUF_TEST_READ_CHARACTER_UTF8("0", '0');
+  BUF_TEST_READ_CHARACTER_UTF8("9", '9');
+  BUF_TEST_READ_CHARACTER_UTF8("A", 'A');
+  BUF_TEST_READ_CHARACTER_UTF8("Z", 'Z');
+  BUF_TEST_READ_CHARACTER_UTF8("a", 'a');
+  BUF_TEST_READ_CHARACTER_UTF8("z", 'z');
+  BUF_TEST_READ_CHARACTER_UTF8("Π", 928);
+  BUF_TEST_READ_CHARACTER_UTF8("꒴", 42164);
+  BUF_TEST_READ_CHARACTER_UTF8("𐅀", 65856);
 }
 
 void buf_test_read_f32()

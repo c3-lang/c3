@@ -4,21 +4,21 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../libc3/ident.h"
 #include "../libc3/str.h"
-#include "../libc3/sym.h"
 #include "test.h"
 
 #define IDENT_TEST_INSPECT(test, result)                   \
   do {                                                     \
-    const s_ident *ident;                                  \
-    s_str *str;                                            \
+    s_ident ident;                                         \
+    s_str str;                                             \
     assert(test);                                          \
     assert(result);                                        \
     test_context("ident_inspect(" #test ") -> " #result);  \
-    ident = ident_1(test);                                 \
-    TEST_ASSERT((str = ident_inspect(ident)));             \
-    TEST_STRNCMP(str->ptr.p, result, str->size);           \
-    str_delete(str);                                       \
+    ident_init_1(&ident, test);                            \
+    TEST_EQ(ident_inspect(&ident, &str), &str);            \
+    TEST_STRNCMP(str.ptr.p, result, str.size);             \
+    str_clean(&str);                                       \
     test_context(NULL);                                    \
   } while (0)
 

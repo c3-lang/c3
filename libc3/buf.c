@@ -115,7 +115,7 @@ sw buf_peek_1 (s_buf *buf, const s8 *p)
   return buf_peek_str(buf, &stra);
 }
 
-sw buf_peek_character (s_buf *buf, character *c)
+sw buf_peek_character_utf8 (s_buf *buf, character *c)
 {
   assert(buf);
   assert(c);
@@ -357,10 +357,10 @@ sw buf_read_1 (s_buf *buf, const s8 *p)
   return buf_read_str(buf, &stra);
 }
 
-sw buf_read_character (s_buf *buf, character *p)
+sw buf_read_character_utf8 (s_buf *buf, character *p)
 {
   sw r;
-  r = buf_peek_character(buf, p);
+  r = buf_peek_character_utf8(buf, p);
   if (r > 0)
     buf->rpos += r;
   return r;
@@ -508,6 +508,24 @@ sw buf_refill (s_buf *buf)
     return buf->refill(buf);
   }
   return 0;
+}
+
+s_buf * buf_restore (s_buf *buf, const s_buf *save)
+{
+  assert(buf);
+  assert(save);
+  buf->rpos = save->rpos;
+  buf->wpos = save->wpos;
+  return buf;
+}
+
+s_buf * buf_save (s_buf *buf, s_buf *save)
+{
+  assert(buf);
+  assert(save);
+  save->rpos = buf->rpos;
+  save->wpos = buf->wpos;
+  return buf;
 }
 
 sw buf_str_to_hex (s_buf *buf, const s_str *src)
