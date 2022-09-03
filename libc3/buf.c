@@ -575,7 +575,7 @@ sw buf_write_1 (s_buf *buf, s8 *p)
   return buf_write_str(buf, &stra);
 }
 
-sw buf_write_character (s_buf *buf, character c)
+sw buf_write_character_utf8 (s_buf *buf, character c)
 {
   sw size = character_utf8_size(c);
   if (size <= 0)

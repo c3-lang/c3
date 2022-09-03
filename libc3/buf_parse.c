@@ -45,7 +45,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *ident)
          ! ident_character_is_reserved(c)) {
     if (buf_read_character(buf, &c) != r)
       return -1;
-    if (buf_write_character(&tmp, c) != r)
+    if (buf_write_character_utf8(&tmp, c) != r)
       return -1;
   }
   if (r != 0)

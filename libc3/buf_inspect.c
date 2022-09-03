@@ -134,7 +134,7 @@ sw buf_inspect_str_character (s_buf *buf, character c)
     return -1;
   }
   if (! str_character_is_reserved(c))
-    return buf_write_character(buf, c);
+    return buf_write_character_utf8(buf, c);
   buf_write_u8(buf, '\\');
   switch (c) {
   case '\0': buf_write_u8(buf, '0'); break;
@@ -147,7 +147,7 @@ sw buf_inspect_str_character (s_buf *buf, character c)
   case '\\': buf_write_u8(buf, '\\'); break;
   default:
     BUF_INIT_ALLOCA(&char_buf, 4);
-    i = buf_write_character(&char_buf, c);
+    i = buf_write_character_utf8(&char_buf, c);
     j = 0;
     if (i-- > 0) {
       buf_write_u8(buf, 'x');
