@@ -7,6 +7,7 @@
 #include "test.h"
 
 void character_test_1 ();
+void character_test_is_digit ();
 void character_test_is_lowercase ();
 void character_test_is_uppercase ();
 void character_test_utf8 ();
@@ -15,6 +16,7 @@ void character_test_utf8_size ();
 void character_test ()
 {
   character_test_1();
+  character_test_is_digit();
   character_test_is_lowercase();
   character_test_is_uppercase();
   character_test_utf8_size();
@@ -57,6 +59,50 @@ void character_test_1 ()
   TEST_EQ(character_1("꒴"), 42164);
   TEST_EQ(character_1("Ꝝ"), 42844);
   TEST_EQ(character_1("ꝝ"), 42845);
+}
+
+void character_test_is_digit ()
+{
+  character c;
+  for (c = -10; c < 40; c++)
+    TEST_ASSERT(! character_is_digit(c));
+  TEST_ASSERT(! character_is_digit('\x00'));
+  TEST_ASSERT(! character_is_digit('\x01'));
+  TEST_ASSERT(! character_is_digit('\r'));
+  TEST_ASSERT(! character_is_digit('\n'));
+  TEST_ASSERT(! character_is_digit(' '));
+  TEST_ASSERT(character_is_digit('0'));
+  TEST_ASSERT(character_is_digit('1'));
+  TEST_ASSERT(character_is_digit('2'));
+  TEST_ASSERT(character_is_digit('3'));
+  TEST_ASSERT(character_is_digit('4'));
+  TEST_ASSERT(character_is_digit('5'));
+  TEST_ASSERT(character_is_digit('6'));
+  TEST_ASSERT(character_is_digit('7'));
+  TEST_ASSERT(character_is_digit('8'));
+  TEST_ASSERT(character_is_digit('9'));
+  TEST_ASSERT(! character_is_digit('A'));
+  TEST_ASSERT(! character_is_digit('B'));
+  TEST_ASSERT(! character_is_digit('C'));
+  TEST_ASSERT(! character_is_digit('X'));
+  TEST_ASSERT(! character_is_digit('Y'));
+  TEST_ASSERT(! character_is_digit('Z'));
+  TEST_ASSERT(! character_is_digit(character_1("À")));
+  TEST_ASSERT(! character_is_digit(character_1("É")));
+  TEST_ASSERT(! character_is_digit(character_1("Π")));
+  TEST_ASSERT(! character_is_digit(character_1("Ꝝ")));
+  TEST_ASSERT(! character_is_digit(character_1("꒴")));
+  TEST_ASSERT(! character_is_digit(character_1("𐅀")));
+  TEST_ASSERT(! character_is_digit('a'));
+  TEST_ASSERT(! character_is_digit('b'));
+  TEST_ASSERT(! character_is_digit('c'));
+  TEST_ASSERT(! character_is_digit('x'));
+  TEST_ASSERT(! character_is_digit('y'));
+  TEST_ASSERT(! character_is_digit('z'));
+  TEST_ASSERT(! character_is_digit(character_1("à")));
+  TEST_ASSERT(! character_is_digit(character_1("é")));
+  TEST_ASSERT(! character_is_digit(character_1("π")));
+  TEST_ASSERT(! character_is_digit(character_1("ꝝ")));
 }
 
 void character_test_is_lowercase ()
