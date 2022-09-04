@@ -9,6 +9,7 @@ void str_test ();
 void sym_test ();
 void buf_test ();
 void buf_inspect_test ();
+void buf_parse_test ();
 void sha1_test ();
 
 int main (int argc, char **argv)
@@ -37,6 +38,10 @@ int main (int argc, char **argv)
   if (test_target("buf_inspect")) {
     printf("\nbuf_inspect\n");
     buf_inspect_test();
+  }
+  if (test_target("buf_parse")) {
+    printf("\nbuf_parse\n");
+    buf_parse_test();
   }
   if (test_target("sha1")) {
     printf("\nsha1\n");

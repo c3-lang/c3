@@ -37,12 +37,23 @@
     TEST_STRNCMP(buf.ptr.ps8 + pos, expected, len);  \
   } while (0)
 
+#define BUF_TEST_PEEK_1(test)                                          \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    test_context("buf_peek_1(" # test ")");                            \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_peek_1(&buf, (test)), strlen(test));                   \
+    TEST_EQ(buf.rpos, 0);                                              \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_TEST_READ_1(test)                                          \
   do {                                                                 \
     s_buf buf;                                                         \
     test_context("buf_read_1(" # test ")");                            \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_read_1(&buf, (test)), strlen(test));                   \
+    TEST_EQ(buf.rpos, strlen(test));                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -71,6 +82,7 @@ void buf_test_f ();
 void buf_test_init_clean ();
 void buf_test_new_delete ();
 void buf_test_new_alloc_delete ();
+void buf_test_peek_1 ();
 void buf_test_peek_f32 ();
 void buf_test_peek_f64 ();
 void buf_test_peek_s8 ();
@@ -111,17 +123,6 @@ void buf_test ()
   buf_test_init_clean();
   buf_test_new_delete();
   buf_test_new_alloc_delete();
-  buf_test_read_s8();
-  buf_test_read_s16();
-  buf_test_read_s32();
-  buf_test_read_s64();
-  buf_test_read_f32();
-  buf_test_read_f64();
-  buf_test_read_u8();
-  buf_test_read_u16();
-  buf_test_read_u32();
-  buf_test_read_u64();
-  buf_test_read_character_utf8();
   buf_test_write_u8();
   buf_test_write_u16();
   buf_test_write_u32();
@@ -131,9 +132,20 @@ void buf_test ()
   buf_test_write_s32();
   buf_test_write_s64();
   buf_test_write_str();
+  buf_test_peek_1 ();
   buf_test_peek_s8 ();
   buf_test_peek_s16 ();
   buf_test_peek_u8();
+  buf_test_read_f32();
+  buf_test_read_f64();
+  buf_test_read_s8();
+  buf_test_read_s16();
+  buf_test_read_s32();
+  buf_test_read_s64();
+  buf_test_read_u8();
+  buf_test_read_u16();
+  buf_test_read_u32();
+  buf_test_read_u64();
   buf_test_read_character_utf8();
   buf_test_f();
 }
@@ -215,6 +227,31 @@ void buf_test_new_alloc_delete ()
     BUF_TEST_DELETE(buf);
     len++;
   }
+}
+
+void buf_test_peek_1 ()
+{
+  BUF_TEST_PEEK_1("");
+  BUF_TEST_PEEK_1("\x01");
+  BUF_TEST_PEEK_1("\x01\x02");
+  BUF_TEST_PEEK_1("\x01\x02\x03");
+  BUF_TEST_PEEK_1("A");
+  BUF_TEST_PEEK_1("AB");
+  BUF_TEST_PEEK_1("ABC");
+  BUF_TEST_PEEK_1("a");
+  BUF_TEST_PEEK_1("ab");
+  BUF_TEST_PEEK_1("abc");
+  BUF_TEST_PEEK_1("À");
+  BUF_TEST_PEEK_1("É");
+  BUF_TEST_PEEK_1("Π");
+  BUF_TEST_PEEK_1("Ꝝ");
+  BUF_TEST_PEEK_1("꒴");
+  BUF_TEST_PEEK_1("𐅀");
+  BUF_TEST_PEEK_1("à");
+  BUF_TEST_PEEK_1("é");
+  BUF_TEST_PEEK_1("π");
+  BUF_TEST_PEEK_1("ꝝ");
+  BUF_TEST_PEEK_1("\x01\x02\x03" "ABCabcÀÉΠꝜ꒴𐅀àéπꝝ");
 }
 
 void buf_test_peek_s8 ()

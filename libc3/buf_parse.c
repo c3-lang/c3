@@ -6,6 +6,7 @@
 #include <string.h>
 #include "buf.h"
 #include "buf_parse.h"
+#include "character.h"
 #include "ident.h"
 #include "limits.h"
 #include "str.h"
@@ -78,21 +79,112 @@ sw buf_parse_ident (s_buf *buf, s_ident *ident)
   }
   if (r != 0)
     return r;
-  str_init(&str, tmp.ptr.p, tmp.size, tmp.ptr.p);
+  buf_to_str(&tmp, &str);
   str_to_ident(&str, ident);
   return r;
 }
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
-  (void) buf;
-  (void) dest;
-  return 0;
+  u8 b;
+  character c;
+  sw r;
+  sw result = 0;
+  s_buf save;
+  uw size = 0;
+  s_buf tmp;
+  assert(buf);
+  assert(dest);
+  buf_save(buf, &save);
+  if ((r = buf_read_1(buf, "\"")) > 0) {
+    while (1) {
+      if ((r = buf_read_1(buf, "\"")) != 0)
+        break;
+      else if ((r = buf_parse_str_character(buf, &c)) > 0)
+        size += character_utf8_size(c);
+      else if (r < 0)
+        break;
+      else if ((r = buf_parse_str_u8(buf, &b)) > 0)
+        size += 1;
+      else
+        break;
+    }
+  }
+  buf_restore(buf, &save);
+  if (r <= 0)
+    return r;
+  if (size == 0) {
+    str_init_empty(dest);
+    return r;
+  }
+  buf_init_alloc(&tmp, size);
+  if ((r = buf_read_1(buf, "\"")) > 0) {
+    result += r;
+    while (1) {
+      if ((r = buf_read_1(buf, "\"")) > 0) {
+        result += r;
+        break;
+      }
+      else if (r < 0)
+        break;
+      else if ((r = buf_parse_str_character(buf, &c)) > 0) {
+        result += r;
+        buf_write_character_utf8(&tmp, c);
+      }
+      else if (r < 0)
+        break;
+      else if ((r = buf_parse_str_u8(buf, &b)) > 0) {
+        result += r;
+        buf_write_u8(&tmp, b);
+      }
+      else
+        break;
+    }
+  }
+  if (r <= 0) {
+    buf_restore(buf, &save);
+    return r;
+  }
+  assert(tmp.wpos == tmp.size);
+  buf_to_str(&tmp, dest);
+  return result;
 }
 
 sw buf_parse_str_character (s_buf *buf, character *dest)
 {
   character c;
+  sw r;
+  sw r1 = 0;
+  s_buf save;
+  buf_save(buf, &save);
+  if ((r = buf_read_1(buf, "\\")) > 0 &&
+      (r1 = buf_read_character_utf8(buf, &c)) > 0) {
+    switch (c) {
+    case '0': c = 0; break;
+    case 'n': c = '\n'; break;
+    case 'r': c = '\r'; break;
+    case 's': c = ' '; break;
+    case 't': c = '\t'; break;
+    case 'v': c = '\v'; break;
+    case 'x': buf_restore(buf, &save); return 0;
+    default: ;
+    }
+    *dest = c;
+    return r + r1;
+  }
+  buf_restore(buf, &save);
+  if (r < 0)
+    return r;
+  if (r > 0 && r1 <= 0)
+    return r1;
+  if ((r = buf_read_character_utf8(buf, &c)) > 0 &&
+      ! str_character_is_reserved(c))
+    *dest = c;
+  return r;
+}
+
+sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
+{
   u8 digit[2];
   sw r;
   sw r1;
@@ -106,18 +198,12 @@ sw buf_parse_str_character (s_buf *buf, character *dest)
     return r + r1 + r2;
   }
   buf_restore(buf, &save);
-  if ((r = buf_read_1(buf, "\\")) > 0 &&
-      (r1 = buf_read_character_utf8(buf, &c)) > 0) {
-    switch (r1) {
-    case 'n': c = '\n'; break;
-    case 'r': c = '\r'; break;
-    case 't': c = '\t'; break;
-    case 'v': c = '\v'; break;
-    default: ;
-    }
-    *dest = c;
-    return r + r1;
-  }
-  buf_restore(buf, &save);
-  return 0;
+  if (r <= 0)
+    return r;
+  if (r1 <= 0)
+    return r1;
+  if (r2 <= 0)
+    return r2;
+  assert(! "error");
+  return -1;
 }

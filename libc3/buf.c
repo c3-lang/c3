@@ -52,8 +52,7 @@ sw buf_flush (s_buf *buf)
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
 {
   assert(buf);
-  assert(size);
-  assert(p);
+  assert((!size || p) && (size || !p));
   buf->free = free;
   buf->size = size;
   buf->ptr.u64 = (u64) p;
@@ -79,11 +78,14 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
 {
   s8 *p;
   assert(buf);
-  assert(size);
-  p = calloc(size, 1);
-  if (!p)
-    err(1, "out of memory");
-  buf_init(buf, true, size, p);
+  if (size) {
+    p = calloc(size, 1);
+    if (!p)
+      err(1, "out of memory");
+    buf_init(buf, true, size, p);
+  }
+  else
+    buf_init(buf, false, 0, NULL);
   return buf;
 }
 
@@ -280,7 +282,7 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
   assert(buf);
   assert(src);
   if (buf->rpos + src->size > buf->size ||
-      memcmp(buf->ptr.p, src->ptr.p, src->size))
+      memcmp(buf->ptr.ps8 + buf->rpos, src->ptr.p, src->size))
     return 0;
   return src->size;
 }

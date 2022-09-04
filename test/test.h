@@ -60,8 +60,8 @@
 
 #define TEST_STRNCMP(test, result, bytes)               \
   do {                                                  \
-    const char *tmp = test;                             \
-    if (strncmp(tmp, result, bytes) == 0) {             \
+    const char *tmp = (test);                           \
+    if (strncmp(tmp, (result), (bytes)) == 0) {         \
       test_ok();                                        \
     }                                                   \
     else {                                              \
@@ -70,10 +70,10 @@
              "strncmp(%s, %s, %ld) == 0\n",             \
              TEST_COLOR_KO,                             \
              __FILE__, __LINE__, __func__,              \
-             # test, # result, (long) bytes);           \
+             # test, # result, (long) (bytes));         \
       printf("Expected %s got \"",                      \
              # result);                                 \
-      fwrite(tmp, bytes, 1, stdout);                    \
+      fwrite(tmp, (bytes), 1, stdout);                  \
       printf("\".%s\n", TEST_COLOR_RESET);              \
     }                                                   \
   } while (0)
