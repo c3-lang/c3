@@ -37,6 +37,15 @@
     TEST_STRNCMP(buf.ptr.ps8 + pos, expected, len);  \
   } while (0)
 
+#define BUF_TEST_READ_1(test)                                          \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    test_context("buf_read_1(" # test ")");                            \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_read_1(&buf, (test)), strlen(test));                   \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_TEST_READ_CHARACTER_UTF8(test, result)                     \
   do {                                                                 \
     character c;                                                       \
@@ -72,6 +81,7 @@ void buf_test_peek_u8 ();
 void buf_test_peek_u16 ();
 void buf_test_peek_u32 ();
 void buf_test_peek_u64 ();
+void buf_test_read_1 ();
 void buf_test_read_character_utf8 ();
 void buf_test_read_f32 ();
 void buf_test_read_f64 ();
@@ -250,6 +260,31 @@ void buf_test_peek_u8 ()
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(byte, 'A');
   TEST_EQ(buf.wpos, 1);
+}
+
+void buf_test_read_1 ()
+{
+  BUF_TEST_READ_1("");
+  BUF_TEST_READ_1("\x01");
+  BUF_TEST_READ_1("\x01\x02");
+  BUF_TEST_READ_1("\x01\x02\x03");
+  BUF_TEST_READ_1("A");
+  BUF_TEST_READ_1("AB");
+  BUF_TEST_READ_1("ABC");
+  BUF_TEST_READ_1("a");
+  BUF_TEST_READ_1("ab");
+  BUF_TEST_READ_1("abc");
+  BUF_TEST_READ_1("À");
+  BUF_TEST_READ_1("É");
+  BUF_TEST_READ_1("Π");
+  BUF_TEST_READ_1("Ꝝ");
+  BUF_TEST_READ_1("꒴");
+  BUF_TEST_READ_1("𐅀");
+  BUF_TEST_READ_1("à");
+  BUF_TEST_READ_1("é");
+  BUF_TEST_READ_1("π");
+  BUF_TEST_READ_1("ꝝ");
+  BUF_TEST_READ_1("\x01\x02\x03" "ABCabcÀÉΠꝜ꒴𐅀àéπꝝ");
 }
 
 void buf_test_read_character_utf8 ()

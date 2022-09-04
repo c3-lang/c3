@@ -3,6 +3,7 @@
  */
 #include <assert.h>
 #include "buf.h"
+#include "buf_inspect.h"
 #include "str.h"
 #include "sym.h"
 
