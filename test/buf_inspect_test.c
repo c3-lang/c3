@@ -10,34 +10,49 @@
 
 #define BUF_INSPECT_TEST_CHARACTER(test, result)                       \
   do {                                                                 \
+    s8 b[32];                                                          \
+    s_buf buf;                                                         \
     test_context("buf_inspect_character(" # test ") -> " # result);    \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_character(&buf, test), strlen(result));        \
     TEST_STRNCMP(buf.ptr.ps8, result, buf.wpos);                       \
+    test_context(NULL);                                                \
   } while (0)
 
 #define BUF_INSPECT_TEST_STR_CHARACTER(test, result)                   \
   do {                                                                 \
+    s8 b[32];                                                          \
+    s_buf buf;                                                         \
     test_context("buf_inspect_str_character(" # test ") -> "           \
                  # result);                                            \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_str_character(&buf, test), strlen(result));    \
     TEST_STRNCMP(buf.ptr.ps8, result, buf.wpos);                       \
+    test_context(NULL);                                                \
   } while (0)
 
 #define BUF_INSPECT_TEST_STR_CHARACTER_SIZE(test, result)              \
   do {                                                                 \
+    s8 b[32];                                                          \
+    s_buf buf;                                                         \
     test_context("buf_inspect_str_character_size("                     \
                  # test ") -> " # result);                             \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_str_character_size(test), result);             \
+    test_context(NULL);                                                \
   } while (0)
 
 #define BUF_INSPECT_TEST_STR(test, result)                             \
   do {                                                                 \
+    s8 b[1024];                                                        \
+    s_buf buf;                                                         \
+    s_str str;                                                         \
     test_context("buf_inspect_str(" # test ") -> " # result);          \
+    str_init_1(&str, false, (test));                                   \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_str(&buf, test), strlen(result));              \
+    TEST_EQ(buf_inspect_str(&buf, &str), strlen(result));              \
+    TEST_STRNCMP(buf.ptr.p, (result), buf.wpos);                       \
+    test_context(NULL);                                                \
   } while (0)
 
 void buf_inspect_test_character ();
@@ -55,8 +70,6 @@ void buf_inspect_test ()
 
 void buf_inspect_test_character ()
 {
-  s8 b[32];
-  s_buf buf;
   BUF_INSPECT_TEST_CHARACTER(0, "'\\0'");
   BUF_INSPECT_TEST_CHARACTER(1, "'\\x01'");
   BUF_INSPECT_TEST_CHARACTER(2, "'\\x02'");
@@ -74,8 +87,6 @@ void buf_inspect_test_character ()
 
 void buf_inspect_test_str_character ()
 {
-  s8 b[32];
-  s_buf buf;
   BUF_INSPECT_TEST_STR_CHARACTER(0, "\\0");
   BUF_INSPECT_TEST_STR_CHARACTER(1, "\\x01");
   BUF_INSPECT_TEST_STR_CHARACTER(2, "\\x02");
@@ -93,8 +104,6 @@ void buf_inspect_test_str_character ()
 
 void buf_inspect_test_str_character_size ()
 {
-  s8 b[32];
-  s_buf buf;
   BUF_INSPECT_TEST_STR_CHARACTER_SIZE(0, 2);
   BUF_INSPECT_TEST_STR_CHARACTER_SIZE(1, 4);
   BUF_INSPECT_TEST_STR_CHARACTER_SIZE(2, 4);
@@ -112,8 +121,38 @@ void buf_inspect_test_str_character_size ()
 
 void buf_inspect_test_str ()
 {
-  s8 b[32];
-  s_buf buf;
-  (void) b;
-  (void) buf;
+  BUF_INSPECT_TEST_STR("", "\"\"");
+  BUF_INSPECT_TEST_STR(" ", "\" \"");
+  BUF_INSPECT_TEST_STR("\n", "\"\\n\"");
+  BUF_INSPECT_TEST_STR("\r", "\"\\r\"");
+  BUF_INSPECT_TEST_STR("\t", "\"\\t\"");
+  BUF_INSPECT_TEST_STR("\v", "\"\\v\"");
+  BUF_INSPECT_TEST_STR("\"", "\"\\\"\"");
+  BUF_INSPECT_TEST_STR(".", "\".\"");
+  BUF_INSPECT_TEST_STR("..", "\"..\"");
+  BUF_INSPECT_TEST_STR("...", "\"...\"");
+  BUF_INSPECT_TEST_STR(".. .", "\".. .\"");
+  BUF_INSPECT_TEST_STR("t", "\"t\"");
+  BUF_INSPECT_TEST_STR("T", "\"T\"");
+  BUF_INSPECT_TEST_STR("test", "\"test\"");
+  BUF_INSPECT_TEST_STR("Test", "\"Test\"");
+  BUF_INSPECT_TEST_STR("123", "\"123\"");
+  BUF_INSPECT_TEST_STR("test123", "\"test123\"");
+  BUF_INSPECT_TEST_STR("Test123", "\"Test123\"");
+  BUF_INSPECT_TEST_STR("test 123", "\"test 123\"");
+  BUF_INSPECT_TEST_STR("Test 123", "\"Test 123\"");
+  BUF_INSPECT_TEST_STR("test123.test456", "\"test123.test456\"");
+  BUF_INSPECT_TEST_STR("Test123.Test456", "\"Test123.Test456\"");
+  BUF_INSPECT_TEST_STR("test123(test456)", "\"test123(test456)\"");
+  BUF_INSPECT_TEST_STR("Test123(Test456)", "\"Test123(Test456)\"");
+  BUF_INSPECT_TEST_STR("test123{test456}", "\"test123{test456}\"");
+  BUF_INSPECT_TEST_STR("Test123{Test456}", "\"Test123{Test456}\"");
+  BUF_INSPECT_TEST_STR("É", "\"É\"");
+  BUF_INSPECT_TEST_STR("Éo", "\"Éo\"");
+  BUF_INSPECT_TEST_STR("Éoà \n\r\t\v\"",
+                       "\"Éoà \\n\\r\\t\\v\\\"\"");
+  BUF_INSPECT_TEST_STR("éoà \n\r\t\v\"",
+                       "\"éoà \\n\\r\\t\\v\\\"\"");
+  BUF_INSPECT_TEST_STR("é", "\"é\"");
+  BUF_INSPECT_TEST_STR("éoπꝝ꒴", "\"éoπꝝ꒴\"");
  }

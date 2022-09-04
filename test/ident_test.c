@@ -22,6 +22,14 @@
     test_context(NULL);                                    \
   } while (0)
 
+void ident_test ();
+void ident_test_inspect ();
+
+void ident_test ()
+{
+  ident_test_inspect();
+}
+
 void ident_test_inspect ()
 {
   IDENT_TEST_INSPECT("", "~i\"\"");
@@ -58,9 +66,4 @@ void ident_test_inspect ()
                      "~i\"éoà \\n\\r\\t\\v\\\"\"");
   IDENT_TEST_INSPECT("é", "é");
   IDENT_TEST_INSPECT("éoπꝝ꒴", "éoπꝝ꒴");
-}
-
-void ident_test ()
-{
-  ident_test_inspect();
 }

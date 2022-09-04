@@ -180,9 +180,9 @@ void buf_parse_test ()
   buf_parse_test_str_character();
   buf_parse_test_str_u8();
   buf_parse_test_character();
-  buf_parse_test_ident();
   buf_parse_test_str();
   buf_parse_test_sym();
+  buf_parse_test_ident();
 }
 
 void buf_parse_test_bool ()
@@ -317,6 +317,7 @@ void buf_parse_test_str ()
   BUF_PARSE_TEST_STR_N("\"\\0\"", 1, "\0");
   BUF_PARSE_TEST_STR_N("\"\\0\\0\"", 2, "\0\0");
   BUF_PARSE_TEST_STR_N("\"\\0\\0\\0\"", 3, "\0\0\0");
+  BUF_PARSE_TEST_STR("\"\"", "");
   BUF_PARSE_TEST_STR("\"\\n\"", "\n");
   BUF_PARSE_TEST_STR("\"\\r\"", "\r");
   BUF_PARSE_TEST_STR("\"\\t\"", "\t");

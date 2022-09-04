@@ -443,6 +443,24 @@ sw buf_read_str (s_buf *buf, const s_str *src)
   return r;
 }
 
+sw buf_read_to_str (s_buf *buf, s_str *dest)
+{
+  sw size;
+  assert(buf);
+  assert(dest);
+  if (buf->rpos > buf->wpos)
+    return -1;
+  if (buf->wpos > buf->size)
+    return -1;
+  size = buf->wpos - buf->rpos;
+  if (size == 0) {
+    str_init_empty(dest);
+    return 0;
+  }
+  str_init_alloc(dest, size, buf->ptr.ps8 + buf->rpos);
+  return size;
+}
+
 sw buf_read_u8 (s_buf *buf, u8 *p)
 {
   sw r;

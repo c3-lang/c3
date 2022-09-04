@@ -7,6 +7,7 @@ void types_test ();
 void character_test ();
 void str_test ();
 void sym_test ();
+void ident_test ();
 void buf_test ();
 void buf_inspect_test ();
 void buf_parse_test ();
@@ -30,6 +31,10 @@ int main (int argc, char **argv)
   if (test_target("sym")) {
     printf("\nsym\n");
     sym_test();
+  }
+  if (test_target("ident")) {
+    printf("\nident\n");
+    ident_test();
   }
   if (test_target("buf")) {
     printf("\nbuf\n");

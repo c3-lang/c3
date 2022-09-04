@@ -89,7 +89,8 @@ sw buf_parse_ident (s_buf *buf, s_ident *ident)
       buf_clean(&tmp);
       return r;
     }
-    buf_to_str(&tmp, &str);
+    buf_read_to_str(&tmp, &str);
+    buf_clean(&tmp);
     str_to_ident(&str, ident);
     str_clean(&str);
     return result;
