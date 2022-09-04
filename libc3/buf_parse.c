@@ -11,7 +11,6 @@
 #include "str.h"
 #include "sym.h"
 
-sw buf_parse_str_character (s_buf *buf, character *dest);
 
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
@@ -46,6 +45,13 @@ sw buf_parse_character (s_buf *buf, character *dest)
   return 0;
 }
 
+sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
+{
+  (void) buf;
+  (void) dest;
+  return 0;
+}
+
 sw buf_parse_ident (s_buf *buf, s_ident *ident)
 {
   s_buf tmp;
@@ -75,6 +81,13 @@ sw buf_parse_ident (s_buf *buf, s_ident *ident)
   str_init(&str, tmp.ptr.p, tmp.size, tmp.ptr.p);
   str_to_ident(&str, ident);
   return r;
+}
+
+sw buf_parse_str (s_buf *buf, s_str *dest)
+{
+  (void) buf;
+  (void) dest;
+  return 0;
 }
 
 sw buf_parse_str_character (s_buf *buf, character *dest)

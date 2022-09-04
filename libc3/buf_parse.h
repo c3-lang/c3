@@ -12,10 +12,20 @@
 
 #include "types.h"
 
-sw      buf_parse_character (s_buf *buf, character *p);
-sw      buf_parse_digit_hex (s_buf *buf, u8 *p);
-sw      buf_parse_ident (s_buf *buf, s_ident *p);
-sw      buf_parse_str (s_buf *buf, s_str *p);
-sw      buf_parse_sym (s_buf *buf, const s_sym *p);
+/**
+ * # buf_parse_
+ *
+ * Parse UTF-8 bytes from buf and fills dest if successful.
+ *
+ * Returns number of bytes read in buf, possibly zero in which case
+ * dest is untouched.
+ */
+
+sw buf_parse_character (s_buf *buf, character *dest);
+sw buf_parse_digit_hex (s_buf *buf, u8 *dest);
+sw buf_parse_ident (s_buf *buf, s_ident *dest);
+sw buf_parse_str (s_buf *buf, s_str *dest);
+sw buf_parse_str_character (s_buf *buf, character *dest);
+sw buf_parse_sym (s_buf *buf, const s_sym **dest);
 
 #endif /* BUF_PARSE_H */
