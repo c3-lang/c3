@@ -17,7 +17,7 @@
     test_context("ident_inspect(" #test ") -> " #result);  \
     ident_init_1(&ident, test);                            \
     TEST_EQ(ident_inspect(&ident, &str), &str);            \
-    TEST_STRNCMP(str.ptr.p, result, str.size);             \
+    TEST_STRNCMP(str.ptr.p, (result), str.size);           \
     str_clean(&str);                                       \
     test_context(NULL);                                    \
   } while (0)

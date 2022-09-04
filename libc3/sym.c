@@ -20,20 +20,9 @@ static s_sym_list * g_sym_list = NULL;
 
 const s_sym * sym_1 (const s8 *p)
 {
-  const s_sym *found;
   s_str stra;
-  s_sym *sym;
   str_init_1(&stra, false, p);
-  found = sym_find(&stra);
-  if (found)
-    return found;
-  sym = sym_new(&stra);
-  if (! sym) {
-    assert(false);
-    return NULL;
-  }
-  g_sym_list = sym_list_new(sym, g_sym_list);
-  return sym;
+  return str_to_sym(&stra);
 }
 
 void sym_delete (s_sym *sym)
@@ -127,12 +116,13 @@ s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next)
   return sym_list;
 }
 
-s_sym * sym_new (const s_str *src)
+const s_sym * sym_new (const s_str *src)
 {
   s_sym *sym;
   sym = malloc(sizeof(s_sym));
   if (! sym)
     err(1, "out of memory");
   str_init_dup(&sym->str, src);
+  g_sym_list = sym_list_new(sym, g_sym_list);
   return sym;
 }

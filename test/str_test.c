@@ -51,10 +51,21 @@
   do {                                                    \
     s_str str;                                            \
     test_context("str_to_hex(" # test ") -> " # result);  \
-    str_to_hex(test, &str);                               \
+    TEST_EQ(str_to_hex(test, &str), &str);                \
     TEST_STRNCMP(str.ptr.p, result, str.size);            \
     str_clean(&str);                                      \
     str_delete(test);                                     \
+  } while (0)
+
+#define STR_TEST_TO_SYM(test)                                           \
+  do {                                                                  \
+    s_str str;                                                          \
+    const s_sym *result = 0;                                            \
+    test_context("str_to_sym(" # test ")");                             \
+    str_init_1(&str, NULL, (test));                                     \
+    TEST_ASSERT((result = str_to_sym(&str)));                           \
+    TEST_EQ(str_to_sym(&str), result);                                  \
+    STR_TEST_CMP(&result->str, &str, 0);                                \
   } while (0)
 
 void str_test_character_is_reserved ();
@@ -66,6 +77,7 @@ void str_test_new_cpy ();
 void str_test_new_delete ();
 void str_test_new_f ();
 void str_test_to_hex ();
+void str_test_to_ident ();
 void str_test_to_sym ();
 
 void str_test_character_is_reserved ()
@@ -359,32 +371,17 @@ void str_test_to_hex ()
 
 void str_test_to_sym ()
 {
-  s_str *test;
-  const s_sym *result;
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, ""))));
-  STR_TEST_CMP(&result->str, test, 0);
-  str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "0"))));
-  STR_TEST_CMP(&result->str, test, 0);
-  str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "012"))));
-  STR_TEST_CMP(&result->str, test, 0);
-  str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "A"))));
-  STR_TEST_CMP(&result->str, test, 0);
-  str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "ABC"))));
-  STR_TEST_CMP(&result->str, test, 0);
-  str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "Abc"))));
-  STR_TEST_CMP(&result->str, test, 0);
-  str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "a"))));
-  STR_TEST_CMP(&result->str, test, 0);
-  str_delete(test);
-  TEST_ASSERT((result = str_to_sym(test = str_new_1(NULL, "abc"))));
-  STR_TEST_CMP(&result->str, test, 0);
-  str_delete(test);
+  STR_TEST_TO_SYM("");
+  STR_TEST_TO_SYM("0");
+  STR_TEST_TO_SYM("9");
+  STR_TEST_TO_SYM("A");
+  STR_TEST_TO_SYM("Z");
+  STR_TEST_TO_SYM("À");
+  STR_TEST_TO_SYM("É");
+  STR_TEST_TO_SYM("a");
+  STR_TEST_TO_SYM("z");
+  STR_TEST_TO_SYM("à");
+  STR_TEST_TO_SYM("é");
 }
 
 void str_test ()

@@ -326,7 +326,7 @@ const s_sym * str_to_sym (const s_str *src)
 {
   const s_sym *sym;
   sym = sym_find(src);
-  if (!sym)
+  if (! sym)
     sym = sym_new(src);
   return sym;
 }

@@ -35,6 +35,6 @@ s_str * sym_inspect (const s_sym *sym);
 /** @brief True iff sym is a module name (starts with a capital). */
 bool sym_is_module (const s_sym *sym);
 
-s_sym * sym_new (const s_str *src);
+const s_sym * sym_new (const s_str *src);
 
 #endif /* SYM_H */

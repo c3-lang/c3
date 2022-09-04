@@ -12,7 +12,6 @@
 #include "str.h"
 #include "sym.h"
 
-
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
   sw r;

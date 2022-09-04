@@ -710,7 +710,8 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   sw r;
   assert(buf);
   assert(src);
-  assert(buf->wpos <= buf->size);
+  if (buf->wpos > buf->size)
+    return -1;
   if (buf->wpos + src->size > buf->size &&
       (r = buf_flush(buf)) <= 0)
     return r;
