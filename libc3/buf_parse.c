@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "buf.h"
+#include "buf_parse.h"
 #include "ident.h"
 #include "limits.h"
 #include "str.h"

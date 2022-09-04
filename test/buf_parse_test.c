@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../libc3/buf.h"
+#include "../libc3/buf_parse.h"
 #include "../libc3/str.h"
 #include "test.h"
 

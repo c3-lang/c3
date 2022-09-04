@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "buf.h"
+#include "buf_inspect.h"
 #include "character.h"
 #include "str.h"
 #include "sym.h"

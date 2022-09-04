@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "buf.h"
+#include "buf_inspect.h"
 #include "character.h"
 #include "ident.h"
 #include "str.h"
