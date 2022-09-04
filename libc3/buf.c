@@ -133,7 +133,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   const u8 _11110000 = 0xF0;
   const u8 _11111000 = 0xF8;
   if (buf->wpos - buf->rpos < 1)
-    return -1;
+    return 0;
   b = (const u8 *) buf->ptr.pu8 + buf->rpos;
   if ((b[0] & _10000000) == 0) {
     *c = b[0];
@@ -141,7 +141,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   }
   if ((b[0] & _11100000) == _11000000) {
     if (buf->wpos - buf->rpos < 2)
-      return -1;
+      return 0;
     if ((b[1] & _11000000) != _10000000)
       return -1;
     x[0] = b[0] & _00011111;
@@ -151,7 +151,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   }
   if ((b[0] & _11110000) == _11100000) {
     if (buf->wpos - buf->rpos < 3)
-      return -1;
+      return 0;
     if ((b[1] & _11000000) != _10000000)
       return -1;
     if ((b[2] & _11000000) != _10000000)
@@ -164,7 +164,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   }
   if ((b[0] & _11111000) == _11110000) {
     if (buf->wpos - buf->rpos < 4)
-      return -1;
+      return 0;
     if ((b[1] & _11000000) != _10000000)
       return -1;
     if ((b[2] & _11000000) != _10000000)

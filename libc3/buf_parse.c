@@ -59,29 +59,49 @@ sw buf_parse_ident (s_buf *buf, s_ident *ident)
   character c;
   sw r;
   sw r1;
+  sw result = 0;
   s_buf save;
   s_str str;
   assert(buf);
   assert(ident);
-  buf_init_alloc(&tmp, IDENT_MAX);
   buf_save(buf, &save);
   if ((r = buf_read_1(buf, "~i")) > 0 &&
       (r1 = buf_parse_str(buf, &str)) > 0) {
       str_to_ident(&str, ident);
+      str_clean(&str);
       return r + r1;
   }
-  while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
-         ! ident_character_is_reserved(c)) {
-    if (buf_read_character_utf8(buf, &c) != r)
-      return -1;
+  buf_restore(buf, &save);
+  if ((r = buf_read_character_utf8(buf, &c)) > 0 &&
+      character_is_lowercase(c)) {
+    buf_init_alloc(&tmp, IDENT_MAX);
     if (buf_write_character_utf8(&tmp, c) != r)
-      return -1;
+      goto error;
+    result += r;
+    while ((r = buf_read_character_utf8(buf, &c)) > 0 &&
+           ! ident_character_is_reserved(c)) {
+      if (buf_write_character_utf8(&tmp, c) != r)
+        goto error;
+      result += r;
+    }
+    if (r < 0) {
+      buf_restore(buf, &save);
+      buf_clean(&tmp);
+      return r;
+    }
+    buf_to_str(&tmp, &str);
+    str_to_ident(&str, ident);
+    str_clean(&str);
+    return result;
   }
-  if (r != 0)
+  buf_restore(buf, &save);
+  if (r < 0)
     return r;
-  buf_to_str(&tmp, &str);
-  str_to_ident(&str, ident);
-  return r;
+  return 0;
+ error:
+  buf_restore(buf, &save);
+  buf_clean(&tmp);
+  return -1;
 }
 
 sw buf_parse_str (s_buf *buf, s_str *dest)

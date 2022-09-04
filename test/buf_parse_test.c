@@ -302,7 +302,7 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_NOT_IDENT("Z");
   BUF_PARSE_TEST_NOT_IDENT("09AZ");
   BUF_PARSE_TEST_IDENT("~i\"0\"", "0");
-  BUF_PARSE_TEST_IDENT("~i\"9\"", "0");
+  BUF_PARSE_TEST_IDENT("~i\"9\"", "9");
   BUF_PARSE_TEST_IDENT("~i\"A\"", "A");
   BUF_PARSE_TEST_IDENT("~i\"Z\"", "Z");
   BUF_PARSE_TEST_IDENT("~i\"a\"", "a");
