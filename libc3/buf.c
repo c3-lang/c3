@@ -13,7 +13,7 @@
 const sw buf_u8_to_hex_size = 2;
 const sw buf_inspect_str_byte_size = 4;
 
-void buf_refill_move (s_buf *buf);
+sw buf_refill_compact (s_buf *buf);
 
 void buf_clean (s_buf *buf)
 {
@@ -507,25 +507,40 @@ sw buf_read_u64 (s_buf *buf, u64 *p)
 
 sw buf_refill (s_buf *buf)
 {
+  sw r;
   assert(buf);
-  if (buf->refill) {
-    if (buf->rpos > 0) {
-      if (buf->rpos == buf->wpos) {
-        buf->rpos = 0;
-        buf->wpos = 0;
-      }
-      else {
-        uw size;
-        size = buf->wpos - buf->rpos;
-        assert(size < buf->size);
-        memmove(buf->ptr.p,
-                buf->ptr.ps8 + buf->rpos,
-                size);
-        buf->rpos = 0;
-        buf->wpos = size;
-      }
+  if ((r = buf_refill_compact(buf)) < 0)
+    return r;
+  if (buf->refill)
+    buf->refill(buf);
+  r = buf->wpos - buf->rpos;
+  return r;
+}
+
+sw buf_refill_compact (s_buf *buf)
+{
+  assert(buf);
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
+    assert(! "buf error");
+    return -1;
+  }
+  if (buf->rpos > 0) {
+    if (buf->rpos == buf->wpos) {
+      buf->rpos = 0;
+      buf->wpos = 0;
     }
-    return buf->refill(buf);
+    else {
+      uw size;
+      size = buf->wpos - buf->rpos;
+      assert(size < buf->size);
+      memmove(buf->ptr.p,
+              buf->ptr.ps8 + buf->rpos,
+              size);
+      buf->rpos = 0;
+      buf->wpos = size;
+    }
+    return 1;
   }
   return 0;
 }

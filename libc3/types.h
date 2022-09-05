@@ -4,6 +4,8 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <stdio.h>
+
 /* Basic integer types. */
 typedef char                s8;
 typedef short               s16;
@@ -80,6 +82,7 @@ struct buf {
   u64 wpos;
   sw (*flush) (s_buf *buf);
   sw (*refill) (s_buf *buf);
+  FILE *fp;
 };
 
 typedef struct tag      s_tag;

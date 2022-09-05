@@ -6,7 +6,10 @@ CLEANFILES = *.a *.gcno *.la libc3.la .libs *.lo *.o
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
 
-all: libc3.la libc3.a
+build: libc3.la libc3.a
+
+all: build cov debug
+	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 asan: libc3.asan.la libc3.asan.a
 
@@ -37,6 +40,6 @@ libc3.debug.a: libc3.debug.la
 
 test:
 
-.PHONY: all asan clean cov debug test
+.PHONY: all asan build clean cov debug test
 
 include config.mk

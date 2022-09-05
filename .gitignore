@@ -5,6 +5,10 @@ config.mk
 *.css
 *.gcno
 *.html
+ic3/ic3
+ic3/ic3.asan
+ic3/ic3.cov
+ic3/ic3.debug
 *.la
 .libs/
 *.lo

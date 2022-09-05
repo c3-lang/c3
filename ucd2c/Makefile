@@ -3,7 +3,9 @@
 
 CLEANFILES = ucd2c
 
-all: ucd.c
+build: ucd.c
+
+all: build
 
 UCD: UCD.zip
 	rm -rf UCD
@@ -22,6 +24,6 @@ ucd.c: UCD UCD/UnicodeData.txt ucd2c
 clean:
 	rm -f ${CLEANFILES}
 
-.PHONY: all clean
+.PHONY: all build clean
 
 include config.mk
