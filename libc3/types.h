@@ -23,7 +23,7 @@ typedef float               f32;
 typedef double              f64;
 
 /* Boolean : true or false. */
-typedef sw bool;
+typedef s8 bool;
 
 typedef enum {
   false = 0,
@@ -36,14 +36,12 @@ typedef union ptr {
   const void *p;
   const s8   *ps8;
   const u8   *pu8;
-  u64   u64;
 } u_ptr;
 
 typedef union ptr_w {
   void *p;
   s8   *ps8;
   u8   *pu8;
-  u64   u64;
 } u_ptr_w;
 
 typedef struct str {
@@ -58,14 +56,9 @@ typedef struct sym {
   s_str str;
 } s_sym;
 
-typedef union sym_list_ptr {
-  s_sym_list *p;
-  u64 u64;
-} u_sym_list_ptr;
-  
 struct sym_list {
   s_sym *sym;
-  u_sym_list_ptr next;
+  s_sym_list *next;
 };
 
 typedef struct ident {
@@ -85,8 +78,8 @@ struct buf {
   FILE *fp;
 };
 
-typedef struct tag      s_tag;
-typedef struct list     s_list;
+typedef struct tag  s_tag;
+typedef struct list s_list;
 
 struct list {
   s_tag *tag;
@@ -95,7 +88,7 @@ struct list {
 
 typedef struct tuple {
   u64 count;
-  s_tag *ptr;
+  s_tag *tag;
 } s_tuple;
 
 typedef enum tag_type {

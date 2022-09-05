@@ -38,7 +38,7 @@ void sym_delete_all ()
   while (sym_list) {
     s_sym_list *tmp;
     tmp = sym_list;
-    sym_list = sym_list->next.p;
+    sym_list = sym_list->next;
     sym_delete(tmp->sym);
     free(tmp);
   }
@@ -53,7 +53,7 @@ const s_sym * sym_find (const s_str *str)
     s_sym *sym = sym_list->sym;
     if (str_cmp(str, &sym->str) == 0)
       return sym;
-    sym_list = sym_list->next.p;
+    sym_list = sym_list->next;
   }
   return NULL;
 }
@@ -112,7 +112,7 @@ s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next)
   if (! sym_list)
     err(1, "out of memory");
   sym_list->sym = sym;
-  sym_list->next.p = next;
+  sym_list->next = next;
   return sym_list;
 }
 

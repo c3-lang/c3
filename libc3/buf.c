@@ -65,7 +65,7 @@ s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
   assert((!size || p) && (size || !p));
   buf->free = free;
   buf->size = size;
-  buf->ptr.u64 = (u64) p;
+  buf->ptr.ps8 = p;
   buf->rpos = 0;
   buf->wpos = 0;
   buf->refill = NULL;

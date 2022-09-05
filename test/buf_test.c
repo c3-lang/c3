@@ -14,7 +14,7 @@
     buf_clean(&bufa);                           \
     TEST_EQ(bufa.size, 0);                      \
     TEST_ASSERT(bufa.ptr.p == NULL);            \
-    TEST_EQ(bufa.ptr.u64, 0);                   \
+    TEST_EQ(bufa.ptr.p, 0);                   \
     TEST_EQ(bufa.rpos, 0);                      \
     TEST_EQ(bufa.wpos, 0);                      \
     TEST_ASSERT(bufa.flush == NULL);            \

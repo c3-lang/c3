@@ -14,7 +14,7 @@
 
 extern const sw buf_inspect_str_byte_size;
 
-sw buf_inspect_bool (s_buf *buf, bool b);
+sw buf_inspect_bool (s_buf *buf, e_bool b);
 sw buf_inspect_character (s_buf *buf, character c);
 sw buf_inspect_character_size (character c);
 sw buf_inspect_f32 (s_buf *buf, f32 x);
