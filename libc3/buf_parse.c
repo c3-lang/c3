@@ -45,8 +45,6 @@ sw buf_parse_character (s_buf *buf, character *dest)
   return 0;
 }
 
-
-//buf_read_character check the value of the character
 sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
 {
   character c;
