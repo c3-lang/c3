@@ -46,7 +46,7 @@ config_libbsd() {
     if pkg-config libbsd-overlay; then
 	CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"
 	CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
-	LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"
+	LIBS="$LIBS $(pkg-config --libs libbsd-overlay) -lmd"
     fi
 }
 

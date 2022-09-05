@@ -58,6 +58,24 @@
     }                                                   \
   } while (0)
 
+#define TEST_STR_CMP(a, b, expected)			   \
+  do {                                                     \
+    sw tmp = str_cmp(a, b);                                \
+    if (tmp == expected) {                                 \
+      test_ok();                                           \
+    }                                                      \
+    else {                                                 \
+      test_ko();                                           \
+      printf("\n%sAssertion failed in %s:%d %s\n"          \
+             "str_cmp(%s, %s) == %s\n"                     \
+             "Expected %s got %ld.%s\n",                   \
+             TEST_COLOR_KO,                                \
+             __FILE__, __LINE__, __func__,                 \
+             # a, # b, # expected, # expected, tmp,        \
+             TEST_COLOR_RESET);                            \
+    }                                                      \
+  } while (0)
+
 #define TEST_STRNCMP(test, result, bytes)               \
   do {                                                  \
     const char *tmp = (test);                           \

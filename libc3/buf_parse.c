@@ -161,11 +161,12 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
         break;
     }
   }
-  if (r <= 0) {
+  if (r <= 0 ||
+      tmp.wpos != tmp.size) {
     buf_restore(buf, &save);
+    buf_clean(&tmp);
     return r;
   }
-  assert(tmp.wpos == tmp.size);
   buf_to_str(&tmp, dest);
   return result;
 }

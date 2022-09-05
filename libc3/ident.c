@@ -51,8 +51,11 @@ s_str * ident_inspect (const s_ident *ident, s_str *p)
   size = buf_inspect_ident_size(ident);
   if (size < 0)
     return NULL;
+  buf_init_alloc(&buf, size);
   r = buf_inspect_ident(&buf, ident);
-  assert(r == size);
-  (void) r;
+  if (r != size) {
+    buf_clean(&buf);
+    return NULL;
+  }
   return buf_to_str(&buf, p);
 }

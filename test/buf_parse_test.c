@@ -150,6 +150,7 @@
     if (g_test_last_ok)                                                \
       TEST_EQ(memcmp(dest.ptr.p, result, n), 0);                       \
     buf_clean(&buf);                                                   \
+    str_clean(&dest);						       \
   } while (0)
 
 #define BUF_PARSE_TEST_STR_U8(test, size, result)                      \

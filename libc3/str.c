@@ -24,9 +24,8 @@ e_bool str_character_is_reserved (character c)
 void str_clean (s_str *str)
 {
   assert(str);
-  if (str->free.p) {
+  if (str->free.p)
     free(str->free.p);
-  }
 }
 
 sw str_cmp (const s_str *a, const s_str *b)

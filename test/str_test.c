@@ -55,6 +55,7 @@
     TEST_STRNCMP(str.ptr.p, result, str.size);            \
     str_clean(&str);                                      \
     str_delete(test);                                     \
+    test_context(NULL);					  \
   } while (0)
 
 #define STR_TEST_TO_SYM(test)                                           \
@@ -65,7 +66,7 @@
     str_init_1(&str, NULL, (test));                                     \
     TEST_ASSERT((result = str_to_sym(&str)));                           \
     TEST_EQ(str_to_sym(&str), result);                                  \
-    STR_TEST_CMP(&result->str, &str, 0);                                \
+    TEST_STR_CMP(&result->str, &str, 0);                                \
   } while (0)
 
 void str_test_character_is_reserved ();
