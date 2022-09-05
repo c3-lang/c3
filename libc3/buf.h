@@ -96,8 +96,8 @@ sw      buf_write_u64 (s_buf *buf, u64 i);
 sw      buf_xfer (s_buf *buf, s_buf *src, uw size);
 
 /* UNIX filesystem interface. */
-e_bool  buf_open_r (s_buf *buf, FILE *fp);
-e_bool  buf_open_w (s_buf *buf, FILE *fp);
+s_buf * buf_open_r (s_buf *buf, FILE *fp);
+s_buf * buf_open_w (s_buf *buf, FILE *fp);
 void    buf_close (s_buf *buf);
 
 /* Observers. */

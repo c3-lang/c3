@@ -83,7 +83,7 @@ sw buf_parse_digit_oct (s_buf *buf, u8 *dest)
   return r;
 }
 
-sw buf_parse_digit_bin(s_buf *buf, u8 *dest)
+sw buf_parse_digit_bin (s_buf *buf, u8 *dest)
 {
   character c;
   sw r;
@@ -91,6 +91,23 @@ sw buf_parse_digit_bin(s_buf *buf, u8 *dest)
   assert(dest);
   if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
     if (c == '0' || c == '1')
+      *dest = c - '0';
+    else
+      return 0;
+    buf_read_character_utf8(buf, &c);
+    return r;
+  }
+  return r;
+}
+
+sw buf_parse_digit_dec (s_buf *buf, u8 *dest)
+{
+  character c;
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
+    if (c >= '0' && c <= '9')
       *dest = c - '0';
     else
       return 0;
@@ -183,7 +200,7 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
     return r;
   if (size == 0) {
     str_init_empty(dest);
-    return r;
+    return 2;
   }
   buf_init_alloc(&tmp, size);
   if ((r = buf_read_1(buf, "\"")) > 0) {
@@ -199,8 +216,6 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
         result += r;
         buf_write_character_utf8(&tmp, c);
       }
-      else if (r < 0)
-        break;
       else if ((r = buf_parse_str_u8(buf, &b)) > 0) {
         result += r;
         buf_write_u8(&tmp, b);
