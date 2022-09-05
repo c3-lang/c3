@@ -4,8 +4,14 @@
 #include <assert.h>
 #include "buf.h"
 #include "buf_inspect.h"
+#include "character.h"
 #include "str.h"
 #include "sym.h"
+
+bool ident_first_character_is_reserved (character c)
+{
+  return ! character_is_lowercase(c);
+}
 
 bool ident_character_is_reserved (character c)
 {
@@ -18,9 +24,13 @@ bool ident_has_reserved_characters (const s_ident *ident)
   sw r;
   s_str stra;
   str_init(&stra, false, ident->sym->str.size, ident->sym->str.ptr.p);
-  while ((r = str_read_character(&stra, &c)) > 0) {
-    if (ident_character_is_reserved(c))
+  if ((r = str_read_character(&stra, &c)) > 0) {
+    if (ident_first_character_is_reserved(c))
       return true;
+    while ((r = str_read_character(&stra, &c)) > 0) {
+      if (ident_character_is_reserved(c))
+        return true;
+    }
   }
   if (r < 0)
     return true;
