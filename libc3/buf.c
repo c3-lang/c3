@@ -458,6 +458,7 @@ sw buf_read_to_str (s_buf *buf, s_str *dest)
     return 0;
   }
   str_init_alloc(dest, size, buf->ptr.ps8 + buf->rpos);
+  buf->rpos += size;
   return size;
 }
 

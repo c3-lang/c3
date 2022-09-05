@@ -55,7 +55,7 @@
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_read_1(&buf, (test)), strlen(test));                   \
     TEST_EQ(buf.rpos, strlen(test));                                   \
-    buf_clean(&buf);						       \
+    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -89,7 +89,7 @@
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_read_to_str(&buf, &result), strlen(test));             \
     TEST_EQ(buf.rpos, strlen(test));                                   \
-    buf_clean(&buf);						       \
+    buf_clean(&buf);                                                   \
     str_clean(&result);                                                \
     test_context(NULL);                                                \
   } while (0)
