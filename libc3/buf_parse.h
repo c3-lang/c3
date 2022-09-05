@@ -23,6 +23,7 @@
 
 sw buf_parse_bool (s_buf *buf, bool *dest);
 sw buf_parse_character (s_buf *buf, character *dest);
+sw buf_parse_digit_bin(s_buf *buf, u8 *dest);
 sw buf_parse_digit_hex (s_buf *buf, u8 *dest);
 sw buf_parse_digit_oct (s_buf *buf, u8 *dest);
 sw buf_parse_ident (s_buf *buf, s_ident *dest);

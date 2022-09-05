@@ -83,6 +83,23 @@ sw buf_parse_digit_oct (s_buf *buf, u8 *dest)
   return r;
 }
 
+sw buf_parse_digit_bin(s_buf *buf, u8 *dest)
+{
+  character c;
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
+    if (c == '0' || c == '1')
+      *dest = c - '0';
+    else
+      return 0;
+    buf_read_character_utf8(buf, &c);
+    return r;
+  }
+  return r;
+}
+
 sw buf_parse_ident (s_buf *buf, s_ident *ident)
 {
   s_buf tmp;

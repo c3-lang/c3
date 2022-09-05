@@ -62,6 +62,18 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
+#define BUF_PARSE_TEST_DIGIT_BIN(test, result)                         \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    u8 dest = 0x80;                                                    \
+    test_context("buf_parse_digit_bin(" # test ") -> " # result);      \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_digit_bin(&buf, &dest), 1);                      \
+    TEST_EQ(buf.rpos, 1);                                              \
+    TEST_EQ(dest, (result));                                           \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
 #define BUF_PARSE_TEST_IDENT(test, result)                             \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -85,6 +97,18 @@
     TEST_EQ(buf_parse_character(&buf, &dest), 0);                      \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, -1);                                                 \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
+#define BUF_PARSE_TEST_NOT_DIGIT_BIN(test, expected)                   \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    u8 dest = 0;                                                       \
+    test_context("buf_parse_digit_bin(" # test ") -> " # expected);    \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_digit_bin(&buf, &dest), 0);                      \
+    TEST_EQ(buf.rpos, 0);                                              \
+    TEST_EQ(dest, 0);                                                  \
     buf_clean(&buf);                                                   \
   } while (0)
 
@@ -191,6 +215,7 @@
 
 void buf_parse_test_bool ();
 void buf_parse_test_character ();
+void buf_parse_test_digit_bin ();
 void buf_parse_test_digit_hex ();
 void buf_parse_test_digit_oct ();
 void buf_parse_test_ident ();
@@ -297,6 +322,24 @@ void buf_parse_test_character ()
   BUF_PARSE_TEST_CHARACTER("'ÿ'", 0xFF);
   BUF_PARSE_TEST_CHARACTER("'꒴'", 42164);
   BUF_PARSE_TEST_CHARACTER("'𐅀'", 65856);
+}
+
+void buf_parse_test_digit_bin ()
+{
+  BUF_PARSE_TEST_NOT_DIGIT_BIN("\x01", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN("\x02", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN("\xF0", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN("\xFF", -1);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN(".", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN(":", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN(",", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN(";", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN("G", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN("H", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN("g", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_BIN("h", 0);
+  BUF_PARSE_TEST_DIGIT_BIN("0", 0);
+  BUF_PARSE_TEST_DIGIT_BIN("1", 1);
 }
 
 void buf_parse_test_digit_hex ()
