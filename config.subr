@@ -75,7 +75,7 @@ require_pkg_config() {
 }
 
 update_config_mk() {
-    if ! cmp "${CONFIG_MK}" config.mk 2>/dev/null; then
+    if ! cmp "${CONFIG_MK}" config.mk >/dev/null 2>&1; then
         mv "${CONFIG_MK}" config.mk
     else
         echo "$PWD/config.mk not changed"
