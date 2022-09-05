@@ -7,4 +7,5 @@ set -e
 ( cd libtommath && ./configure; )
 ( cd ucd2c && ./configure; )
 ( cd libc3 && ./configure; )
+( cd ic3 && ./configure; )
 ( cd test && ./configure; )

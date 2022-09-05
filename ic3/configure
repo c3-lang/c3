@@ -6,10 +6,10 @@ set -e
 
 . ../config.subr
 
-PROG=c3_test
-PROG_ASAN=c3_test.asan
-PROG_COV=c3_test.cov
-PROG_DEBUG=c3_test.debug
+PROG=ic3
+PROG_ASAN=ic3.asan
+PROG_COV=ic3.cov
+PROG_DEBUG=ic3.debug
 
 SOURCES="$(ls *.c | tr '\n' ' ')"
 echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
@@ -37,7 +37,6 @@ LIBS="${LIBS:=}"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 config_asan
 config_libbsd
-config_libcrypto
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"

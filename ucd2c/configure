@@ -47,3 +47,5 @@ done
 echo >> ${CONFIG_MK}
 echo "$PROG: $OBJECTS" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
+
+update_config_mk

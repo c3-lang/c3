@@ -4,16 +4,22 @@
 CLEANFILES = *.a c3_test c3_test.asan c3_test.cov c3_test.debug *.css *.gcno *.html *.o .libs *.lo
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 
-all:   c3_test
-asan:  c3_test.asan
-cov:   c3_test.cov
-debug: c3_test.debug
+build: c3_test
+
+all: build cov debug
+	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
+asan: c3_test.asan
 
 clean:
 	rm -rf ${CLEANFILES}
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
+
+cov:   c3_test.cov
+
+debug: c3_test.debug
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details test.html

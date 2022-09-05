@@ -29,6 +29,7 @@ LIBS="${LIBS:=}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+config_asan
 config_libbsd
 config_libcrypto
 
@@ -53,6 +54,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
 
+echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
@@ -112,3 +114,5 @@ echo >> ${CONFIG_MK}
 echo "install: ${LIB}" >> ${CONFIG_MK}
 echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 -d \${LIBDIR}" >> ${CONFIG_MK}
 echo "	\${LIBTOOL} --tag=CC --mode=install \${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 ${LIB} \${LIBDIR}" >> ${CONFIG_MK}
+
+update_config_mk
