@@ -44,7 +44,7 @@ c2la() {
 
 config_asan() {
     echo "int main() { return 0; }" > .config_asan.c
-    if $CC $CFLAGS .config_asan.c $LDFLAGS -lasan; then
+    if $CC $CFLAGS .config_asan.c $LDFLAGS -lasan -o /dev/null; then
         HAVE_ASAN=true
     else
         HAVE_ASAN=false
@@ -75,7 +75,7 @@ require_pkg_config() {
 }
 
 update_config_mk() {
-    if ! cmp "${CONFIG_MK}" config.mk; then
+    if ! cmp "${CONFIG_MK}" config.mk 2>/dev/null; then
         mv "${CONFIG_MK}" config.mk
     else
         echo "$PWD/config.mk not changed"
