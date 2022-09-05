@@ -55,7 +55,6 @@ sw            str_peek_u8 (const s_str *src, u8 *p);
 sw            str_peek_u16 (const s_str *src, u16 *p);
 sw            str_peek_u32 (const s_str *src, u32 *p);
 sw            str_peek_u64 (const s_str *src, u64 *p);
-sw            str_peek_tag_list (const s_str *src, s_tag_list *p);
 s_str *       str_to_hex (const s_str *src, s_str *dest);
 s_ident *     str_to_ident (const s_str *src, s_ident *dest);
 const s_sym * str_to_sym (const s_str *src);

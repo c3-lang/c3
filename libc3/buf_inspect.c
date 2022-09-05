@@ -316,3 +316,30 @@ sw buf_inspect_sym_reserved_size (const s_sym *sym)
   size += colon_size;
   return size;
 }
+
+sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
+{
+  assert(tag);
+  switch(tag->type.type) {
+  case TAG_VOID:  return 0;
+  case TAG_BOOL:  return buf_inspect_bool(buf, tag->data.bool);
+  case TAG_CHARACTER:
+    return buf_inspect_character(buf, tag->data.character);
+  case TAG_F32:   return buf_inspect_f32(buf, tag->data.f32);
+  case TAG_F64:   return buf_inspect_f64(buf, tag->data.f64);
+  case TAG_LIST:  return buf_inspect_list(buf, &tag->data.list);
+  case TAG_S8:    return buf_inspect_s8(buf, tag->data.s8);
+  case TAG_S16:   return buf_inspect_s16(buf, tag->data.s16);
+  case TAG_S32:   return buf_inspect_s32(buf, tag->data.s32);
+  case TAG_S64:   return buf_inspect_s64(buf, tag->data.s64);
+  case TAG_STR:   return buf_inspect_str(buf, &tag->data.str);
+  case TAG_SYM:   return buf_inspect_sym(buf, tag->data.sym);
+  case TAG_TUPLE: return buf_inspect_tuple(buf, &tag->data.tuple);
+  case TAG_U8:    return buf_inspect_u8(buf, tag->data.u8);
+  case TAG_U16:   return buf_inspect_u16(buf, tag->data.u16);
+  case TAG_U32:   return buf_inspect_u32(buf, tag->data.u32);
+  case TAG_U64:   return buf_inspect_u64(buf, tag->data.u64);
+  }
+  assert(! "unknown tag type");
+  return -1;
+}
