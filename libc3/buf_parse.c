@@ -45,11 +45,27 @@ sw buf_parse_character (s_buf *buf, character *dest)
   return 0;
 }
 
+
+//buf_read_character check the value of the character
 sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
 {
-  (void) buf;
-  (void) dest;
-  return 0;
+  character c;
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
+    if (c >= '0' && c <= '9')
+      *dest = c - '0';
+    else if (c >= 'a' && c <= 'f')
+      *dest = c - 'a' + 10;
+    else if (c >= 'A' && c <= 'F')
+      *dest = c - 'A' + 10;
+    else
+      return 0;
+    buf_read_character_utf8(buf, &c);
+    return r;
+  }
+  return r;
 }
 
 sw buf_parse_ident (s_buf *buf, s_ident *ident)

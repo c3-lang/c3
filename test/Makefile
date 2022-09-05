@@ -30,6 +30,9 @@ test_cov: c3_test.cov
 test_debug: c3_test.debug
 	time ./c3_test.debug
 
-.PHONY: all asan cov debug clean clean_cov test test_asan test_cov test_debug
+test_valgrind: c3_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./c3_test
+
+.PHONY: all asan cov debug clean clean_cov test test_asan test_cov test_debug test_valgrind
 
 include config.mk

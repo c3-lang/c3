@@ -76,13 +76,13 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_NOT_DIGIT_HEX(test)                             \
+#define BUF_PARSE_TEST_NOT_DIGIT_HEX(test, expected)                   \
   do {                                                                 \
     s_buf buf;                                                         \
     u8 dest = 0;                                                       \
     test_context("buf_parse_digit_hex(" # test ") -> 0");              \
     buf_init_1(&buf, (test));                                          \
-    TEST_EQ(buf_parse_digit_hex(&buf, &dest), 0);                      \
+    TEST_EQ(buf_parse_digit_hex(&buf, &dest), (expected));             \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, 0);                                                  \
     buf_clean(&buf);                                                   \
@@ -275,18 +275,18 @@ void buf_parse_test_character ()
 
 void buf_parse_test_digit_hex ()
 {
-  BUF_PARSE_TEST_NOT_DIGIT_HEX("\x01");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX("\x02");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX("\xF0");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX("\xFF");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX(".");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX(":");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX(",");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX(";");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX("G");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX("H");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX("g");
-  BUF_PARSE_TEST_NOT_DIGIT_HEX("h");
+  BUF_PARSE_TEST_NOT_DIGIT_HEX("\x01", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX("\x02", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX("\xF0", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX("\xFF", -1);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX(".", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX(":", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX(",", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX(";", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX("G", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX("H", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX("g", 0);
+  BUF_PARSE_TEST_NOT_DIGIT_HEX("h", 0);
   BUF_PARSE_TEST_DIGIT_HEX("0", 0);
   BUF_PARSE_TEST_DIGIT_HEX("9", 9);
   BUF_PARSE_TEST_DIGIT_HEX("A", 0x0A);
