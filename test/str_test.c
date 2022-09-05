@@ -9,7 +9,11 @@
 
 #define STR_TEST_CMP(a, b, expected)                       \
   do {                                                     \
-    sw tmp = str_cmp(a, b);                                \
+    s_str *a_ = (a);					   \
+    s_str *b_ = (b);					   \
+    sw tmp = str_cmp(a_, b_);                              \
+    str_delete(a_);					   \
+    str_delete(b_);					   \
     if (tmp == expected) {                                 \
       test_ok();                                           \
     }                                                      \
@@ -47,15 +51,17 @@
     test_context(NULL);                                         \
   } while (0)
 
-#define STR_TEST_TO_HEX(test, result)                     \
-  do {                                                    \
-    s_str str;                                            \
-    test_context("str_to_hex(" # test ") -> " # result);  \
-    TEST_EQ(str_to_hex(test, &str), &str);                \
-    TEST_STRNCMP(str.ptr.p, result, str.size);            \
-    str_clean(&str);                                      \
-    str_delete(test);                                     \
-    test_context(NULL);					  \
+#define STR_TEST_TO_HEX(test, result)			   \
+  do {							   \
+    s_str str;						   \
+    s_str *test_;					   \
+    test_context("str_to_hex(" # test ") -> " # result);   \
+    test_ = (test);					   \
+    TEST_EQ(str_to_hex(test_, &str), &str);                \
+    TEST_STRNCMP(str.ptr.p, (result), str.size);	   \
+    str_clean(&str);					   \
+    str_delete(test_);                                     \
+    test_context(NULL);					   \
   } while (0)
 
 #define STR_TEST_TO_SYM(test)                                           \
