@@ -183,7 +183,7 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
     return r;
   if (size == 0) {
     str_init_empty(dest);
-    return r;
+    return 2;
   }
   buf_init_alloc(&tmp, size);
   if ((r = buf_read_1(buf, "\"")) > 0) {
@@ -199,8 +199,6 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
         result += r;
         buf_write_character_utf8(&tmp, c);
       }
-      else if (r < 0)
-        break;
       else if ((r = buf_parse_str_u8(buf, &b)) > 0) {
         result += r;
         buf_write_u8(&tmp, b);
