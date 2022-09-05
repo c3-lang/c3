@@ -51,17 +51,17 @@
     test_context(NULL);                                         \
   } while (0)
 
-#define STR_TEST_TO_HEX(test, result)			   \
-  do {							   \
-    s_str str;						   \
-    s_str *test_;					   \
-    test_context("str_to_hex(" # test ") -> " # result);   \
-    test_ = (test);					   \
-    TEST_EQ(str_to_hex(test_, &str), &str);                \
-    TEST_STRNCMP(str.ptr.p, (result), str.size);	   \
-    str_clean(&str);					   \
-    str_delete(test_);                                     \
-    test_context(NULL);					   \
+#define STR_TEST_TO_HEX(test, result)                                   \
+  do {                                                                  \
+    s_str str;                                                          \
+    s_str *test_;                                                       \
+    test_context("str_to_hex(" # test ") -> " # result);                \
+    test_ = (test);                                                     \
+    TEST_EQ(str_to_hex(test_, &str), &str);                             \
+    TEST_STRNCMP(str.ptr.p, (result), str.size);                        \
+    str_clean(&str);                                                    \
+    str_delete(test_);                                                  \
+    test_context(NULL);                                                 \
   } while (0)
 
 #define STR_TEST_TO_SYM(test)                                           \
