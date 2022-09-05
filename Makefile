@@ -56,7 +56,7 @@ install: all
 	${MAKE} -C libc3 install
 	${MAKE} -C ic3 install
 
-test: all
+test: build
 	${MAKE} -C test test
 
 test_asan: asan
