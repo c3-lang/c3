@@ -44,7 +44,7 @@ c2la() {
 
 config_asan() {
     echo "int main() { return 0; }" > .config_asan.c
-    if $CC $CFLAGS .config_asan.c $LDFLAGS -lasan -o /dev/null; then
+    if $CC $CFLAGS .config_asan.c $LDFLAGS -lasan -o /dev/null 2>/dev/null; then
         HAVE_ASAN=true
     else
         HAVE_ASAN=false
