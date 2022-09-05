@@ -13,6 +13,8 @@
 const sw buf_u8_to_hex_size = 2;
 const sw buf_inspect_str_byte_size = 4;
 
+sw buf_open_r_refill (s_buf *buf);
+sw buf_open_w_flush (s_buf *buf);
 sw buf_refill_compact (s_buf *buf);
 
 void buf_clean (s_buf *buf)
@@ -23,6 +25,14 @@ void buf_clean (s_buf *buf)
     free(buf->ptr.p);
   buf->free = false;
   buf->ptr.p = NULL;
+}
+
+void buf_close (s_buf *buf)
+{
+  assert(buf);
+  buf->flush = NULL;
+  buf->refill = NULL;
+  buf->fp = NULL;
 }
 
 void buf_delete (s_buf *buf)
@@ -107,6 +117,50 @@ s_buf * buf_new_alloc (uw size)
     err(1, "out of memory");
   buf_init_alloc(buf, size);
   return buf;
+}
+
+s_buf * buf_open_r (s_buf *buf, FILE *fp)
+{
+  assert(buf);
+  assert(fp);
+  buf->fp = fp;
+  buf->refill = buf_open_r_refill;
+  return buf;
+}
+
+sw buf_open_r_refill (s_buf *buf)
+{
+  uw r;
+  uw size;
+  assert(buf);
+  assert(buf->fp);
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size)
+    return -1;
+  size = buf->size - buf->wpos;
+  r = fread(buf->ptr.ps8 + buf->wpos, 1, size, buf->fp);
+  if (buf->wpos + r > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf->wpos += r;
+  return r;
+}
+
+s_buf * buf_open_w (s_buf *buf, FILE *fp)
+{
+  assert(buf);
+  assert(fp);
+  buf->fp = fp;
+  buf->flush = buf_open_w_flush;
+  return buf;
+}
+
+sw buf_open_w_flush (s_buf *buf)
+{
+  /* TODO */
+  err(1, "not implemented");
+  (void) buf;
 }
 
 sw buf_peek_1 (s_buf *buf, const s8 *p)
