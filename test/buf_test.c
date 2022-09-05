@@ -81,6 +81,19 @@
     TEST_EQ(c, result);                                                \
   } while (0)
 
+#define BUF_TEST_READ_TO_STR(test)                                     \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_str result;                                                      \
+    test_context("buf_read_to_str(" # test ")");                       \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_read_to_str(&buf, &result), strlen(test));             \
+    TEST_EQ(buf.rpos, strlen(test));                                   \
+    buf_clean(&buf);						       \
+    str_clean(&result);                                                \
+    test_context(NULL);                                                \
+  } while (0)
+
 void buf_test_f ();
 void buf_test_init_clean ();
 void buf_test_new_delete ();
@@ -104,6 +117,7 @@ void buf_test_read_s8 ();
 void buf_test_read_s16 ();
 void buf_test_read_s32 ();
 void buf_test_read_s64 ();
+void buf_test_read_to_str ();
 void buf_test_read_u8 ();
 void buf_test_read_u16 ();
 void buf_test_read_u32 ();
@@ -150,6 +164,8 @@ void buf_test ()
   buf_test_read_u32();
   buf_test_read_u64();
   buf_test_read_character_utf8();
+  buf_test_read_to_str();
+  buf_test_xfer();
   buf_test_f();
 }
 
@@ -517,6 +533,22 @@ void buf_test_read_s64()
   buf_clean(&buf);
 }
 
+void buf_test_read_to_str ()
+{
+  BUF_TEST_READ_TO_STR("");
+  BUF_TEST_READ_TO_STR("0");
+  BUF_TEST_READ_TO_STR("9");
+  BUF_TEST_READ_TO_STR("A");
+  BUF_TEST_READ_TO_STR("Z");
+  BUF_TEST_READ_TO_STR("À");
+  BUF_TEST_READ_TO_STR("É");
+  BUF_TEST_READ_TO_STR("a");
+  BUF_TEST_READ_TO_STR("z");
+  BUF_TEST_READ_TO_STR("à");
+  BUF_TEST_READ_TO_STR("é");
+  BUF_TEST_READ_TO_STR("09AZÀÉazàé");
+}
+
 void buf_test_read_u8 ()
 {
   char a[8] = "ABCDEFGH";
@@ -822,4 +854,25 @@ void buf_test_write_u64 ()
 
 void buf_test_write_str ()
 {
+}
+
+void buf_test_xfer ()
+{
+  const char a[] = "0123456789ABCDEF";
+  s_buf dest;
+  s_buf src;
+  s_str str;
+  str_init_1(&str, NULL, a);
+  BUF_INIT_ALLOCA(&src, sizeof(a));
+  buf_write_str(&src, &str);
+  BUF_INIT_ALLOCA(&dest, sizeof(a));
+  TEST_EQ(buf_xfer(&dest, &src, 0), 0);
+  TEST_EQ(buf_xfer(&dest, &src, 1), 1);
+  TEST_EQ(buf_xfer(&dest, &src, 2), 2);
+  TEST_EQ(buf_xfer(&dest, &src, 3), 3);
+  TEST_EQ(buf_xfer(&dest, &src, 4), 4);
+  TEST_EQ(buf_xfer(&dest, &src, 5), 5);
+  TEST_EQ(buf_xfer(&dest, &src, 6), 0);
+  TEST_EQ(buf_xfer(&dest, &src, 7), 0);
+  TEST_EQ(buf_xfer(&dest, &src, 8), 0);
 }
