@@ -4,19 +4,9 @@
 #ifndef C3_H
 #define C3_H
 
-#include "str.h"
+#include "types.h"
 
-typedef enum {
-  C3_ATOM,
-  C3_COMMENT,
-  C3_IDENT,
-  C3_STRING,
-  C3_WHITESPACE
-} e_c3_token_type;
-
-typedef struct c3_token {
-  e_c3_token_type type;
-  str *str;
-} s_c3_token;
+void libc3_init ();
+void libc3_shutdown ();
 
 #endif /* C3_H */

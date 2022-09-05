@@ -1,6 +1,7 @@
 /* c3
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
+#include "../libc3/c3.h"
 #include "test.h"
 
 void types_test ();
@@ -16,6 +17,7 @@ void sha1_test ();
 int main (int argc, char **argv)
 {
   test_init(argc, argv);
+  libc3_init();
   if (test_target("types")) {
     printf("\ntypes\n");
     types_test();
@@ -54,5 +56,6 @@ int main (int argc, char **argv)
   }
   test_summary();
   test_shutdown();
+  libc3_shutdown();
   return 0;
 }
