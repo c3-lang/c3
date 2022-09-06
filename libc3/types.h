@@ -5,6 +5,7 @@
 #define TYPES_H
 
 #include <stdio.h>
+#include "../libtommath/tommath.h"
 
 /* Basic integer types. */
 typedef char                s8;
@@ -24,6 +25,10 @@ typedef double              f64;
 
 /* Boolean : true or false. */
 typedef s8 bool;
+
+typedef struct integer {
+    mp_int integer;
+} s_integer;
 
 typedef enum {
   false = 0,
@@ -121,6 +126,7 @@ typedef union tag_data {
   character character;
   f32 f32;
   f64 f64;
+  s_integer integer;
   s_list list;
   s_str str;
   const s_sym *sym;
@@ -140,6 +146,5 @@ struct tag {
   u_tag_data data;
 };
 
-typedef struct integer s_integer;
 
 #endif
