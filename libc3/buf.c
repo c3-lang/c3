@@ -159,7 +159,7 @@ s_buf * buf_open_w (s_buf *buf, FILE *fp)
 sw buf_open_w_flush (s_buf *buf)
 {
   /* TODO */
-  err(1, "not implemented");
+  errx(1, "not implemented");
   (void) buf;
 }
 
