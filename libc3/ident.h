@@ -4,10 +4,11 @@
 #ifndef IDENT_H
 #define IDENT_H
 
+#include "sym.h"
 #include "types.h"
 
 /* Maximum number of bytes in UTF-8 of an identifier. */
-#define IDENT_MAX 1024
+#define IDENT_MAX SYM_MAX
 
 /* Constructors, call ident_clean after use. */
 s_ident * ident_init_1 (s_ident *ident, const s8 *p);

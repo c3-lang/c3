@@ -15,6 +15,8 @@
 
 #include "types.h"
 
+#define SYM_MAX 1024
+
 /** @brief Make symbol from C string.
  *  @sa str_to_sym
  */

@@ -75,7 +75,7 @@ struct buf {
   u64 wpos;
   sw (*flush) (s_buf *buf);
   sw (*refill) (s_buf *buf);
-  FILE *fp;
+  void *user_ptr;
 };
 
 typedef struct tag  s_tag;
@@ -97,6 +97,7 @@ typedef enum tag_type {
   TAG_CHARACTER,
   TAG_F32,
   TAG_F64,
+  TAG_IDENT,
   TAG_LIST,
   TAG_S8,
   TAG_S16,
@@ -121,6 +122,7 @@ typedef union tag_data {
   character character;
   f32 f32;
   f64 f64;
+  s_ident ident;
   s_list list;
   s_str str;
   const s_sym *sym;

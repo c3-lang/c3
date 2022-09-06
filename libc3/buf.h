@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <err.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include "types.h"
 
 #define BUF_INIT_ALLOCA(buf, size)              \
@@ -94,11 +95,6 @@ sw      buf_write_u16 (s_buf *buf, u16 i);
 sw      buf_write_u32 (s_buf *buf, u32 i);
 sw      buf_write_u64 (s_buf *buf, u64 i);
 sw      buf_xfer (s_buf *buf, s_buf *src, uw size);
-
-/* UNIX filesystem interface. */
-s_buf * buf_open_r (s_buf *buf, FILE *fp);
-s_buf * buf_open_w (s_buf *buf, FILE *fp);
-void    buf_close (s_buf *buf);
 
 /* Observers. */
 s_buf * buf_save (s_buf *buf, s_buf *save);

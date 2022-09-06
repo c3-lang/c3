@@ -4,7 +4,11 @@
 #ifndef C3_H
 #define C3_H
 
-#include "types.h"
+#include "buf.h"
+#include "buf_file.h"
+#include "buf_inspect.h"
+#include "buf_parse.h"
+#include "character.h"
 
 void libc3_init ();
 void libc3_shutdown ();

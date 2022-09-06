@@ -117,57 +117,100 @@ sw buf_parse_digit_dec (s_buf *buf, u8 *dest)
   return r;
 }
 
-sw buf_parse_ident (s_buf *buf, s_ident *ident)
+sw buf_parse_ident (s_buf *buf, s_ident *dest)
 {
-  s_buf tmp;
   character c;
+  sw csize;
   sw r;
-  sw r1;
+  sw r1 = 0;
   sw result = 0;
   s_buf save;
   s_str str;
+  s_buf tmp;
   assert(buf);
-  assert(ident);
-  buf_save(buf, &save);
-  if ((r = buf_read_1(buf, "~i")) > 0 &&
-      (r1 = buf_parse_str(buf, &str)) > 0) {
-      str_to_ident(&str, ident);
+  assert(dest);
+  if ((r = buf_peek_1(buf, "~i\"")) > 0) {
+    if ((r = buf_read_1(buf, "~i")) > 0 &&
+        (r1 = buf_parse_str(buf, &str)) > 0) {
+      str_to_ident(&str, dest);
       str_clean(&str);
       return r + r1;
+    }
+    if (r1 < 0) {
+      buf_restore(buf, &save);
+      return r1;
+    }
   }
-  buf_restore(buf, &save);
-  if ((r = buf_read_character_utf8(buf, &c)) > 0 &&
+  if (r < 0) {
+    buf_restore(buf, &save);
+    return r;
+  }
+  if ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
       character_is_lowercase(c)) {
-    buf_init_alloc(&tmp, IDENT_MAX);
-    if (buf_write_character_utf8(&tmp, c) != r)
+    csize = r;
+    BUF_INIT_ALLOCA(&tmp, IDENT_MAX);
+    result += csize;
+    if ((r = buf_xfer(&tmp, buf, csize)) != csize)
       goto error;
-    result += r;
-    while ((r = buf_read_character_utf8(buf, &c)) > 0 &&
+    while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
            ! ident_character_is_reserved(c)) {
-      if (buf_write_character_utf8(&tmp, c) != r)
+      csize = r;
+      if ((r = buf_xfer(&tmp, buf, csize)) != csize)
         goto error;
-      result += r;
+      result += csize;
     }
     if (r < 0) {
       buf_restore(buf, &save);
-      buf_clean(&tmp);
       return r;
     }
-    buf_read_to_str(&tmp, &str);
-    buf_clean(&tmp);
-    str_to_ident(&str, ident);
-    str_clean(&str);
+    buf_to_str(&tmp, &str);
+    str_to_ident(&str, dest);
     return result;
   }
-  buf_restore(buf, &save);
   if (r < 0)
     return r;
   return 0;
  error:
   buf_restore(buf, &save);
-  buf_clean(&tmp);
-  return -1;
+  return r;
 }
+
+/*
+sw buf_parse_integer (s_buf *buf, s_integer *dest)
+{
+  character c;
+  sw csize;
+  mp_err err;
+  e_bool negative = false;
+  const mp_digit radix = 10;
+  mp_digit digit;
+  mp_zero(dest->mp_int);
+  if (radix < 2 || radix > 64)
+    return -1;
+  if ((r = buf_peek_1(buf, "-")) > 0) {
+    if ((r = buf_read_1(buf, "-")) != 1)
+      return r;
+    negative = true;
+  }
+  mp_zero(dest->mp_int);
+  if ((err = mp_mul_d(dest->mp_int, radix, a)) != MP_OKAY) {
+         return err;
+      }
+      if ((err = mp_add_d(a, (mp_digit)y, a)) != MP_OKAY) {
+         return err;
+      }
+      ++str;
+   }
+   if (!((*str == '\0') || (*str == '\r') || (*str == '\n'))) {
+      mp_zero(a);
+      return MP_VAL;
+   }
+   if (!MP_IS_ZERO(a)) {
+      a->sign = neg;
+   }
+   return MP_OKAY;
+}
+*/
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
@@ -290,4 +333,94 @@ sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
     return r2;
   assert(! "error");
   return -1;
+}
+
+
+sw buf_parse_sym (s_buf *buf, const s_sym **dest)
+{
+  s_buf tmp;
+  character c;
+  sw csize;
+  sw r;
+  sw r1 = 0;
+  sw result = 0;
+  s_buf save;
+  s_str str;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_peek_1(buf, ":\"")) > 0) {
+    if ((r = buf_read_1(buf, ":")) > 0 &&
+        (r1 = buf_parse_str(buf, &str)) > 0) {
+      *dest = str_to_sym(&str);
+      str_clean(&str);
+      return r + r1;
+    }
+    if (r1 < 0) {
+      buf_restore(buf, &save);
+      return r1;
+    }
+  }
+  if (r < 0) {
+    buf_restore(buf, &save);
+    return r;
+  }
+  if ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
+      (c == ':' || character_is_uppercase(c))) {
+    csize = r;
+    BUF_INIT_ALLOCA(&tmp, SYM_MAX);
+    if ((r = buf_xfer(&tmp, buf, csize)) != csize)
+      goto error;
+    result += csize;
+    while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
+           ! sym_character_is_reserved(c)) {
+      csize = r1;
+      if ((r = buf_xfer(&tmp, buf, csize)) != csize)
+        goto error;
+      result += csize;
+    }
+    if (r < 0)
+      goto error;
+    buf_to_str(&tmp, &str);
+    *dest = str_to_sym(&str);
+    return result;
+  }
+  return r;
+ error:
+  buf_restore(buf, &save);
+  return r;
+}
+
+sw buf_parse_tag (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  (void) ((r = buf_parse_tag_str(buf, dest)) > 0 ||
+          (r = buf_parse_tag_sym(buf, dest)) > 0 ||
+          (r = buf_parse_tag_ident(buf, dest)) > 0);
+  return r;
+}
+
+sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_ident(buf, &dest->data.ident)) > 0)
+    dest->type.type = TAG_IDENT;
+  return r;
+}
+
+sw buf_parse_tag_str (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_str(buf, &dest->data.str)) > 0)
+    dest->type.type = TAG_STR;
+  return r;
+}
+
+sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_sym(buf, &dest->data.sym)) > 0)
+    dest->type.type = TAG_SYM;
+  return r;
 }
