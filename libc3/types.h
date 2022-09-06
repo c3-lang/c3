@@ -140,4 +140,6 @@ struct tag {
   u_tag_data data;
 };
 
+typedef struct integer s_integer;
+
 #endif
