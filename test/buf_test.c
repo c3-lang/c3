@@ -551,43 +551,25 @@ void buf_test_read_to_str ()
 
 void buf_test_read_u8 ()
 {
-  char a[8] = "ABCDEFGH";
   s_buf buf;
   u8 byte;
-  buf_init(&buf, false, sizeof(a), a);
-  TEST_EQ(buf_read_u8(&buf, &byte), 0);
-  TEST_EQ(buf_read_u8(&buf, &byte), 0);
-  buf.wpos = 1;
+  buf_init_1(&buf, "ABCDEFGH");
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'A');
-  TEST_EQ(buf.rpos, 1);
-  TEST_EQ(buf_read_u8(&buf, &byte), 0);
-  TEST_EQ(buf_read_u8(&buf, &byte), 0);
-  buf.wpos = 5;
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'B');
-  TEST_EQ(buf.rpos, 2);
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'C');
-  TEST_EQ(buf.rpos, 3);
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'D');
-  TEST_EQ(buf.rpos, 4);
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'E');
-  TEST_EQ(buf.rpos, 5);
-  TEST_EQ(buf_read_u8(&buf, &byte), 0);
-  TEST_EQ(buf_read_u8(&buf, &byte), 0);
-  buf.wpos = 8;
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'F');
-  TEST_EQ(buf.rpos, 6);
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'G');
-  TEST_EQ(buf.rpos, 7);
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'H');
-  TEST_EQ(buf.rpos, 8);
   TEST_EQ(buf_read_u8(&buf, &byte), 0);
   buf_clean(&buf);
 }

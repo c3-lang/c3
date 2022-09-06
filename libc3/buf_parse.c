@@ -149,9 +149,9 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
       character_is_lowercase(c)) {
     csize = r;
     BUF_INIT_ALLOCA(&tmp, IDENT_MAX);
-    result += csize;
     if ((r = buf_xfer(&tmp, buf, csize)) != csize)
       goto error;
+    result += csize;
     while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
            ! ident_character_is_reserved(c)) {
       csize = r;
@@ -163,8 +163,9 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
       buf_restore(buf, &save);
       return r;
     }
-    buf_to_str(&tmp, &str);
+    buf_read_to_str(&tmp, &str);
     str_to_ident(&str, dest);
+    str_clean(&str);
     return result;
   }
   if (r < 0)
@@ -373,18 +374,21 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
     result += csize;
     while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
            ! sym_character_is_reserved(c)) {
-      csize = r1;
+      csize = r;
       if ((r = buf_xfer(&tmp, buf, csize)) != csize)
         goto error;
       result += csize;
     }
     if (r < 0)
       goto error;
-    buf_to_str(&tmp, &str);
+    buf_read_to_str(&tmp, &str);
     *dest = str_to_sym(&str);
+    str_clean(&str);
     return result;
   }
-  return r;
+  if (r < 0)
+    return r;
+  return 0;
  error:
   buf_restore(buf, &save);
   return r;

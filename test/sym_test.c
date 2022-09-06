@@ -61,9 +61,11 @@ void sym_test_1 ()
   mod = sym_test_1_test("Test123.Test456");
   TEST_ASSERT(mod != mod_test123);
   TEST_ASSERT(mod != sym);
+  sym_test_1_test("A");
   sym_test_1_test("É");
   sym_test_1_test("Éo");
   sym_test_1_test("Éoà \n\r\t\v\"");
+  sym_test_1_test("a");
   sym_test_1_test("é");
   sym_test_1_test("éo");
   sym_test_1_test("éoà \n\r\t\v\"");

@@ -93,8 +93,8 @@
     test_context("buf_parse_ident(" # test ") -> " # result);          \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_ident(&buf, &dest), strlen(test));               \
-    TEST_EQ(buf.wpos, strlen(test));                                   \
-    TEST_ASSERT(dest.sym);                                             \
+    if (g_test_last_ok)                                                \
+      TEST_EQ(dest.sym->str.size, strlen(result));                    \
     if (g_test_last_ok)                                                \
       TEST_STRNCMP(dest.sym->str.ptr.p, (result), dest.sym->str.size); \
     buf_clean(&buf);                                                   \
@@ -183,6 +183,17 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
+#define BUF_PARSE_TEST_NOT_SYM(test)                                   \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    const s_sym *dest = NULL;                                          \
+    test_context("buf_parse_sym(" # test ") -> 0");                    \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_sym(&buf, &dest), 0);                            \
+    TEST_EQ(buf.rpos, 0);                                              \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
 #define BUF_PARSE_TEST_STR(test, result)                               \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -234,6 +245,22 @@
     TEST_EQ(buf_parse_str_u8(&buf, &dest), (size));                    \
     TEST_EQ(buf.rpos, (size));                                         \
     TEST_EQ(dest, (result));                                           \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
+#define BUF_PARSE_TEST_SYM(test, result)                               \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    const s_sym *dest = NULL;                                          \
+    test_context("buf_parse_sym(" # test ") -> " # result);            \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_sym(&buf, &dest), strlen(test));                 \
+    if (g_test_last_ok)                                                \
+      TEST_ASSERT(dest);                                               \
+    if (g_test_last_ok)                                                \
+      TEST_EQ(dest->str.size, strlen(result));                         \
+    if (g_test_last_ok)                                                \
+      TEST_STRNCMP(dest->str.ptr.p, (result), dest->str.size);         \
     buf_clean(&buf);                                                   \
   } while (0)
 
@@ -519,4 +546,20 @@ void buf_parse_test_str_u8 ()
 
 void buf_parse_test_sym ()
 {
+  BUF_PARSE_TEST_NOT_SYM("0");
+  BUF_PARSE_TEST_NOT_SYM("9");
+  BUF_PARSE_TEST_NOT_SYM("a");
+  BUF_PARSE_TEST_NOT_SYM("z");
+  BUF_PARSE_TEST_NOT_SYM("00");
+  BUF_PARSE_TEST_NOT_SYM("0Abc");
+  BUF_PARSE_TEST_NOT_SYM("0abc");
+  BUF_PARSE_TEST_SYM(":\"0\"", "0");
+  BUF_PARSE_TEST_SYM(":\"9\"", "9");
+  BUF_PARSE_TEST_SYM(":\"A\"", "A");
+  BUF_PARSE_TEST_SYM(":\"Z\"", "Z");
+  BUF_PARSE_TEST_SYM(":\"a\"", "a");
+  BUF_PARSE_TEST_SYM(":\"z\"", "z");
+  BUF_PARSE_TEST_SYM("A", "A");
+  BUF_PARSE_TEST_SYM("Z", "Z");
+  BUF_PARSE_TEST_SYM("Az09az", "Az09az");
 }

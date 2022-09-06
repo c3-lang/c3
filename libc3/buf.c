@@ -132,7 +132,8 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   const u8 _11100000 = 0xE0;
   const u8 _11110000 = 0xF0;
   const u8 _11111000 = 0xF8;
-  if (buf->wpos - buf->rpos < 1)
+  if (buf->wpos - buf->rpos < 1 &&
+      buf_refill(buf) < 1)
     return 0;
   b = (const u8 *) buf->ptr.pu8 + buf->rpos;
   if ((b[0] & _10000000) == 0) {
@@ -297,7 +298,8 @@ sw buf_peek_u8 (s_buf *buf, u8 *p)
     assert(! "buf error");
     return -1;
   }
-  if (buf->rpos + size > buf->wpos)
+  if (buf->rpos + size > buf->wpos &&
+      buf_refill(buf) < size)
     return 0;
   *p = buf->ptr.pu8[buf->rpos];
   return size;

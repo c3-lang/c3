@@ -31,7 +31,7 @@ s_buf * buf_file_open_r (s_buf *buf, FILE *fp)
   assert(fp);
   buf_file = malloc(sizeof(s_buf_file));
   if (! buf_file)
-    err(1, "out of memory");
+    errx(1, "buf_file_open_r: out of memory");
   buf_file->fp = fp;
   buf->refill = buf_file_open_r_refill;
   buf->user_ptr = buf_file;
@@ -60,18 +60,22 @@ sw buf_file_open_r_refill (s_buf *buf)
 
 s_buf * buf_file_open_w (s_buf *buf, FILE *fp)
 {
+  s_buf_file *buf_file;
   assert(buf);
   assert(fp);
-  (void) buf;
-  (void) fp;
-  err(1, "not implemented");
-  return NULL;
+  buf_file = malloc(sizeof(s_buf_file));
+  if (! buf_file)
+    errx(1, "buf_file_open_w: out of memory");
+  buf_file->fp = fp;
+  buf->flush = buf_file_open_w_flush;
+  buf->user_ptr = buf_file;
+  return buf;
 }
 
 sw buf_file_open_w_flush (s_buf *buf)
 {
   /* TODO */
-  err(1, "not implemented");
+  errx(1, "not implemented");
   (void) buf;
   return 0;
 }
