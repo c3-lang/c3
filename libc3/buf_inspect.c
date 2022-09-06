@@ -108,6 +108,33 @@ sw buf_inspect_f32 (s_buf *buf, f32 x)
   errx(1, "not implemented");
   return -1;
 }
+sw buf_inspect_f32 (s_buf *buf, f32 x)
+{
+  u8 digit;
+  sw i;
+  sw r;
+  sw size = 0;
+  s_buf tmp;
+  s_buf save;
+  BUF_INIT_ALLOCA(&tmp, 20);
+  while (x > 0) {
+    digit = (int)x % 10;
+    x /= 10;
+    if (buf_write_u8(&tmp, '0' + digit) != 1) {
+      assert(! "error");
+      return -1;
+    }
+    size++;
+  }
+  buf_save(buf, &save);
+  i = size;
+  while (i--)
+    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) != 1) {
+      buf_restore(buf, &save);
+      return r;
+    }
+  return size;
+}
 
 sw buf_inspect_f64 (s_buf *buf, f64 x)
 {

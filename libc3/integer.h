@@ -15,10 +15,6 @@
 #include "types.h"
 #include "../libtommath/tommath.h"
 
-struct integer {
-  mp_int mp;
-};
-
 /* Stack allocation compatible functions */
 s_integer * integer_init (s_integer *i);
 void integer_clean (s_integer *i);
