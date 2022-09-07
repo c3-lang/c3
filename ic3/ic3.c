@@ -48,8 +48,11 @@ int main (int argc, char **argv)
     if ((r = buf_parse_tag(&in, &tag)) > 0) {
       if (buf_inspect_tag(&out, &tag) < 0 ||
           buf_write_1(&out, "\n") < 0 ||
-          buf_flush(&out) < 0)
+          buf_flush(&out) < 0) {
+	tag_clean(&tag);
         break;
+      }
+      tag_clean(&tag);
     }
     if (r < 0)
       break;

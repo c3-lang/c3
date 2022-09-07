@@ -7,6 +7,18 @@
 #include "str.h"
 #include "tag.h"
 
+void tag_clean (s_tag *tag)
+{
+  assert(tag);
+  switch (tag->type.type) {
+  case TAG_STR:
+    str_clean(&tag->data.str);
+    break;
+  default:
+    ;
+  }
+}
+
 s_tag * tag_init_bool (s_tag *tag, bool b)
 {
   assert(tag);
@@ -62,18 +74,6 @@ s_tag * tag_init_u64 (s_tag *tag, u64 i)
     tag->type.type = TAG_U64;
     tag->data.u64 = i;
     return tag;
-}
-
-void tag_clean (s_tag *tag)
-{
-  assert(tag);
-  switch (tag->type.type) {
-  case TAG_STR:
-    str_clean(&tag->data.str);
-    break;
-  default:
-    ;
-  }
 }
 
 void tag_delete (s_tag *tag)

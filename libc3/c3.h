@@ -9,6 +9,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "character.h"
+#include "tag.h"
 #include "ucd.h"
 
 void libc3_init ();

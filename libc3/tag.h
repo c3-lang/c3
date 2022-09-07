@@ -29,6 +29,7 @@ s_tag * tag_init_u8 (s_tag *tag, u8 i);
 s_tag * tag_init_u16 (s_tag *tag, u16 i);
 s_tag * tag_init_u32 (s_tag *tag, u32 i);
 s_tag * tag_init_u64 (s_tag *tag, u64 i);
+void    tag_clean (s_tag *tag);
 
 /* Constructors, call tag_delete after use */
 s_tag * tag_new_str (s8 *free, uw size, const s8 *p);
