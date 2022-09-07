@@ -18,6 +18,8 @@ sw buf_file_open_w_flush (s_buf *buf);
 void buf_file_close (s_buf *buf)
 {
   assert(buf);
+  if (buf->flush)
+    buf_flush(buf);
   buf->flush = NULL;
   buf->refill = NULL;
   free(buf->user_ptr);
