@@ -27,7 +27,7 @@ typedef double              f64;
 typedef s8 bool;
 
 typedef struct integer {
-    mp_int integer;
+    mp_int mp_int;
 } s_integer;
 
 typedef enum {

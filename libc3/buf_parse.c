@@ -11,6 +11,7 @@
 #include "limits.h"
 #include "str.h"
 #include "sym.h"
+#include "integer.h"
 
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
@@ -169,42 +170,32 @@ sw buf_parse_ident (s_buf *buf, s_ident *ident)
   return -1;
 }
 
-/*
 sw buf_parse_integer (s_buf *buf, s_integer *dest)
 {
-  character c;
-  sw csize;
+  //character c;
   mp_err err;
-  e_bool negative = false;
   const mp_digit radix = 10;
   mp_digit digit;
-  mp_zero(dest->mp_int);
+  sw r;
+  mp_zero(&dest->mp_int);
   if (radix < 2 || radix > 64)
     return -1;
   if ((r = buf_peek_1(buf, "-")) > 0) {
     if ((r = buf_read_1(buf, "-")) != 1)
       return r;
-    negative = true;
   }
-  mp_zero(dest->mp_int);
-  if ((err = mp_mul_d(dest->mp_int, radix, a)) != MP_OKAY) {
-         return err;
-      }
-      if ((err = mp_add_d(a, (mp_digit)y, a)) != MP_OKAY) {
-         return err;
-      }
-      ++str;
-   }
-   if (!((*str == '\0') || (*str == '\r') || (*str == '\n'))) {
-      mp_zero(a);
-      return MP_VAL;
-   }
-   if (!MP_IS_ZERO(a)) {
-      a->sign = neg;
-   }
-   return MP_OKAY;
+  mp_zero(&dest->mp_int);
+  if ((r = buf_parse_digit_dec(buf, (u8 *)&digit)) > 0) {
+    if ((err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int)) != MP_OKAY)
+      return -1;
+    if ((err = mp_add_d(&dest->mp_int, digit, &dest->mp_int)) != MP_OKAY)
+      return -1;
+  }
+  if (!MP_IS_ZERO(&dest->mp_int)) {
+    dest->mp_int.sign = 1;
+  }
+  return MP_OKAY;
 }
-*/
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {

@@ -100,6 +100,10 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
+#define BUF_PARSE_TEST_DIGIT_INTEGER(test, result)                           \
+do {                                                                   \
+} while (0)
+
 #define BUF_PARSE_TEST_NOT_CHARACTER(test)                             \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -159,6 +163,9 @@
     TEST_EQ(dest, 0);                                                  \
     buf_clean(&buf);                                                   \
   } while (0)
+
+#define BUF_PARSE_TEST_NOT_DIGIT_INTEGER(test, expected)               \
+  do {} while (0)
 
 #define BUF_PARSE_TEST_NOT_IDENT(test)                                 \
   do {                                                                 \
@@ -243,6 +250,7 @@ void buf_parse_test_digit_bin ();
 void buf_parse_test_digit_hex ();
 void buf_parse_test_digit_oct ();
 void buf_parse_test_digit_dec ();
+void buf_parse_test_digit_integer();
 void buf_parse_test_ident ();
 void buf_parse_test_str ();
 void buf_parse_test_str_character ();
@@ -255,6 +263,7 @@ void buf_parse_test ()
   buf_parse_test_digit_hex();
   buf_parse_test_digit_oct();
   buf_parse_test_digit_dec();
+  buf_parse_test_digit_integer();
   buf_parse_test_str_character();
   buf_parse_test_str_u8();
   buf_parse_test_character();
@@ -424,6 +433,12 @@ void buf_parse_test_digit_dec ()
   BUF_PARSE_TEST_NOT_DIGIT_DEC("h", 0);
   BUF_PARSE_TEST_DIGIT_DEC("0", 0);
   BUF_PARSE_TEST_DIGIT_DEC("9", 9);
+}
+
+void buf_parse_test_digit_integer()
+{
+  BUF_PARSE_TEST_NOT_DIGIT_INTEGER("\x01", 0);
+  BUF_PARSE_TEST_DIGIT_INTEGER("0", 0);
 }
 
 void buf_parse_test_ident ()
