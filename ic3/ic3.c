@@ -41,7 +41,7 @@ int main (int argc, char **argv)
     return usage(argv[0]);
   BUF_INIT_ALLOCA(&in, BUFSZ);
   BUF_INIT_ALLOCA(&out, BUFSZ);
-  if (isatty(STDIN_FILENO))
+  if (false && isatty(STDIN_FILENO))
     buf_readline_open_r(&in, "ic3> ");
   else
     buf_file_open_r(&in, stdin);
