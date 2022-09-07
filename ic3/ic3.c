@@ -1,6 +1,7 @@
 /* c3
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
+#include <unistd.h>
 #include "../libc3/c3.h"
 #include "buf_readline.h"
 
@@ -40,7 +41,10 @@ int main (int argc, char **argv)
     return usage(argv[0]);
   BUF_INIT_ALLOCA(&in, BUFSZ);
   BUF_INIT_ALLOCA(&out, BUFSZ);
-  buf_readline_open_r(&in, "ic3> ");
+  if (isatty(STDIN_FILENO))
+    buf_readline_open_r(&in, "ic3> ");
+  else
+    buf_file_open_r(&in, stdin);
   buf_file_open_w(&out, stdout);
   while ((r = buf_peek_u8(&in, &byte)) > 0) {
     if (buf_xfer_spaces(&in, &out) < 0)
@@ -57,7 +61,10 @@ int main (int argc, char **argv)
     if (r < 0)
       break;
   }
-  buf_readline_close(&in);
+  if (isatty(STDIN_FILENO))
+    buf_readline_close(&in);
+  else
+    buf_file_close(&in);
   buf_file_close(&out);
   libc3_shutdown();
   return 0;
