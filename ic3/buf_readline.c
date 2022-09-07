@@ -10,7 +10,8 @@
 #include "../libc3/c3.h"
 
 typedef struct buf_readline {
-  s_buf buf;
+  s_buf       buf;
+  bool        eof;
   const char *prompt;
 } s_buf_readline;
 
@@ -32,6 +33,7 @@ s_buf * buf_readline_open_r (s_buf *buf, const char *prompt)
   if (! buf_readline)
     errx(1, "buf_readline_open_r: out of memory");
   buf_init_1(&buf_readline->buf, "");
+  buf_readline->eof = false;
   buf_readline->prompt = prompt;
   buf->refill = buf_readline_refill;
   buf->user_ptr = buf_readline;
@@ -53,11 +55,22 @@ sw buf_readline_refill (s_buf *buf)
   if (size == 0)
     return 0;
   buf_readline = buf->user_ptr;
+  if (buf_readline->eof)
+    return -1;
   buf_readline_len = buf_readline->buf.wpos - buf_readline->buf.rpos;
   if (buf_readline_len == 0) {
     free(buf_readline->buf.ptr.p);
-    if (! (buf_readline->buf.ptr.p = readline(buf_readline->prompt)))
+    if (! (buf_readline->buf.ptr.p = readline(buf_readline->prompt))) {
+      buf_readline->eof = true;
+      buf_readline->buf.rpos =
+        buf_readline->buf.wpos =
+        buf_readline->buf.size = 0;
       return -1;
+    }
+    buf_readline_len = strlen(buf_readline->buf.ptr.p);
+    buf_readline->buf.ptr.ps8[buf_readline_len++] = '\n';
+    buf_readline->buf.size = buf_readline->buf.wpos = buf_readline_len;
+    buf_readline->buf.rpos = 0;
   }
   if (buf_readline_len < size)
     size = buf_readline_len;

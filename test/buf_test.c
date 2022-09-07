@@ -59,6 +59,16 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_TEST_READ_1_(data, test, result)                           \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    test_context("buf_read_1(" # data ", " # test ") -> " # result);   \
+    buf_init_1(&buf, (data));                                          \
+    TEST_EQ(buf_read_1(&buf, (test)), (result));                       \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_TEST_READ_CHARACTER_UTF8(test, result)                     \
   do {                                                                 \
     character c;                                                       \
@@ -153,6 +163,7 @@ void buf_test ()
   buf_test_peek_s8 ();
   buf_test_peek_s16 ();
   buf_test_peek_u8();
+  buf_test_read_1();
   buf_test_read_f32();
   buf_test_read_f64();
   buf_test_read_s8();
@@ -341,6 +352,11 @@ void buf_test_read_1 ()
   BUF_TEST_READ_1("π");
   BUF_TEST_READ_1("ꝝ");
   BUF_TEST_READ_1("\x01\x02\x03" "ABCabcÀÉΠꝜ꒴𐅀àéπꝝ");
+  BUF_TEST_READ_1_("", "", 0);
+  BUF_TEST_READ_1_("", "a", 0);
+  BUF_TEST_READ_1_("", "abc", 0);
+  BUF_TEST_READ_1_("a", "", 0);
+  BUF_TEST_READ_1_("abc", "", 0);
 }
 
 void buf_test_read_character_utf8 ()

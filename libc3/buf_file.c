@@ -18,8 +18,7 @@ sw buf_file_open_w_flush (s_buf *buf);
 void buf_file_close (s_buf *buf)
 {
   assert(buf);
-  if (buf->flush)
-    buf_flush(buf);
+  buf_flush(buf);
   buf->flush = NULL;
   buf->refill = NULL;
   free(buf->user_ptr);
@@ -76,8 +75,22 @@ s_buf * buf_file_open_w (s_buf *buf, FILE *fp)
 
 sw buf_file_open_w_flush (s_buf *buf)
 {
-  /* TODO */
-  errx(1, "not implemented");
-  (void) buf;
-  return 0;
+  s_buf_file *buf_file;
+  sw size;
+  assert(buf);
+  assert(buf->user_ptr);
+  if (buf->rpos)
+    return -1;
+  if (buf->rpos > buf->wpos)
+    return -1;
+  if (buf->wpos > buf->size)
+    return -1;
+  size = buf->wpos;
+  if (size == 0)
+    return 0;
+  buf_file = buf->user_ptr;
+  fwrite(buf->ptr.p, 1, size, buf_file->fp);
+  fflush(buf_file->fp);
+  buf->wpos = 0;
+  return size;
 }

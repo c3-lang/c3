@@ -10,34 +10,22 @@ int usage (char *argv0);
 
 sw buf_xfer_spaces (s_buf *in, s_buf *out)
 {
-  u8 b;
   character c;
+  sw csize;
   sw r;
-  sw r1;
-  uw size = 0;
-  s_buf in_save;
+  sw size = 0;
   assert(in);
   assert(out);
   while ((r = buf_peek_character_utf8(in, &c)) > 0 &&
-         character_is_space(c)) {
-    while (r--) {
-      buf_save(in, &in_save);
-      if ((r1 = buf_read_u8(in, &b)) != 1)
-        break;
-      if ((r1 = buf_write_u8(out, b)) != 1) {
-        buf_restore(in, &in_save);
-        break;
-      }
-    }
-    if (r1 != 1) {
-      if (size)
-        return size;
-      return r1;
-    }
+         c >= 0 &&
+         c < UCD_MAX &&
+         g_ucd[c].flags & (UCD_OTHER_CONTROL | UCD_SEPARATOR_SPACE)) {
+    csize = r;
+    if ((r = buf_xfer(out, in, csize)) != csize)
+      return -1;
+    size += csize;
   }
-  if (size)
-    return size;
-  return r;
+  return size;
 }
 
 int main (int argc, char **argv)
@@ -55,12 +43,18 @@ int main (int argc, char **argv)
   buf_readline_open_r(&in, "ic3> ");
   buf_file_open_w(&out, stdout);
   while ((r = buf_peek_u8(&in, &byte)) > 0) {
-    buf_xfer_spaces(&in, &out);
-    if ((r = buf_parse_tag(&in, &tag)) > 0)
-      buf_inspect_tag(&out, &tag);
-    
+    if (buf_xfer_spaces(&in, &out) < 0)
+      break;
+    if ((r = buf_parse_tag(&in, &tag)) > 0) {
+      if (buf_inspect_tag(&out, &tag) < 0 ||
+          buf_write_1(&out, "\n") < 0 ||
+          buf_flush(&out) < 0)
+        break;
+    }
+    if (r < 0)
+      break;
   }
-  buf_file_close(&in);
+  buf_readline_close(&in);
   buf_file_close(&out);
   libc3_shutdown();
   return 0;

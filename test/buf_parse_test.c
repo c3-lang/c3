@@ -171,6 +171,18 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
+
+#define BUF_PARSE_TEST_NOT_STR(test)                                   \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_str dest = {0};                                                  \
+    test_context("buf_parse_str(" # test ") -> 0");                    \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_str(&buf, &dest), 0);                            \
+    TEST_EQ(buf.rpos, 0);                                              \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
 #define BUF_PARSE_TEST_NOT_STR_U8(test)                                \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -473,6 +485,22 @@ void buf_parse_test_ident ()
 
 void buf_parse_test_str ()
 {
+  BUF_PARSE_TEST_NOT_STR("");
+  BUF_PARSE_TEST_NOT_STR("\x00");
+  BUF_PARSE_TEST_NOT_STR("\x01");
+  BUF_PARSE_TEST_NOT_STR("\xFF");
+  BUF_PARSE_TEST_NOT_STR("\x00\x01\xFF");
+  BUF_PARSE_TEST_NOT_STR("0");
+  BUF_PARSE_TEST_NOT_STR("9");
+  BUF_PARSE_TEST_NOT_STR("A");
+  BUF_PARSE_TEST_NOT_STR("Z");
+  BUF_PARSE_TEST_NOT_STR("a");
+  BUF_PARSE_TEST_NOT_STR("z");
+  BUF_PARSE_TEST_NOT_STR("09AZaz");
+  BUF_PARSE_TEST_NOT_STR("\"");
+  BUF_PARSE_TEST_NOT_STR("\"0");
+  BUF_PARSE_TEST_NOT_STR("\"9");
+  BUF_PARSE_TEST_NOT_STR("\"09AZaz");
   BUF_PARSE_TEST_STR_N("\"\\0\"", 1, "\0");
   BUF_PARSE_TEST_STR_N("\"\\0\\0\"", 2, "\0\0");
   BUF_PARSE_TEST_STR_N("\"\\0\\0\\0\"", 3, "\0\0\0");

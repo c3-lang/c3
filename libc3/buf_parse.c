@@ -399,9 +399,11 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  (void) ((r = buf_parse_tag_str(buf, dest)) > 0 ||
-          (r = buf_parse_tag_sym(buf, dest)) > 0 ||
-          (r = buf_parse_tag_ident(buf, dest)) > 0);
+  if ((r = buf_parse_tag_str(buf, dest)) != 0)
+    return r;
+  if ((r = buf_parse_tag_sym(buf, dest)) != 0)
+    return r;
+  r = buf_parse_tag_ident(buf, dest);
   return r;
 }
 
