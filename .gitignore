@@ -15,6 +15,7 @@ ic3/ic3.debug
 *.lo
 *.o
 *.out
+*.ret
 test/c3_test
 test/c3_test.asan
 test/c3_test.cov

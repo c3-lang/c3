@@ -26,19 +26,19 @@ gcovr:
 
 test: c3_test
 	time ./c3_test
-	IC3=${PWD}/../ic3/ic3 time ./ic3_test
+	IC3=${C3_TOP}/ic3/ic3 time ./ic3_test
 
 test_asan: c3_test.asan
 	time ./c3_test.asan
-	IC3=${PWD}/../ic3/ic3.asan time ./ic3_test
+	IC3=${C3_TOP}/ic3/ic3.asan time ./ic3_test
 
 test_cov: c3_test.cov
 	time ./c3_test.cov
-	IC3=${PWD}/../ic3/ic3.cov time ./ic3_test
+	IC3=${C3_TOP}/ic3/ic3.cov time ./ic3_test
 
 test_debug: c3_test.debug
 	time ./c3_test.debug
-	IC3=${PWD}/../ic3/ic3.debug time ./ic3_test
+	IC3=${C3_TOP}/ic3/ic3.debug time ./ic3_test
 
 test_valgrind: c3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./c3_test
