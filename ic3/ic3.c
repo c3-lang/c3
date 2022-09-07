@@ -2,6 +2,7 @@
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
 #include "../libc3/c3.h"
+#include "buf_readline.h"
 
 #define BUFSZ 1024
 
@@ -51,7 +52,7 @@ int main (int argc, char **argv)
     return usage(argv[0]);
   BUF_INIT_ALLOCA(&in, BUFSZ);
   BUF_INIT_ALLOCA(&out, BUFSZ);
-  buf_file_open_r(&in, stdin);
+  buf_readline_open_r(&in, "ic3> ");
   buf_file_open_w(&out, stdout);
   while ((r = buf_peek_u8(&in, &byte)) > 0) {
     buf_xfer_spaces(&in, &out);
