@@ -544,6 +544,8 @@ void buf_parse_test_str_character ()
   BUF_PARSE_TEST_STR_CHARACTER("ÿ", 0xFF);
   BUF_PARSE_TEST_STR_CHARACTER("꒴", 42164);
   BUF_PARSE_TEST_STR_CHARACTER("𐅀", 65856);
+  BUF_PARSE_TEST_STR_CHARACTER("🤩", 129321);
+  BUF_PARSE_TEST_STR_CHARACTER("🎳", "127923");
 }
 
 void buf_parse_test_str_u8 ()
