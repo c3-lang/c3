@@ -68,14 +68,15 @@ typedef struct ident {
 typedef struct buf s_buf;
 
 struct buf {
-  bool free;
-  u64 size;
+  sw    (*flush) (s_buf *buf);
+  bool    free;
   u_ptr_w ptr;
-  u64 rpos;
-  u64 wpos;
-  sw (*flush) (s_buf *buf);
-  sw (*refill) (s_buf *buf);
-  void *user_ptr;
+  sw    (*refill) (s_buf *buf);
+  u64     rpos;
+  s_buf  *save;
+  u64     size;
+  void   *user_ptr;
+  u64     wpos;
 };
 
 typedef struct tag  s_tag;

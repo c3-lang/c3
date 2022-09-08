@@ -76,6 +76,8 @@ int main (int argc, char **argv)
         (r == 0 &&
          (r = buf_ignore_character(&in)) <= 0))
       break;
+    if ((r = buf_refill_compact(&in)) < 0)
+      break;
   }
   buf_readline_close(&in);
   buf_file_close(&out);

@@ -13,8 +13,6 @@
 const sw buf_u8_to_hex_size = 2;
 const sw buf_inspect_str_byte_size = 4;
 
-sw buf_refill_compact (s_buf *buf);
-
 void buf_clean (s_buf *buf)
 {
   assert(buf);
@@ -58,6 +56,8 @@ sw buf_ignore (s_buf *buf, uw size)
     return 0;
   if ((r = buf_refill(buf, size)) < 0)
     return r;
+  if ((uw) r < size)
+    return 0;
   buf->rpos += size;
   return size;
 }
@@ -66,13 +66,15 @@ s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
 {
   assert(buf);
   assert((!size || p) && (size || !p));
-  buf->free = free;
-  buf->size = size;
-  buf->ptr.ps8 = p;
-  buf->rpos = 0;
-  buf->wpos = 0;
-  buf->refill = NULL;
   buf->flush = NULL;
+  buf->free = free;
+  buf->ptr.ps8 = p;
+  buf->refill = NULL;
+  buf->rpos = 0;
+  buf->save = NULL;
+  buf->size = size;
+  buf->user_ptr = NULL;
+  buf->wpos = 0;
   return buf;
 }
 
@@ -547,7 +549,7 @@ sw buf_refill (s_buf *buf, sw size)
   if (size <= 0)
     return 0;
   if (buf->rpos + size > buf->wpos &&
-      (r = buf_refill_compact(buf)) >= 0 &&
+      (r = 0 /* buf_refill_compact(buf) */) >= 0 &&
       buf->refill)
     while ((r = buf->refill(buf)) > 0 &&
            buf->wpos - buf->rpos < (uw) size)
@@ -598,7 +600,17 @@ s_buf * buf_save (s_buf *buf, s_buf *save)
   assert(buf);
   assert(save);
   save->rpos = buf->rpos;
+  save->save = buf->save;
   save->wpos = buf->wpos;
+  buf->save = save;
+  return buf;
+}
+
+s_buf * buf_save_clean (s_buf *buf, s_buf *save)
+{
+  assert(buf);
+  assert(save);
+  buf->save = save->save;
   return buf;
 }
 

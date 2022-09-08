@@ -77,6 +77,7 @@ sw      buf_read_u16 (s_buf *buf, u16 *p);
 sw      buf_read_u32 (s_buf *buf, u32 *p);
 sw      buf_read_u64 (s_buf *buf, u64 *p);
 sw      buf_refill (s_buf *buf, sw size);
+sw      buf_refill_compact (s_buf *buf);
 s_buf * buf_restore (s_buf *buf, const s_buf *save);
 sw      buf_str_to_hex (s_buf *buf, const s_str *src);
 sw      buf_str_to_hex_size (const s_str *src);

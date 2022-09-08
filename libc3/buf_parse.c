@@ -229,7 +229,7 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
     while (1) {
       if ((r = buf_read_1(buf, "\"")) != 0)
         break;
-      else if ((r = buf_parse_str_character(buf, &c)) > 0)
+      if ((r = buf_parse_str_character(buf, &c)) > 0)
         size += character_utf8_size(c);
       else if (r < 0)
         break;
@@ -244,35 +244,42 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
     return r;
   if (size == 0) {
     str_init_empty(dest);
+    buf_ignore(buf, 2);
     return 2;
   }
   buf_init_alloc(&tmp, size);
   if ((r = buf_read_1(buf, "\"")) > 0) {
     result += r;
     while (1) {
-      if ((r = buf_read_1(buf, "\"")) > 0) {
+      if ((r = buf_read_1(buf, "\"")) > 0)
         result += r;
+      if (r != 0)
         break;
+      if ((r = buf_parse_str_character(buf, &c)) > 0) {
+        result += r;
+        if ((r = buf_write_character_utf8(&tmp, c)) < 0)
+          break;
       }
       else if (r < 0)
         break;
-      else if ((r = buf_parse_str_character(buf, &c)) > 0) {
-        result += r;
-        buf_write_character_utf8(&tmp, c);
-      }
       else if ((r = buf_parse_str_u8(buf, &b)) > 0) {
         result += r;
-        buf_write_u8(&tmp, b);
+        if ((r = buf_write_u8(&tmp, b)) < 0)
+          break;
       }
       else
         break;
     }
   }
-  if (r <= 0 ||
-      tmp.wpos != tmp.size) {
+  if (r < 0) {
     buf_restore(buf, &save);
     buf_clean(&tmp);
     return r;
+  }
+  if (tmp.wpos != tmp.size) {
+    buf_restore(buf, &save);
+    buf_clean(&tmp);
+    return 0;
   }
   buf_to_str(&tmp, dest);
   return result;
@@ -317,17 +324,11 @@ sw buf_parse_str_character (s_buf *buf, character *dest)
   if (r < 0)
     return r;
   if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
-    csize = r;
-    if (c != '"') {
-      if ((r = buf_ignore(buf, csize)) == csize)
-        *dest = c;
-      else {
-        buf_restore(buf, &save);
-        return r;
-      }
-    }
-    else
+    if (c == '"')
       return 0;
+    csize = r;
+    if ((r = buf_ignore(buf, csize)) == csize)
+      *dest = c;
   }
   return r;
 }
