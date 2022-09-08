@@ -543,11 +543,12 @@ sw buf_refill (s_buf *buf, sw size)
   assert(buf);
   if (size <= 0)
     return 0;
-  while (buf->rpos + size > buf->wpos &&
-         (r = buf_refill_compact(buf)) >= 0 &&
-         (!buf->refill || (r = buf->refill(buf)) > 0) &&
-         (r = buf->wpos - buf->rpos) < size)
-    ;
+  if (buf->rpos + size > buf->wpos &&
+      (r = buf_refill_compact(buf)) >= 0 &&
+      buf->refill)
+    while ((r = buf->refill(buf)) > 0 &&
+           (r = buf->wpos - buf->rpos) < size)
+      ;
   return r;
 }
 
