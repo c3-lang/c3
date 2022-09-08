@@ -21,8 +21,6 @@ void integer_clean(s_integer *i)
   mp_clear(&i->mp_int);
 }
 
-//Basic operations
-
 s_integer * integer_copy (s_integer *i, s_integer *j)
 {
   int r;
@@ -231,4 +229,3 @@ s_integer * integer_not (s_integer *i, s_integer *j)
     err(1, "integer_not: %s", mp_error_to_string(r));
   return j;
 }
-

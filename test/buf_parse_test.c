@@ -6,6 +6,7 @@
 #include "../libc3/buf.h"
 #include "../libc3/buf_parse.h"
 #include "../libc3/str.h"
+#include "../libc3/integer.h"
 #include "test.h"
 
 #define BUF_PARSE_TEST_BOOL(test, result)                              \
@@ -100,8 +101,20 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_DIGIT_INTEGER(test, result)                           \
+#define BUF_PARSE_TEST_INTEGER(test, expected)                           \
 do {                                                                   \
+  s_buf buf;                                                           \
+  s_integer s_tmp;                                                     \
+  u64 u64_tmp;                                                         \
+  test_context("buf_parse_integer(" # test ") -> " # expected);        \
+  buf_init_1(&buf, (test));                                            \
+  integer_init(&s_tmp);                                                \
+  TEST_EQ(buf_parse_integer(&buf, &s_tmp), strlen(test));              \
+  u64_tmp = mp_get_u64(&s_tmp.mp_int);                                 \
+  TEST_EQ(buf.wpos, strlen(test));                                     \
+  TEST_EQ(u64_tmp, (expected));                                        \
+  buf_clean(&buf);                                                     \
+  mp_clear(&s_tmp.mp_int);                                             \
 } while (0)
 
 #define BUF_PARSE_TEST_NOT_CHARACTER(test)                             \
@@ -164,8 +177,18 @@ do {                                                                   \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_NOT_DIGIT_INTEGER(test, expected)               \
-  do {} while (0)
+#define BUF_PARSE_TEST_NOT_INTEGER(test, expected)                     \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_integer dest = {0};                                              \
+    test_context("buf_parse_integer(" # test ") -> 0");                \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_integer(&buf, &dest), (expected));               \
+    TEST_EQ(buf.rpos, 0);                                              \
+    TEST_EQ(dest.mp_int.dp, 0);                                        \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
 
 #define BUF_PARSE_TEST_NOT_IDENT(test)                                 \
   do {                                                                 \
@@ -289,12 +312,14 @@ void buf_parse_test_digit_bin ();
 void buf_parse_test_digit_hex ();
 void buf_parse_test_digit_oct ();
 void buf_parse_test_digit_dec ();
-void buf_parse_test_digit_integer();
+void buf_parse_test_integer();
 void buf_parse_test_ident ();
 void buf_parse_test_str ();
 void buf_parse_test_str_character ();
 void buf_parse_test_str_u8 ();
 void buf_parse_test_sym ();
+sw buf_parse_str_integer (s_buf *buf, s_integer *dest);
+
 
 void buf_parse_test ()
 {
@@ -302,10 +327,10 @@ void buf_parse_test ()
   buf_parse_test_digit_hex();
   buf_parse_test_digit_oct();
   buf_parse_test_digit_dec();
-  buf_parse_test_digit_integer();
   buf_parse_test_str_character();
   buf_parse_test_str_u8();
   buf_parse_test_character();
+  buf_parse_test_integer();
   buf_parse_test_str();
   buf_parse_test_sym();
   buf_parse_test_ident();
@@ -474,10 +499,14 @@ void buf_parse_test_digit_dec ()
   BUF_PARSE_TEST_DIGIT_DEC("9", 9);
 }
 
-void buf_parse_test_digit_integer()
+void buf_parse_test_integer()
 {
-  BUF_PARSE_TEST_NOT_DIGIT_INTEGER("\x01", 0);
-  BUF_PARSE_TEST_DIGIT_INTEGER("0", 0);
+  BUF_PARSE_TEST_INTEGER("9", 9);
+  BUF_PARSE_TEST_INTEGER("256", 256);
+  BUF_PARSE_TEST_INTEGER("100000000000000000", 100000000000000000);
+  BUF_PARSE_TEST_INTEGER("0", 0);
+  BUF_PARSE_TEST_INTEGER("-256", -256);
+
 }
 
 void buf_parse_test_ident ()
@@ -578,6 +607,7 @@ void buf_parse_test_str ()
   BUF_PARSE_TEST_STR("\"😄\"", "😄");
   BUF_PARSE_TEST_STR("\"🟣\"", "🟣");
   BUF_PARSE_TEST_STR("\"🤩\"", "🤩");
+  BUF_PARSE_TEST_STR("\"ꇤ\"", "ꇤ");
 }
 
 void buf_parse_test_str_character ()
