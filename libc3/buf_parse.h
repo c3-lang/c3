@@ -44,6 +44,8 @@ sw buf_parse_tag_ident (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_list (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_str (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_str_character (s_buf *buf, s_tag *dest);
+sw buf_parse_str_character_unicode (s_buf *buf, character *dest);
+sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
 sw buf_parse_tag_str_u8 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_sym (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest);

@@ -283,12 +283,19 @@ sw buf_parse_str_character (s_buf *buf, character *dest)
   character c;
   sw r;
   sw r1 = 0;
+  sw r2 = 0;
   s_buf save;
   buf_save(buf, &save);
   if ((r = buf_read_1(buf, "\\")) > 0 &&
       (r1 = buf_read_character_utf8(buf, &c)) > 0) {
     switch (c) {
     case '0': c = 0; break;
+    case 'U': case 'u':
+      if ((r2 = buf_parse_str_character_unicode(buf, &c)) < 0) {
+        buf_restore(buf, &save);
+        return r2;
+      }
+      break;
     case 'n': c = '\n'; break;
     case 'r': c = '\r'; break;
     case 's': c = ' '; break;
@@ -298,7 +305,7 @@ sw buf_parse_str_character (s_buf *buf, character *dest)
     default: ;
     }
     *dest = c;
-    return r + r1;
+    return r + r1 + r2;
   }
   buf_restore(buf, &save);
   if (r < 0)
@@ -309,6 +316,24 @@ sw buf_parse_str_character (s_buf *buf, character *dest)
       ! str_character_is_reserved(c))
     *dest = c;
   return r;
+}
+
+sw buf_parse_str_character_unicode (s_buf *buf, character *dest)
+{
+  sw r;
+  sw result = 0;
+  u64 temp = 0;
+  s_buf save;
+  dest += 0;
+  if ((r = buf_read_1(buf, "+")) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_parse_u64_hex(buf, &temp)) <= 0) {
+    buf_restore(buf, &save);
+    return r;
+  }
+  result += r;
+  return result;
 }
 
 sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
@@ -396,6 +421,22 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
     return r;
   return 0;
  error:
+  buf_restore(buf, &save);
+  return r;
+}
+
+sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
+{
+  sw r;
+  u8 digit;
+  s_buf save;
+  buf_save(buf, &save);
+  while ((r = buf_parse_digit_hex(buf, &digit)) > 0)
+    *dest = *dest * 16 + digit;
+  if (r < 0) {
+    buf_restore(buf, &save);
+    return r;
+  }
   buf_restore(buf, &save);
   return r;
 }
