@@ -281,13 +281,21 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
 sw buf_parse_str_character (s_buf *buf, character *dest)
 {
   character c;
+  sw csize;
   sw r;
   sw r1 = 0;
   sw r2 = 0;
   s_buf save;
   buf_save(buf, &save);
-  if ((r = buf_read_1(buf, "\\")) > 0 &&
-      (r1 = buf_read_character_utf8(buf, &c)) > 0) {
+  if ((r = buf_peek_1(buf, "\\x")) > 0)
+    return 0;
+  if (r < 0)
+    return r;
+  if ((r = buf_read_1(buf, "\\")) > 0) {
+    if ((r1 = buf_read_character_utf8(buf, &c)) <= 0) {
+      buf_restore(buf, &save);
+      return r1;
+    }
     switch (c) {
     case '0': c = 0; break;
     case 'U': case 'u':
@@ -301,20 +309,26 @@ sw buf_parse_str_character (s_buf *buf, character *dest)
     case 's': c = ' '; break;
     case 't': c = '\t'; break;
     case 'v': c = '\v'; break;
-    case 'x': buf_restore(buf, &save); return 0;
     default: ;
     }
     *dest = c;
     return r + r1 + r2;
   }
-  buf_restore(buf, &save);
   if (r < 0)
     return r;
-  if (r > 0 && r1 <= 0)
-    return r1;
-  if ((r = buf_read_character_utf8(buf, &c)) > 0 &&
-      ! str_character_is_reserved(c))
-    *dest = c;
+  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
+    csize = r;
+    if (c != '"') {
+      if ((r = buf_ignore(buf, csize)) == csize)
+        *dest = c;
+      else {
+        buf_restore(buf, &save);
+        return r;
+      }
+    }
+    else
+      return 0;
+  }
   return r;
 }
 

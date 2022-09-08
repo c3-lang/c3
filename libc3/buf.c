@@ -56,10 +56,8 @@ sw buf_ignore (s_buf *buf, uw size)
   assert(buf);
   if (size == 0)
     return 0;
-  while (buf->rpos + size < buf->wpos &&
-         (s64) (r = buf_refill(buf)) < (s64) size)
-    if (r < 0)
-      return r;
+  if ((r = buf_refill(buf, size)) < 0)
+    return r;
   buf->rpos += size;
   return size;
 }
@@ -147,8 +145,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   const u8 _11100000 = 0xE0;
   const u8 _11110000 = 0xF0;
   const u8 _11111000 = 0xF8;
-  if (buf->wpos - buf->rpos < 1 &&
-      buf_refill(buf) < 1)
+  if (buf_refill(buf, 1) < 1)
     return 0;
   b = (const u8 *) buf->ptr.pu8 + buf->rpos;
   if ((b[0] & _10000000) == 0) {
@@ -156,7 +153,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
     return 1;
   }
   if ((b[0] & _11100000) == _11000000) {
-    if (buf->wpos - buf->rpos < 2)
+    if (buf_refill(buf, 2) < 2)
       return 0;
     if ((b[1] & _11000000) != _10000000)
       return -1;
@@ -166,7 +163,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
     return 2;
   }
   if ((b[0] & _11110000) == _11100000) {
-    if (buf->wpos - buf->rpos < 3)
+    if (buf_refill(buf, 3) < 3)
       return 0;
     if ((b[1] & _11000000) != _10000000)
       return -1;
@@ -179,7 +176,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
     return 3;
   }
   if ((b[0] & _11111000) == _11110000) {
-    if (buf->wpos - buf->rpos < 4)
+    if (buf_refill(buf, 4) < 4)
       return 0;
     if ((b[1] & _11000000) != _10000000)
       return -1;
@@ -305,8 +302,10 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
     assert(buf->wpos <= buf->size);
     return -1;
   }
-  if (buf->rpos + src->size > buf->wpos ||
-      memcmp(buf->ptr.ps8 + buf->rpos, src->ptr.p, src->size))
+  if (buf->rpos + src->size > buf->wpos &&
+      buf_refill(buf, src->size) < (sw) src->size)
+    return 0;
+  if (memcmp(buf->ptr.ps8 + buf->rpos, src->ptr.p, src->size))
     return 0;
   return src->size;
 }
@@ -325,7 +324,7 @@ sw buf_peek_u8 (s_buf *buf, u8 *p)
     return -1;
   }
   if (buf->rpos + size > buf->wpos &&
-      buf_refill(buf) < size)
+      buf_refill(buf, size) < size)
     return 0;
   if (buf->rpos + size > buf->wpos) {
     assert(! "buf_peek_u8: buffer overflow");
@@ -538,13 +537,17 @@ sw buf_read_u64 (s_buf *buf, u64 *p)
   return r;
 }
 
-sw buf_refill (s_buf *buf)
+sw buf_refill (s_buf *buf, sw size)
 {
-  sw r;
+  sw r = buf->wpos - buf->rpos;
   assert(buf);
-  (void) ((r = buf_refill_compact(buf)) < 0 ||
-          (buf->refill && (r = buf->refill(buf)) < 0) ||
-          (r = buf->wpos - buf->rpos));
+  if (size <= 0)
+    return 0;
+  while (buf->rpos + size > buf->wpos &&
+         (r = buf_refill_compact(buf)) >= 0 &&
+         (!buf->refill || (r = buf->refill(buf)) > 0) &&
+         (r = buf->wpos - buf->rpos) < size)
+    ;
   return r;
 }
 

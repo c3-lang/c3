@@ -8,6 +8,23 @@
 
 int usage (char *argv0);
 
+sw buf_ignore_character (s_buf *buf)
+{
+  u8 b;
+  character c = 0;
+  sw csize;
+  sw r;
+  if ((r = buf_peek_character_utf8(buf, &c)) > 0)
+    csize = r;
+  else if ((r = buf_peek_u8(buf, &b)) > 0)
+    csize = 1;
+  else
+    return r;
+  if ((r = buf_ignore(buf, csize)) < 0)
+    return r;
+  return csize;
+}
+
 sw buf_xfer_spaces (s_buf *out, s_buf *in)
 {
   character c;
@@ -27,6 +44,8 @@ sw buf_xfer_spaces (s_buf *out, s_buf *in)
     if ((r = buf_flush(out)) < 0)
       return -1;
   }
+  if (r < 0)
+    return r;
   return size;
 }
 
@@ -50,9 +69,12 @@ int main (int argc, char **argv)
         break;
       }
       tag_clean(&tag);
+      if ((r = buf_flush(&out)) < 0)
+        break;
     }
     if (r < 0 ||
-        (r = buf_flush(&out)) < 0)
+        (r == 0 &&
+         (r = buf_ignore_character(&in)) <= 0))
       break;
   }
   buf_readline_close(&in);

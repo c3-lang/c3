@@ -89,7 +89,7 @@ sw buf_file_open_w_flush (s_buf *buf)
   if (size == 0)
     return 0;
   buf_file = buf->user_ptr;
-  fwrite(buf->ptr.p, 1, size, buf_file->fp);
+  fwrite(buf->ptr.p, size, 1, buf_file->fp);
   fflush(buf_file->fp);
   buf->wpos = 0;
   return size;
