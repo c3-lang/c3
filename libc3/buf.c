@@ -50,6 +50,20 @@ sw buf_flush (s_buf *buf)
   return 0;
 }
 
+sw buf_ignore (s_buf *buf, uw size)
+{
+  sw r;
+  assert(buf);
+  if (size == 0)
+    return 0;
+  while (buf->rpos + size < buf->wpos &&
+         (s64) (r = buf_refill(buf)) < (s64) size)
+    if (r < 0)
+      return r;
+  buf->rpos += size;
+  return size;
+}
+
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
 {
   assert(buf);

@@ -369,9 +369,15 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
       (c == ':' || character_is_uppercase(c))) {
     csize = r;
     BUF_INIT_ALLOCA(&tmp, SYM_MAX);
-    if ((r = buf_xfer(&tmp, buf, csize)) != csize)
-      goto error;
-    result += csize;
+    if (c == ':') {
+      if ((r = buf_ignore(buf, csize)) != csize)
+        goto error;
+    }
+    else {
+      if ((r = buf_xfer(&tmp, buf, csize)) != csize)
+        goto error;
+      result += csize;
+    }
     while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
            ! sym_character_is_reserved(c)) {
       csize = r;

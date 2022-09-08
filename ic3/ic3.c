@@ -8,7 +8,7 @@
 
 int usage (char *argv0);
 
-sw buf_xfer_spaces (s_buf *in, s_buf *out)
+sw buf_xfer_spaces (s_buf *out, s_buf *in)
 {
   character c;
   sw csize;
@@ -24,13 +24,14 @@ sw buf_xfer_spaces (s_buf *in, s_buf *out)
     if ((r = buf_xfer(out, in, csize)) != csize)
       return -1;
     size += csize;
+    if ((r = buf_flush(out)) < 0)
+      return -1;
   }
   return size;
 }
 
 int main (int argc, char **argv)
 {
-  u8 byte;
   s_buf in;
   s_buf out;
   sw r;
@@ -42,12 +43,9 @@ int main (int argc, char **argv)
   BUF_INIT_ALLOCA(&out, BUFSZ);
   buf_readline_open_r(&in, "ic3> ");
   buf_file_open_w(&out, stdout);
-  while ((r = buf_peek_u8(&in, &byte)) > 0) {
-    if (buf_xfer_spaces(&in, &out) < 0)
-      break;
+  while ((r = buf_xfer_spaces(&out, &in)) >= 0) {
     if ((r = buf_parse_tag(&in, &tag)) > 0) {
-      if (buf_inspect_tag(&out, &tag) < 0 ||
-          buf_write_1(&out, "\n") < 0) {
+      if (buf_inspect_tag(&out, &tag) < 0) {
 	tag_clean(&tag);
         break;
       }

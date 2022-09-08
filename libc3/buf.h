@@ -48,6 +48,7 @@ void buf_delete (s_buf *buf);
 /* Modifiers */
 sw      buf_f (s_buf *buf, const char *fmt, ...);
 sw      buf_flush (s_buf *buf);
+sw      buf_ignore (s_buf *buf, uw size);
 sw      buf_peek_1 (s_buf *buf, const s8 *p);
 sw      buf_peek_character_utf8 (s_buf *buf, character *p);
 sw      buf_peek_f32 (s_buf *buf, f32 *p);
