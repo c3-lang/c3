@@ -7,15 +7,18 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <unistd.h>
 #include "../libc3/c3.h"
 
 typedef struct buf_readline {
   s_buf       buf;
   bool        eof;
   const char *prompt;
+  bool        readline;
 } s_buf_readline;
 
-sw buf_readline_refill (s_buf *buf);
+sw buf_readline_refill_fgets (s_buf *buf);
+sw buf_readline_refill_readline (s_buf *buf);
 
 void buf_readline_close (s_buf *buf)
 {
@@ -34,13 +37,37 @@ s_buf * buf_readline_open_r (s_buf *buf, const char *prompt)
     errx(1, "buf_readline_open_r: out of memory");
   buf_init_1(&buf_readline->buf, "");
   buf_readline->eof = false;
+  if (isatty(STDIN_FILENO))
+    buf->refill = buf_readline_refill_readline;
+  else
+    buf->refill = buf_readline_refill_fgets;
   buf_readline->prompt = prompt;
-  buf->refill = buf_readline_refill;
   buf->user_ptr = buf_readline;
   return buf;
 }
 
-sw buf_readline_refill (s_buf *buf)
+sw buf_readline_refill_fgets (s_buf *buf)
+{
+  sw c = 0;
+  uw result = 0;
+  assert(buf);
+  assert(buf->user_ptr);
+  if (buf->rpos > buf->wpos ||
+      buf->wpos > buf->size)
+    return -1;
+  if (feof(stdin))
+    return -1;
+  while (buf->wpos < buf->size &&
+         c != '\n' &&
+         (c = getchar()) != EOF &&
+         c <= 255) {
+    buf_write_u8(buf, c);
+    result++;
+  }      
+  return result;
+}
+
+sw buf_readline_refill_readline (s_buf *buf)
 {
   s_buf_readline *buf_readline;
   uw buf_readline_len;
