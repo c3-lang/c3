@@ -172,29 +172,34 @@ sw buf_parse_ident (s_buf *buf, s_ident *ident)
 
 sw buf_parse_integer (s_buf *buf, s_integer *dest)
 {
-  //character c;
   mp_err err;
   const mp_digit radix = 10;
-  mp_digit digit;
   sw r;
+  u8 u8_digit ;
+  int result = 0;
+  bool negative = false;
   mp_zero(&dest->mp_int);
-  if (radix < 2 || radix > 64)
-    return -1;
-  if ((r = buf_peek_1(buf, "-")) > 0) {
-    if ((r = buf_read_1(buf, "-")) != 1)
-      return r;
+  if ((r = buf_read_1(buf, "-")) == 1) {
+    negative = true;
+    result += r;
   }
-  mp_zero(&dest->mp_int);
-  if ((r = buf_parse_digit_dec(buf, (u8 *)&digit)) > 0) {
-    if ((err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int)) != MP_OKAY)
+  while ((r = buf_parse_digit_dec(buf, &u8_digit)) > 0) {
+    err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int);
+    if (err != MP_OKAY)
       return -1;
-    if ((err = mp_add_d(&dest->mp_int, digit, &dest->mp_int)) != MP_OKAY)
+    err = mp_add_d(&dest->mp_int, u8_digit, &dest->mp_int);
+    if (err != MP_OKAY)
+      return -1;
+    result += r;
+  }
+  if (r < 0)
+    return r;
+  if (negative){
+    err = mp_neg(&dest->mp_int, &dest->mp_int);
+    if (err != MP_OKAY)
       return -1;
   }
-  if (!MP_IS_ZERO(&dest->mp_int)) {
-    dest->mp_int.sign = 1;
-  }
-  return MP_OKAY;
+  return result;
 }
 
 sw buf_parse_str (s_buf *buf, s_str *dest)

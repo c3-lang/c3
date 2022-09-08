@@ -24,4 +24,8 @@ void integer_clean (s_integer *i);
 /* Constructors, call integer_delete after use. */
 s_integer * integer_new ();
 
+s_integer integer_set_base (s_integer *i, int j);
+char * mp_to_string(s_integer *i);
+int integer_cmp (s_integer *i, s_integer *j);
+
 #endif /* INTEGER_H */
