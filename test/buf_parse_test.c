@@ -523,6 +523,7 @@ void buf_parse_test_str ()
   BUF_PARSE_TEST_STR("\"ÿ\"", "ÿ");
   BUF_PARSE_TEST_STR("\"꒴\"", "꒴");
   BUF_PARSE_TEST_STR("\"𐅀\"", "𐅀");
+  BUF_PARSE_TEST_STR("\"●\"", "●");
 }
 
 void buf_parse_test_str_character ()
