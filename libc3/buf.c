@@ -312,6 +312,7 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
 
 sw buf_peek_u8 (s_buf *buf, u8 *p)
 {
+  sw r;
   const sw size = sizeof(u8);
   assert(buf);
   assert(p);
@@ -323,9 +324,13 @@ sw buf_peek_u8 (s_buf *buf, u8 *p)
     assert(! "buf_peek_u8: wpos > size");
     return -1;
   }
-  if (buf->rpos + size > buf->wpos &&
-      buf_refill(buf, size) < size)
-    return 0;
+  if (buf->rpos + size > buf->wpos) {
+    if ((r = buf_refill(buf, size)) <= 0)
+      return r;
+    if (r < size)
+      return 0;
+    assert(! "error");
+  }
   if (buf->rpos + size > buf->wpos) {
     assert(! "buf_peek_u8: buffer overflow");
     return -1;
@@ -497,10 +502,8 @@ sw buf_read_u8 (s_buf *buf, u8 *p)
 {
   sw r;
   r = buf_peek_u8(buf, p);
-  if (r > 0) {
-    assert(r == sizeof(u8));
+  if (r == sizeof(u8))
     buf->rpos += r;
-  }
   return r;
 }
 
@@ -547,8 +550,9 @@ sw buf_refill (s_buf *buf, sw size)
       (r = buf_refill_compact(buf)) >= 0 &&
       buf->refill)
     while ((r = buf->refill(buf)) > 0 &&
-           (r = buf->wpos - buf->rpos) < size)
+           buf->wpos - buf->rpos < (uw) size)
       ;
+  r = buf->wpos - buf->rpos;
   return r;
 }
 
