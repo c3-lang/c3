@@ -420,18 +420,24 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
 
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
 {
-  sw r;
+ sw r;
+  sw result = 0;
   u8 digit;
+  u64 tmp = 0;
   s_buf save;
   buf_save(buf, &save);
-  while ((r = buf_parse_digit_hex(buf, &digit)) > 0)
-    *dest = *dest * 16 + digit;
+  while ((r = buf_parse_digit_hex(buf, &digit)) > 0) {
+    tmp = tmp * 16 + digit;
+    result += r;
+  }
   if (r < 0) {
     buf_restore(buf, &save);
     return r;
   }
-  buf_restore(buf, &save);
-  return r;
+  if (result == 0)
+    return 0;
+  *dest = tmp;
+  return result;
 }
 
 sw buf_parse_tag (s_buf *buf, s_tag *dest)

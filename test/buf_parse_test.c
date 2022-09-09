@@ -548,6 +548,8 @@ void buf_parse_test_str_character ()
   BUF_PARSE_TEST_STR_CHARACTER("🎳", 127923);
   BUF_PARSE_TEST_STR_CHARACTER("🟣", 128995);
   BUF_PARSE_TEST_STR_CHARACTER("\\U+FF", 0xFF);
+  BUF_PARSE_TEST_STR_CHARACTER("\\U+0000", 0);
+  BUF_PARSE_TEST_STR_CHARACTER("\\U+1F595", 129321);
 }
 
 void buf_parse_test_str_u8 ()
