@@ -4,8 +4,6 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <stdio.h>
-
 /* Basic integer types. */
 typedef char                s8;
 typedef short               s16;

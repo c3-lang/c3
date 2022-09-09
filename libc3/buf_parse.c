@@ -356,7 +356,7 @@ sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
   u8 digit[2];
   sw r;
   sw r1;
-  sw r2;
+  sw r2 = 0;
   s_buf save;
   buf_save(buf, &save);
   if ((r = buf_read_1(buf, "\\x")) > 0 &&

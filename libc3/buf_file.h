@@ -8,6 +8,7 @@
 #ifndef BUF_FILE_H
 #define BUF_FILE_H
 
+#include <stdio.h>
 #include "types.h"
 
 s_buf * buf_file_open_r (s_buf *buf, FILE *fp);
