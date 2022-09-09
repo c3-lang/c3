@@ -23,9 +23,9 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 # Default config
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
-DEFAULT_CFLAGS="-O2 -pipe"
+DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 LDFLAGS="${LDFLAGS:=}"
-LIBS="${LIBS:=} ../libtommath/libtommath.a"
+LIBS="${LIBS:=} ../libtommath/libtommath.la"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"

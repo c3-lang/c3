@@ -55,10 +55,15 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_INSPECT_TEST_INTEGER_DEC(test, result)                     \
+  do {                                                                 \
+  } while (0)
+
 void buf_inspect_test_character ();
 void buf_inspect_test_str_character ();
 void buf_inspect_test_str_character_size ();
 void buf_inspect_test_str ();
+void buf_inspect_test_integer_dec ();
 
 void buf_inspect_test ()
 {
@@ -66,6 +71,7 @@ void buf_inspect_test ()
   buf_inspect_test_str_character();
   buf_inspect_test_character();
   buf_inspect_test_str();
+  buf_inspect_test_integer_dec();
 }
 
 void buf_inspect_test_character ()
@@ -164,3 +170,10 @@ void buf_inspect_test_str ()
   BUF_INSPECT_TEST_STR("é", "\"é\"");
   BUF_INSPECT_TEST_STR("éoπꝝ꒴𐅀🎳😄🟣🤩", "\"éoπꝝ꒴𐅀🎳😄🟣🤩\"");
  }
+
+void buf_inspect_test_integer_dec ()
+{
+  BUF_INSPECT_TEST_INTEGER_DEC("9", 9);
+  BUF_INSPECT_TEST_INTEGER_DEC("256", 256);
+  BUF_INSPECT_TEST_INTEGER_DEC("100000000000000000", 100000000000000000);
+}
