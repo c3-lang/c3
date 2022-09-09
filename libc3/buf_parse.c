@@ -11,7 +11,7 @@
 #include "limits.h"
 #include "str.h"
 #include "sym.h"
-#include "integer.h"
+#include "../libtommath/tommath.h"
 
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
@@ -170,7 +170,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *ident)
   return -1;
 }
 
-sw buf_parse_integer (s_buf *buf, s_integer *dest)
+sw buf_parse_integer_dec (s_buf *buf, s_integer *dest)
 {
   mp_err err;
   const mp_digit radix = 10;
@@ -184,6 +184,74 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest)
     result += r;
   }
   while ((r = buf_parse_digit_dec(buf, &u8_digit)) > 0) {
+    err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int);
+    if (err != MP_OKAY)
+      return -1;
+    err = mp_add_d(&dest->mp_int, u8_digit, &dest->mp_int);
+    if (err != MP_OKAY)
+      return -1;
+    result += r;
+  }
+  if (r < 0)
+    return r;
+  if (negative){
+    err = mp_neg(&dest->mp_int, &dest->mp_int);
+    if (err != MP_OKAY)
+      return -1;
+  }
+  return result;
+}
+
+sw buf_parse_integer_hex (s_buf *buf, s_integer *dest)
+{
+  mp_err err;
+  const mp_digit radix = 16;
+  sw r;
+  u8 u8_digit ;
+  int result = 0;
+  bool negative = false;
+  mp_zero(&dest->mp_int);
+  if ((r = buf_read_1(buf, "-")) == 1) {
+    negative = true;
+    result += r;
+  }
+  if ((r = buf_read_1(buf, "0x")) == 2)
+    result += r;
+  while ((r = buf_parse_digit_hex(buf, &u8_digit)) > 0) {
+    err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int);
+    if (err != MP_OKAY)
+      return -1;
+    err = mp_add_d(&dest->mp_int, u8_digit, &dest->mp_int);
+    if (err != MP_OKAY)
+      return -1;
+    result += r;
+  }
+  if (r < 0)
+    return r;
+  if (negative){
+    err = mp_neg(&dest->mp_int, &dest->mp_int);
+    if (err != MP_OKAY)
+      return -1;
+  }
+  return result;
+}
+
+sw buf_parse_integer_oct (s_buf *buf, s_integer *dest)
+{
+  mp_err err;
+  const mp_digit radix = 8;
+  sw r;
+  u8 u8_digit ;
+  int result = 0;
+  bool negative = false;
+  mp_zero(&dest->mp_int);
+  if ((r = buf_read_1(buf, "-")) == 1) {
+    negative = true;
+    result += r;
+  }
+  if ((r = buf_read_1(buf, "0o")) == 2)
+    result += r;
+  while ((r = buf_parse_digit_oct(buf, &u8_digit)) > 0) {
     err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int);
     if (err != MP_OKAY)
       return -1;

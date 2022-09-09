@@ -2,7 +2,7 @@
  * Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
  */
 /**
- * @file str.h
+ * @file integer.h
  * @brief Integer manipulation functions.
  *
  * Structure to manipulate byte strings.
@@ -13,7 +13,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "types.h"
-#include "../libtommath/tommath.h"
 
 #define MP_IS_ZERO(a) ((a)->used == 0)
 

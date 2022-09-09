@@ -101,21 +101,65 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_INTEGER(test, expected)                           \
+#define BUF_PARSE_TEST_INTEGER_DEC(test, expected)                           \
 do {                                                                   \
   s_buf buf;                                                           \
   s_integer s_tmp;                                                     \
   u64 u64_tmp;                                                         \
-  test_context("buf_parse_integer(" # test ") -> " # expected);        \
+  test_context("buf_parse_integer_dec(" # test ") -> " # expected);        \
   buf_init_1(&buf, (test));                                            \
   integer_init(&s_tmp);                                                \
-  TEST_EQ(buf_parse_integer(&buf, &s_tmp), strlen(test));              \
+  TEST_EQ(buf_parse_integer_dec(&buf, &s_tmp), strlen(test));              \
   u64_tmp = mp_get_u64(&s_tmp.mp_int);                                 \
-  TEST_EQ(buf.wpos, strlen(test));                                     \
   TEST_EQ(u64_tmp, (expected));                                        \
   buf_clean(&buf);                                                     \
   mp_clear(&s_tmp.mp_int);                                             \
 } while (0)
+
+#define BUF_PARSE_TEST_INTEGER_HEX(test, expected) \
+  do {                                             \
+    s_buf buf;                                    \
+    s_integer s_tmp;                              \
+    u64 u64_tmp;                                  \
+    test_context("buf_parse_integer_hex(" # test ") -> " # expected); \
+    buf_init_1(&buf, (test));                     \
+    integer_init(&s_tmp);                         \
+    TEST_EQ(buf_parse_integer_hex(&buf, &s_tmp), strlen(test)); \
+    u64_tmp = mp_get_u64(&s_tmp.mp_int);          \
+    TEST_EQ(buf.wpos, strlen(test));              \
+    TEST_EQ(u64_tmp, (expected));                 \
+    buf_clean(&buf);                              \
+    mp_clear(&s_tmp.mp_int);                      \
+  } while (0)
+
+#define BUF_PARSE_TEST_INTEGER_OCT(test, expected) \
+  do {                                             \
+    s_buf buf;                                    \
+    s_integer s_tmp;                              \
+    u64 u64_tmp;                                  \
+    test_context("buf_parse_integer_oct(" # test ") -> " # expected); \
+    buf_init_1(&buf, (test));                     \
+    integer_init(&s_tmp);                         \
+    TEST_EQ(buf_parse_integer_oct(&buf, &s_tmp), strlen(test)); \
+    u64_tmp = mp_get_u64(&s_tmp.mp_int);          \
+    TEST_EQ(buf.wpos, strlen(test));              \
+    TEST_EQ(u64_tmp, (expected));                 \
+    buf_clean(&buf);                              \
+    mp_clear(&s_tmp.mp_int);                      \
+  } while (0)
+
+#define BUF_PARSE_TEST_NOT_INTEGER_HEX(test) \
+  do {                                       \
+    s_buf buf;                              \
+    s_integer s_tmp;                        \
+    test_context("buf_parse_integer_hex(" # test ") -> 0"); \
+    buf_init_1(&buf, (test));               \
+    integer_init(&s_tmp);                   \
+    TEST_EQ(buf_parse_integer_hex(&buf, &s_tmp), 0); \
+    TEST_EQ(buf.rpos, 0);                   \
+    buf_clean(&buf);                        \
+    mp_clear(&s_tmp.mp_int);                \
+  } while (0)
 
 #define BUF_PARSE_TEST_NOT_CHARACTER(test)                             \
   do {                                                                 \
@@ -177,19 +221,6 @@ do {                                                                   \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_NOT_INTEGER(test, expected)                     \
-  do {                                                                 \
-    s_buf buf;                                                         \
-    s_integer dest = {0};                                              \
-    test_context("buf_parse_integer(" # test ") -> 0");                \
-    buf_init_1(&buf, (test));                                          \
-    TEST_EQ(buf_parse_integer(&buf, &dest), (expected));               \
-    TEST_EQ(buf.rpos, 0);                                              \
-    TEST_EQ(dest.mp_int.dp, 0);                                        \
-    buf_clean(&buf);                                                   \
-  } while (0)
-
-
 #define BUF_PARSE_TEST_NOT_IDENT(test)                                 \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -200,6 +231,22 @@ do {                                                                   \
     TEST_EQ(buf.rpos, 0);                                              \
     buf_clean(&buf);                                                   \
   } while (0)
+
+#define BUF_PARSE_TEST_NOT_INTEGER_DEC(test, expected)                     \
+do {                                                                   \
+  s_buf buf;                                                           \
+  s_integer s_tmp;                                                     \
+  u64 u64_tmp;                                                         \
+  test_context("buf_parse_integer_dec(" # test ") -> " # expected);        \
+  buf_init_1(&buf, (test));                                            \
+  integer_init(&s_tmp);                                                \
+  TEST_EQ(buf_parse_integer_dec(&buf, &s_tmp), 0);                         \
+  u64_tmp = mp_get_u64(&s_tmp.mp_int);                                 \
+  TEST_EQ(buf.rpos, 0);                                                \
+  TEST_EQ(u64_tmp, (expected));                                        \
+  buf_clean(&buf);                                                     \
+  mp_clear(&s_tmp.mp_int);                                             \
+} while (0)
 
 #define BUF_PARSE_TEST_NOT_STR_U8(test)                                \
   do {                                                                 \
@@ -273,7 +320,10 @@ void buf_parse_test_digit_bin ();
 void buf_parse_test_digit_hex ();
 void buf_parse_test_digit_oct ();
 void buf_parse_test_digit_dec ();
-void buf_parse_test_integer();
+void buf_parse_test_integer_dec();
+void buf_parse_test_integer_hex();
+void buf_parse_test_integer_oct();
+void buf_parse_test_integer_bin();
 void buf_parse_test_ident ();
 void buf_parse_test_str ();
 void buf_parse_test_str_character ();
@@ -291,7 +341,9 @@ void buf_parse_test ()
   buf_parse_test_str_character();
   buf_parse_test_str_u8();
   buf_parse_test_character();
-  buf_parse_test_integer();
+  buf_parse_test_integer_dec();
+  buf_parse_test_integer_hex();
+  buf_parse_test_integer_oct();
   buf_parse_test_str();
   buf_parse_test_sym();
   buf_parse_test_ident();
@@ -460,16 +512,6 @@ void buf_parse_test_digit_dec ()
   BUF_PARSE_TEST_DIGIT_DEC("9", 9);
 }
 
-void buf_parse_test_integer()
-{
-  BUF_PARSE_TEST_INTEGER("9", 9);
-  BUF_PARSE_TEST_INTEGER("256", 256);
-  BUF_PARSE_TEST_INTEGER("100000000000000000", 100000000000000000);
-  BUF_PARSE_TEST_INTEGER("0", 0);
-  BUF_PARSE_TEST_INTEGER("-256", -256);
-
-}
-
 void buf_parse_test_ident ()
 {
   BUF_PARSE_TEST_NOT_IDENT("0");
@@ -486,6 +528,34 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_IDENT("a", "a");
   BUF_PARSE_TEST_IDENT("z", "z");
   BUF_PARSE_TEST_IDENT("az09AZ", "az09AZ");
+}
+
+void buf_parse_test_integer_dec()
+{
+  BUF_PARSE_TEST_INTEGER_DEC("9", 9);
+  BUF_PARSE_TEST_INTEGER_DEC("256", 256);
+  BUF_PARSE_TEST_INTEGER_DEC("100000000000000000", 100000000000000000);
+  BUF_PARSE_TEST_INTEGER_DEC("0", 0);
+  BUF_PARSE_TEST_INTEGER_DEC("-256", -256);
+  BUF_PARSE_TEST_INTEGER_DEC("-100000000000000000", -100000000000000000);
+  BUF_PARSE_TEST_NOT_INTEGER_DEC("A", 0);
+  BUF_PARSE_TEST_NOT_INTEGER_DEC("STR", 0);
+}
+
+void buf_parse_test_integer_hex()
+{
+  BUF_PARSE_TEST_INTEGER_HEX("9", 9);
+  BUF_PARSE_TEST_INTEGER_HEX("256", 0x256);
+  BUF_PARSE_TEST_INTEGER_HEX("0", 0);
+  BUF_PARSE_TEST_INTEGER_HEX("-256", -0x256);
+  BUF_PARSE_TEST_INTEGER_HEX("-E8D4A51000", -1000000000000);
+  BUF_PARSE_TEST_INTEGER_HEX("A", 10);
+  BUF_PARSE_TEST_NOT_INTEGER_HEX("STR");
+}
+
+void buf_parse_test_integer_oct()
+{
+  BUF_PARSE_TEST_INTEGER_OCT("777", 511);
 }
 
 void buf_parse_test_str ()
