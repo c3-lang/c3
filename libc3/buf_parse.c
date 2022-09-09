@@ -220,68 +220,41 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
   sw r;
   sw result = 0;
   s_buf save;
-  uw size = 0;
   s_buf tmp;
   assert(buf);
   assert(dest);
   buf_save(buf, &save);
-  if ((r = buf_read_1(buf, "\"")) > 0) {
-    while (1) {
-      if ((r = buf_read_1(buf, "\"")) != 0)
-        break;
-      if ((r = buf_parse_str_character(buf, &c)) > 0)
-        size += character_utf8_size(c);
-      else if (r < 0)
-        break;
-      else if ((r = buf_parse_str_u8(buf, &b)) > 0)
-        size += 1;
-      else
-        break;
-    }
-  }
-  buf_restore(buf, &save);
-  if (r <= 0)
+  if ((r = buf_read_1(buf, "\"")) <= 0)
     return r;
-  if (size == 0) {
-    str_init_empty(dest);
-    buf_ignore(buf, 2);
-    return 2;
-  }
-  buf_init_alloc(&tmp, size);
-  if ((r = buf_read_1(buf, "\"")) > 0) {
-    result += r;
-    while (1) {
-      if ((r = buf_read_1(buf, "\"")) > 0)
-        result += r;
-      if (r != 0)
-        break;
-      if ((r = buf_parse_str_character(buf, &c)) > 0) {
-        result += r;
-        if ((r = buf_write_character_utf8(&tmp, c)) < 0)
-          break;
-      }
-      else if (r < 0)
-        break;
-      else if ((r = buf_parse_str_u8(buf, &b)) > 0) {
-        result += r;
-        if ((r = buf_write_u8(&tmp, b)) < 0)
-          break;
-      }
-      else
+  result += r;
+  buf_init_alloc(&tmp, STR_MAX);
+  while (1) {
+    if ((r = buf_read_1(buf, "\"")) > 0)
+      result += r;
+    if (r != 0)
+      break;
+    if ((r = buf_parse_str_character(buf, &c)) > 0) {
+      result += r;
+      if ((r = buf_write_character_utf8(&tmp, c)) < 0)
         break;
     }
+    else if (r < 0)
+      break;
+    else if ((r = buf_parse_str_u8(buf, &b)) > 0) {
+      result += r;
+      if ((r = buf_write_u8(&tmp, b)) < 0)
+        break;
+    }
+    else
+      break;
   }
-  if (r < 0) {
+  if (r <= 0) {
     buf_restore(buf, &save);
     buf_clean(&tmp);
     return r;
   }
-  if (tmp.wpos != tmp.size) {
-    buf_restore(buf, &save);
-    buf_clean(&tmp);
-    return 0;
-  }
-  buf_to_str(&tmp, dest);
+  buf_read_to_str(&tmp, dest);
+  buf_clean(&tmp);
   return result;
 }
 
