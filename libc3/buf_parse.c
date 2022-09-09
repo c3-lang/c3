@@ -337,16 +337,17 @@ sw buf_parse_str_character_unicode (s_buf *buf, character *dest)
 {
   sw r;
   sw result = 0;
-  u64 temp = 0;
+  u64 tmp;
   s_buf save;
-  dest += 0;
+  buf_save(buf, &save);
   if ((r = buf_read_1(buf, "+")) <= 0)
     return r;
   result += r;
-  if ((r = buf_parse_u64_hex(buf, &temp)) <= 0) {
+  if ((r = buf_parse_u64_hex(buf, &tmp)) <= 0) {
     buf_restore(buf, &save);
     return r;
   }
+  *dest = (character) tmp;
   result += r;
   return result;
 }
@@ -376,7 +377,6 @@ sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
   return -1;
 }
 
-
 sw buf_parse_sym (s_buf *buf, const s_sym **dest)
 {
   s_buf tmp;
@@ -389,21 +389,19 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
   s_str str;
   assert(buf);
   assert(dest);
+  buf_save(buf, &save);
   if ((r = buf_peek_1(buf, ":\"")) > 0) {
-    if ((r = buf_read_1(buf, ":")) > 0 &&
-        (r1 = buf_parse_str(buf, &str)) > 0) {
+    if ((r = buf_read_1(buf, ":")) <= 0)
+      return r;
+    if ((r1 = buf_parse_str(buf, &str)) <= 0)
+      buf_restore(buf, &save);
+    if (r1 < 0)
+      return r1;
+    if (r1 > 0) {
       *dest = str_to_sym(&str);
       str_clean(&str);
       return r + r1;
     }
-    if (r1 < 0) {
-      buf_restore(buf, &save);
-      return r1;
-    }
-  }
-  if (r < 0) {
-    buf_restore(buf, &save);
-    return r;
   }
   if ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
       (c == ':' || character_is_uppercase(c))) {
@@ -412,12 +410,19 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
     if (c == ':') {
       if ((r = buf_ignore(buf, csize)) != csize)
         goto error;
+      if ((r = buf_peek_character_utf8(buf, &c)) <= 0 ||
+          sym_character_is_reserved(c)) {
+        buf_restore(buf, &save);
+        if (r < 0)
+          return r;
+        return 0;
+      }
     }
     else {
       if ((r = buf_xfer(&tmp, buf, csize)) != csize)
         goto error;
-      result += csize;
     }
+    result += csize;
     while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
            ! sym_character_is_reserved(c)) {
       csize = r;

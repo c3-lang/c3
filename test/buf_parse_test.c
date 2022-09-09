@@ -546,6 +546,7 @@ void buf_parse_test_str_character ()
   BUF_PARSE_TEST_STR_CHARACTER("𐅀", 65856);
   BUF_PARSE_TEST_STR_CHARACTER("🤩", 129321);
   BUF_PARSE_TEST_STR_CHARACTER("🎳", 127923);
+  BUF_PARSE_TEST_STR_CHARACTER("\\U+FF", 0xFF);
 }
 
 void buf_parse_test_str_u8 ()
@@ -584,6 +585,7 @@ void buf_parse_test_sym ()
   BUF_PARSE_TEST_NOT_SYM("00");
   BUF_PARSE_TEST_NOT_SYM("0Abc");
   BUF_PARSE_TEST_NOT_SYM("0abc");
+  BUF_PARSE_TEST_NOT_SYM(":");
   BUF_PARSE_TEST_SYM(":\"0\"", "0");
   BUF_PARSE_TEST_SYM(":\"9\"", "9");
   BUF_PARSE_TEST_SYM(":\"A\"", "A");
@@ -593,4 +595,5 @@ void buf_parse_test_sym ()
   BUF_PARSE_TEST_SYM("A", "A");
   BUF_PARSE_TEST_SYM("Z", "Z");
   BUF_PARSE_TEST_SYM("Az09az", "Az09az");
+  BUF_PARSE_TEST_SYM(":az09AZ", "az09AZ");
 }
