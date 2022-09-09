@@ -586,34 +586,6 @@ sw buf_refill_compact (s_buf *buf)
   return 0;
 }
 
-s_buf * buf_restore (s_buf *buf, const s_buf *save)
-{
-  assert(buf);
-  assert(save);
-  buf->rpos = save->rpos;
-  buf->wpos = save->wpos;
-  return buf;
-}
-
-s_buf * buf_save (s_buf *buf, s_buf *save)
-{
-  assert(buf);
-  assert(save);
-  save->rpos = buf->rpos;
-  save->save = buf->save;
-  save->wpos = buf->wpos;
-  buf->save = save;
-  return buf;
-}
-
-s_buf * buf_save_clean (s_buf *buf, s_buf *save)
-{
-  assert(buf);
-  assert(save);
-  buf->save = save->save;
-  return buf;
-}
-
 sw buf_str_to_hex (s_buf *buf, const s_str *src)
 {
   const u8 *b;

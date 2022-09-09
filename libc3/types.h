@@ -64,17 +64,24 @@ typedef struct ident {
 } s_ident;
 
 typedef struct buf s_buf;
+typedef struct buf_save s_buf_save;
+
+struct buf_save {
+  uw rpos;
+  s_buf_save *save;
+  uw wpos;
+};
 
 struct buf {
-  sw    (*flush) (s_buf *buf);
-  bool    free;
-  u_ptr_w ptr;
-  sw    (*refill) (s_buf *buf);
-  u64     rpos;
-  s_buf  *save;
-  u64     size;
-  void   *user_ptr;
-  u64     wpos;
+  sw        (*flush) (s_buf *buf);
+  bool        free;
+  u_ptr_w     ptr;
+  sw        (*refill) (s_buf *buf);
+  u64         rpos;
+  s_buf_save *save;
+  u64         size;
+  void       *user_ptr;
+  u64         wpos;
 };
 
 typedef struct tag  s_tag;

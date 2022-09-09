@@ -6,6 +6,7 @@
 #include <string.h>
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_save.h"
 #include "character.h"
 #include "ident.h"
 #include "str.h"
@@ -100,30 +101,26 @@ sw buf_inspect_character_size (character c)
 sw buf_inspect_f32 (s_buf *buf, f32 x)
 {
   sw r;
-  s_buf save;
-  buf_save(buf, &save);
   if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) != 1)
+    if ((r = buf_write_u8(buf, '-')) < 0)
       return r;
     x = -x;
   }
   /* TODO */
-  err(1, "not implemented");
+  errx(1, "not implemented");
   return -1;
 }
 
 sw buf_inspect_f64 (s_buf *buf, f64 x)
 {
   sw r;
-  s_buf save;
-  buf_save(buf, &save);
   if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) != 1)
+    if ((r = buf_write_u8(buf, '-')) < 0)
       return r;
     x = -x;
   }
   /* TODO */
-  err(1, "not implemented");
+  errx(1, "not implemented");
   return -1;
 }
 
@@ -131,125 +128,100 @@ sw buf_inspect_list (s_buf *buf, const s_list *list)
 {
   sw r;
   sw result = 0;
-  s_buf save;
-  buf_save(buf, &save);
-  if ((r = buf_write_u8(buf, '[')) != 1)
+  if ((r = buf_write_u8(buf, '[')) <= 0)
     return r;
   result++;
   if ((r = buf_inspect_tag(buf, list->tag)) < 0)
-    goto error;
+    return r;
   result += r;
   if ((r = buf_write_1(buf, " | ")) < 0)
-    goto error;
+    return r;
   result += r;
   if ((r = buf_inspect_list(buf, list->next)) < 0)
-    goto error;
+    return r;
   result += r;
   if ((r = buf_write_1(buf, "]")) < 0)
-    goto error;
+    return r;
   result += r;
   return result;
- error:
-  buf_restore(buf, &save);
-  return r;
 }
 
 sw buf_inspect_s8 (s_buf *buf, s8 x)
 {
   sw r;
-  s_buf save;
-  buf_save(buf, &save);
-  if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) != 1)
-      return r;
-    if ((r = buf_inspect_u8(buf, (u8) x)) <= 0) {
-      buf_restore(buf, &save);
-      return r;
-    }
-    return r + 1;
-  }
-  return buf_inspect_u8(buf, (u8) x);
+  sw r1;
+  if (x > 0)
+    return buf_inspect_u8(buf, (u8) x);
+  if ((r = buf_write_1(buf, "-")) < 0)
+    return r;
+  if ((r1 = buf_inspect_u8(buf, (u8) x)) < 0)
+    return r1;
+  return r + r1;
 }
 
 sw buf_inspect_s16 (s_buf *buf, s16 x)
 {
   sw r;
-  s_buf save;
-  buf_save(buf, &save);
-  if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) != 1)
-      return r;
-    if ((r = buf_inspect_u16(buf, (u16) x)) <= 0) {
-      buf_restore(buf, &save);
-      return r;
-    }
-    return r + 1;
-  }
-  return buf_inspect_u16(buf, (u16) x);
+  sw r1;
+  if (x > 0)
+    return buf_inspect_u16(buf, (u16) x);
+  if ((r = buf_write_1(buf, "-")) < 0)
+    return r;
+  if ((r1 = buf_inspect_u16(buf, (u16) x)) < 0)
+    return r1;
+  return r + r1;
 }
 
 sw buf_inspect_s32 (s_buf *buf, s32 x)
 {
   sw r;
-  s_buf save;
-  buf_save(buf, &save);
-  if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) != 1)
-      return r;
-    if ((r = buf_inspect_u32(buf, (u32) x)) <= 0) {
-      buf_restore(buf, &save);
-      return r;
-    }
-    return r + 1;
-  }
-  return buf_inspect_u32(buf, (u32) x);
+  sw r1;
+  if (x > 0)
+    return buf_inspect_u32(buf, (u32) x);
+  if ((r = buf_write_1(buf, "-")) < 0)
+    return r;
+  if ((r1 = buf_inspect_u32(buf, (u32) x)) < 0)
+    return r1;
+  return r + r1;
 }
 
 sw buf_inspect_s64 (s_buf *buf, s64 x)
 {
   sw r;
-  s_buf save;
-  buf_save(buf, &save);
-  if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) != 1)
-      return r;
-    if ((r = buf_inspect_u64(buf, (u64) x)) <= 0) {
-      buf_restore(buf, &save);
-      return r;
-    }
-    return r + 1;
-  }
-  return buf_inspect_u64(buf, (u64) x);
+  sw r1;
+  if (x > 0)
+    return buf_inspect_u64(buf, (u64) x);
+  if ((r = buf_write_1(buf, "-")) < 0)
+    return r;
+  if ((r1 = buf_inspect_u64(buf, (u64) x)) < 0)
+    return r1;
+  return r + r1;
 }
 
 sw buf_inspect_str (s_buf *buf, const s_str *str)
 {
+  sw r;
   sw size;
   assert(buf);
   assert(str);
   if (str_has_reserved_characters(str))
     return buf_inspect_str_reserved(buf, str);
   size = str->size + 2;
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write_u8(buf, '"');
-  buf_write_str(buf, str);
-  buf_write_u8(buf, '"');
+  if ((r = buf_write_u8(buf, '"')) < 0 ||
+      (r = buf_write_str(buf, str)) < 0 ||
+      (r = buf_write_u8(buf, '"') < 0))
+    return r;
   return size;
 }
 
 sw buf_inspect_str_byte (s_buf *buf, u8 b)
 {
-  sw size = 4;
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write_u8(buf, '\\');
-  buf_write_u8(buf, 'x');
-  buf_u8_to_hex(buf, b);
+  sw r;
+  const sw size = 4;
+  if ((r = buf_write_u8(buf, '\\')) < 0 ||
+      (r = buf_write_u8(buf, 'x')) < 0 ||
+      (r = buf_u8_to_hex(buf, b)) < 0)
+    return r;
   return size;
 }
 
@@ -258,37 +230,37 @@ sw buf_inspect_str_character (s_buf *buf, character c)
   s_buf char_buf;
   int i;
   int j;
+  sw r;
   sw size;
   size = buf_inspect_str_character_size(c);
   if (size <= 0)
     return size;
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
   if (! str_character_is_reserved(c))
     return buf_write_character_utf8(buf, c);
   buf_write_u8(buf, '\\');
   switch (c) {
-  case '\0': buf_write_u8(buf, '0'); break;
-  case '\n': buf_write_u8(buf, 'n'); break;
-  case '\r': buf_write_u8(buf, 'r'); break;
-  case '\t': buf_write_u8(buf, 't'); break;
-  case '\v': buf_write_u8(buf, 'v'); break;
-  case '\"': buf_write_u8(buf, '"'); break;
-  case '\'': buf_write_u8(buf, '\''); break;
-  case '\\': buf_write_u8(buf, '\\'); break;
+  case '\0': if ((r = buf_write_u8(buf, '0')) < 0) return r; break;
+  case '\n': if ((r = buf_write_u8(buf, 'n')) < 0) return r; break;
+  case '\r': if ((r = buf_write_u8(buf, 'r')) < 0) return r; break;
+  case '\t': if ((r = buf_write_u8(buf, 't')) < 0) return r; break;
+  case '\v': if ((r = buf_write_u8(buf, 'v')) < 0) return r; break;
+  case '\"': if ((r = buf_write_u8(buf, '"')) < 0) return r; break;
+  case '\'': if ((r = buf_write_u8(buf, '\'')) < 0) return r; break;
+  case '\\': if ((r = buf_write_u8(buf, '\\')) < 0) return r; break;
   default:
     BUF_INIT_ALLOCA(&char_buf, 4);
-    i = buf_write_character_utf8(&char_buf, c);
+    if ((i = buf_write_character_utf8(&char_buf, c)) < 0)
+      return i;
     j = 0;
     if (i-- > 0) {
-      buf_write_u8(buf, 'x');
-      buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
+      if ((r = buf_write_u8(buf, 'x')) < 0)
+        return r;
+      if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) < 0)
+        return r;
       while (i--) {
-        buf_write_u8(buf, '\\');
-        buf_write_u8(buf, 'x');
-        buf_u8_to_hex(buf, char_buf.ptr.pu8[j++]);
+        if ((r = buf_write_1(buf, "\\x")) < 0 ||
+            (r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) < 0)
+          return r;
       }
     }
   }
@@ -333,23 +305,25 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *src)
   size = buf_inspect_str_reserved_size(src);
   if (size <= 0)
     return size;
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write_u8(buf, '"');
+  if ((r = buf_write_u8(buf, '"')) < 0)
+    return r;
   str_init_str(&s, src);
   while (1) {
-    if ((r = str_read_character(&s, &c)) > 0)
-      buf_inspect_str_character(buf, c);
-    else if (r && (r = str_read(&s, &b)) == 1)
-      buf_inspect_str_byte(buf, b);
+    if ((r = str_read_character(&s, &c)) > 0) {
+      if ((r = buf_inspect_str_character(buf, c)) < 0)
+        return r;
+    }
+    else if ((r = str_read(&s, &b)) == 1) {
+      if ((r = buf_inspect_str_byte(buf, b)) < 0)
+        return r;
+    }
     else if (r < 0)
-      return -1;
+      return r;
     else if (r == 0)
       break;
   }
-  buf_write_u8(buf, '"');
+  if ((r = buf_write_u8(buf, '"')) < 0)
+    return r;
   return size;
 }
 
@@ -389,6 +363,7 @@ sw buf_inspect_str_size (const s_str *str)
 
 sw buf_inspect_sym (s_buf *buf, const s_sym *sym)
 {
+  sw r;
   sw size;
   assert(buf);
   assert(sym);
@@ -399,12 +374,9 @@ sw buf_inspect_sym (s_buf *buf, const s_sym *sym)
   if (sym_is_module(sym))
     return buf_write_str(buf, &sym->str);
   size = sym->str.size + 1;
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write_u8(buf, ':');
-  buf_write_str(buf, &sym->str);
+  if ((r = buf_write_1(buf, ":")) < 0 ||
+      (r = buf_write_str(buf, &sym->str)) < 0)
+    return r;
   return size;
 }
 
@@ -424,16 +396,14 @@ sw buf_inspect_sym_size (const s_sym *sym)
 /* XXX keep in sync with buf_inspect_sym_reserved_size */
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym)
 {
-  sw  size;
+  sw r;
+  sw size;
   size = buf_inspect_sym_reserved_size(sym);
   if (size <= 0)
     return size;
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer_overflow");
-    return -1;
-  }
-  buf_write_u8(buf, ':');
-  buf_inspect_str(buf, &sym->str);
+  if ((r = buf_write_u8(buf, ':')) < 0 ||
+      (r = buf_inspect_str(buf, &sym->str)) < 0)
+    return r;
   return size;
 }
 
@@ -482,27 +452,22 @@ sw buf_inspect_tuple (s_buf *buf, const s_tuple *tuple)
   u64 i = 0;
   sw r;
   sw result = 0;
-  s_buf save;
-  buf_save(buf, &save);
   if ((r = buf_write_1(buf, "{")) < 0)
     return r;
   result += r;
   while (i < tuple->count) {
     if ((r = buf_inspect_tag(buf, tuple->tag + i)) < 0)
-      goto error;
+      return r;
     result += r;
     if ((r = buf_write_1(buf, ", ")) < 0)
-      goto error;
+      return r;
     result += r;
     i++;
   }
   if ((r = buf_write_1(buf, "}")) < 0)
-    goto error;
+    return r;
   result += r;
   return result;
- error:
-  buf_restore(buf, &save);
-  return r;
 }
 
 sw buf_inspect_u8 (s_buf *buf, u8 x)
@@ -512,24 +477,21 @@ sw buf_inspect_u8 (s_buf *buf, u8 x)
   sw r;
   sw size = 0;
   s_buf tmp;
-  s_buf save;
   BUF_INIT_ALLOCA(&tmp, 3);
+  if (x == 0)
+    return buf_write_u8(buf, '0');
   while (x > 0) {
     digit = x % 10;
     x /= 10;
     if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      assert(! "error");
       return -1;
     }
     size++;
   }
-  buf_save(buf, &save);
   i = size;
   while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) != 1) {
-      buf_restore(buf, &save);
+    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
       return r;
-    }
   return size;
 }
 
@@ -540,24 +502,21 @@ sw buf_inspect_u16 (s_buf *buf, u16 x)
   sw r;
   sw size = 0;
   s_buf tmp;
-  s_buf save;
   BUF_INIT_ALLOCA(&tmp, 5);
+  if (x == 0)
+    return buf_write_u8(buf, '0');
   while (x > 0) {
     digit = x % 10;
     x /= 10;
     if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      assert(! "error");
       return -1;
     }
     size++;
   }
-  buf_save(buf, &save);
   i = size;
   while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) != 1) {
-      buf_restore(buf, &save);
+    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
       return r;
-    }
   return size;
 }
 
@@ -568,24 +527,21 @@ sw buf_inspect_u32 (s_buf *buf, u32 x)
   sw r;
   sw size = 0;
   s_buf tmp;
-  s_buf save;
   BUF_INIT_ALLOCA(&tmp, 10);
+  if (x == 0)
+    return buf_write_u8(buf, '0');
   while (x > 0) {
     digit = x % 10;
     x /= 10;
     if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      assert(! "error");
       return -1;
     }
     size++;
   }
-  buf_save(buf, &save);
   i = size;
   while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) != 1) {
-      buf_restore(buf, &save);
+    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
       return r;
-    }
   return size;
 }
 
@@ -596,23 +552,20 @@ sw buf_inspect_u64 (s_buf *buf, u64 x)
   sw r;
   sw size = 0;
   s_buf tmp;
-  s_buf save;
   BUF_INIT_ALLOCA(&tmp, 20);
+  if (x == 0)
+    return buf_write_u8(buf, '0');
   while (x > 0) {
     digit = x % 10;
     x /= 10;
     if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      assert(! "error");
       return -1;
     }
     size++;
   }
-  buf_save(buf, &save);
   i = size;
   while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) != 1) {
-      buf_restore(buf, &save);
+    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
       return r;
-    }
   return size;
 }

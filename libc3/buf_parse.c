@@ -6,6 +6,7 @@
 #include <string.h>
 #include "buf.h"
 #include "buf_parse.h"
+#include "buf_save.h"
 #include "character.h"
 #include "ident.h"
 #include "limits.h"
@@ -31,18 +32,27 @@ sw buf_parse_character (s_buf *buf, character *dest)
   sw r;
   sw r1;
   sw r2;
-  s_buf save;
+  s_buf_save save;
   assert(buf);
   assert(dest);
-  buf_save(buf, &save);
-  if ((r = buf_read_1(buf, "'")) > 0 &&
-      (r1 = buf_parse_str_character(buf, &c)) &&
-      (r2 = buf_read_1(buf, "'")) > 0) {
-    *dest = c;
-    return r + r1 + r2;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "'")) <= 0)
+    goto clean;
+  if ((r1 = buf_parse_str_character(buf, &c)) <= 0) {
+    r = r1;
+    goto restore;
   }
-  buf_restore(buf, &save);
-  return 0;
+  if ((r2 = buf_read_1(buf, "'")) <= 0) {
+    r = r2;
+    goto restore;
+  }
+  *dest = c;
+  return r + r1 + r2;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
@@ -51,18 +61,17 @@ sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
-    if (c >= '0' && c <= '9')
-      *dest = c - '0';
-    else if (c >= 'a' && c <= 'f')
-      *dest = c - 'a' + 10;
-    else if (c >= 'A' && c <= 'F')
-      *dest = c - 'A' + 10;
-    else
-      return 0;
-    buf_read_character_utf8(buf, &c);
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
     return r;
-  }
+  if (c >= '0' && c <= '9')
+    *dest = c - '0';
+  else if (c >= 'a' && c <= 'f')
+    *dest = c - 'a' + 10;
+  else if (c >= 'A' && c <= 'F')
+    *dest = c - 'A' + 10;
+  else
+    return 0;
+  r = buf_ignore(buf, r);
   return r;
 }
 
@@ -72,14 +81,13 @@ sw buf_parse_digit_oct (s_buf *buf, u8 *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
-    if (c >= '0' && c <= '7')
-      *dest = c - '0';
-    else
-      return 0;
-    buf_read_character_utf8(buf, &c);
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
     return r;
-  }
+  if (c >= '0' && c <= '7')
+    *dest = c - '0';
+  else
+    return 0;
+  r = buf_ignore(buf, r);
   return r;
 }
 
@@ -89,14 +97,13 @@ sw buf_parse_digit_bin (s_buf *buf, u8 *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
-    if (c == '0' || c == '1')
-      *dest = c - '0';
-    else
-      return 0;
-    buf_read_character_utf8(buf, &c);
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
     return r;
-  }
+  if (c == '0' || c == '1')
+    *dest = c - '0';
+  else
+    return 0;
+  r = buf_ignore(buf, r);
   return r;
 }
 
@@ -106,14 +113,13 @@ sw buf_parse_digit_dec (s_buf *buf, u8 *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
-    if (c >= '0' && c <= '9')
-      *dest = c - '0';
-    else
-      return 0;
-    buf_read_character_utf8(buf, &c);
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
     return r;
-  }
+  if (c >= '0' && c <= '9')
+    *dest = c - '0';
+  else
+    return 0;
+  r = buf_ignore(buf, r);
   return r;
 }
 
@@ -122,57 +128,56 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   character c;
   sw csize;
   sw r;
-  sw r1 = 0;
   sw result = 0;
-  s_buf save;
+  s_buf_save save;
   s_str str;
   s_buf tmp;
   assert(buf);
   assert(dest);
-  if ((r = buf_peek_1(buf, "~i\"")) > 0) {
-    if ((r = buf_read_1(buf, "~i")) > 0 &&
-        (r1 = buf_parse_str(buf, &str)) > 0) {
-      str_to_ident(&str, dest);
-      str_clean(&str);
-      return r + r1;
-    }
-    if (r1 < 0) {
-      buf_restore(buf, &save);
-      return r1;
-    }
+  buf_save_init(buf, &save);
+  if ((r = buf_peek_1(buf, "~i\"")) < 0)
+    goto clean;
+  if (r > 0) {
+    if ((r = buf_read_1(buf, "~i")) < 0)
+      goto clean;
+    result += r;
+    if ((r = buf_parse_str(buf, &str)) < 0)
+      goto restore;
+    result += r;
+    str_to_ident(&str, dest);
+    str_clean(&str);
+    r = result;
+    goto clean;
   }
-  if (r < 0) {
-    buf_restore(buf, &save);
-    return r;
-  }
-  if ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
-      character_is_lowercase(c)) {
+  if ((r = buf_peek_character_utf8(buf, &c)) < 0)
+    goto clean;
+  if (r > 0 && character_is_lowercase(c)) {
     csize = r;
     BUF_INIT_ALLOCA(&tmp, IDENT_MAX);
-    if ((r = buf_xfer(&tmp, buf, csize)) != csize)
-      goto error;
+    if ((r = buf_xfer(&tmp, buf, csize)) < 0)
+      goto restore;
     result += csize;
     while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
            ! ident_character_is_reserved(c)) {
       csize = r;
       if ((r = buf_xfer(&tmp, buf, csize)) != csize)
-        goto error;
+        goto restore;
       result += csize;
     }
-    if (r < 0) {
-      buf_restore(buf, &save);
-      return r;
-    }
+    if (r < 0)
+      goto restore;
     buf_read_to_str(&tmp, &str);
     str_to_ident(&str, dest);
     str_clean(&str);
-    return result;
+    r = result;
+    goto clean;
   }
-  if (r < 0)
-    return r;
-  return 0;
- error:
-  buf_restore(buf, &save);
+  r = 0;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 
@@ -219,43 +224,41 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
   character c;
   sw r;
   sw result = 0;
-  s_buf save;
+  s_buf_save save;
   s_buf tmp;
   assert(buf);
   assert(dest);
-  buf_save(buf, &save);
+  buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "\"")) <= 0)
-    return r;
+    goto save_clean;
   result += r;
   buf_init_alloc(&tmp, STR_MAX);
   while (1) {
-    if ((r = buf_read_1(buf, "\"")) > 0)
-      result += r;
-    if (r != 0)
+    if ((r = buf_read_1(buf, "\"")) < 0)
+      goto restore;
+    result += r;
+    if (r > 0)
       break;
-    if ((r = buf_parse_str_character(buf, &c)) > 0) {
-      result += r;
-      if ((r = buf_write_character_utf8(&tmp, c)) < 0)
-        break;
-    }
-    else if (r < 0)
-      break;
-    else if ((r = buf_parse_str_u8(buf, &b)) > 0) {
-      result += r;
+    if ((r = buf_parse_str_character(buf, &c)) <= 0) {
+      if ((r = buf_parse_str_u8(buf, &b)) <= 0)
+        goto restore;
       if ((r = buf_write_u8(&tmp, b)) < 0)
-        break;
+        goto restore;
     }
-    else
-      break;
-  }
-  if (r <= 0) {
-    buf_restore(buf, &save);
-    buf_clean(&tmp);
-    return r;
+    result += r;
+    if ((r = buf_write_character_utf8(&tmp, c)) < 0)
+      goto restore;
   }
   buf_read_to_str(&tmp, dest);
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
   buf_clean(&tmp);
-  return result;
+ save_clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_str_character (s_buf *buf, character *dest)
@@ -265,23 +268,27 @@ sw buf_parse_str_character (s_buf *buf, character *dest)
   sw r;
   sw r1 = 0;
   sw r2 = 0;
-  s_buf save;
-  buf_save(buf, &save);
-  if ((r = buf_peek_1(buf, "\\x")) > 0)
-    return 0;
-  if (r < 0)
-    return r;
-  if ((r = buf_read_1(buf, "\\")) > 0) {
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_peek_1(buf, "\\x")) < 0)
+    goto clean;
+  if (r > 0) {
+    r = 0;
+    goto clean;
+  }
+  if ((r = buf_read_1(buf, "\\")) < 0)
+    goto clean;
+  if (r > 0) {
     if ((r1 = buf_read_character_utf8(buf, &c)) <= 0) {
-      buf_restore(buf, &save);
-      return r1;
+      r = r1;
+      goto restore;
     }
     switch (c) {
     case '0': c = 0; break;
     case 'U': case 'u':
       if ((r2 = buf_parse_str_character_unicode(buf, &c)) < 0) {
-        buf_restore(buf, &save);
-        return r2;
+        r = r2;
+        goto restore;
       }
       break;
     case 'n': c = '\n'; break;
@@ -294,15 +301,21 @@ sw buf_parse_str_character (s_buf *buf, character *dest)
     *dest = c;
     return r + r1 + r2;
   }
-  if (r < 0)
-    return r;
-  if ((r = buf_peek_character_utf8(buf, &c)) > 0) {
-    if (c == '"')
-      return 0;
-    csize = r;
-    if ((r = buf_ignore(buf, csize)) == csize)
-      *dest = c;
+  if ((r = buf_peek_character_utf8(buf, &c)) < 0)
+    goto clean;
+  if (c == '"') {
+    r = 0;
+    goto clean;
   }
+  csize = r;
+  if ((r = buf_ignore(buf, csize)) < 0)
+    goto clean;
+  *dest = c;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 
@@ -311,43 +324,47 @@ sw buf_parse_str_character_unicode (s_buf *buf, character *dest)
   sw r;
   sw result = 0;
   u64 tmp;
-  s_buf save;
-  buf_save(buf, &save);
+  s_buf_save save;
+  buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "+")) <= 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_parse_u64_hex(buf, &tmp)) <= 0) {
-    buf_restore(buf, &save);
-    return r;
+    buf_save_restore(buf, &save);
+    goto clean;
   }
   *dest = (character) tmp;
   result += r;
-  return result;
+  r = result;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
 {
-  u8 digit[2];
+  u8 digit[3];
   sw r;
-  sw r1;
-  sw r2 = 0;
-  s_buf save;
-  buf_save(buf, &save);
-  if ((r = buf_read_1(buf, "\\x")) > 0 &&
-      (r1 = buf_parse_digit_hex(buf, &digit[0])) > 0 &&
-      (r2 = buf_parse_digit_hex(buf, &digit[1])) > 0) {
-    *dest = digit[0] * 16 + digit[1];
-    return r + r1 + r2;
-  }
-  buf_restore(buf, &save);
-  if (r <= 0)
-    return r;
-  if (r1 <= 0)
-    return r1;
-  if (r2 <= 0)
-    return r2;
-  assert(! "error");
-  return -1;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "\\x")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_digit_hex(buf, &digit[0])) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_digit_hex(buf, &digit[1])) <= 0)
+    goto restore;
+  result += r;
+  *dest = digit[0] * 16 + digit[1];
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_sym (s_buf *buf, const s_sym **dest)
@@ -356,65 +373,65 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
   character c;
   sw csize;
   sw r;
-  sw r1 = 0;
   sw result = 0;
-  s_buf save;
+  s_buf_save save;
   s_str str;
   assert(buf);
   assert(dest);
-  buf_save(buf, &save);
-  if ((r = buf_peek_1(buf, ":\"")) > 0) {
+  buf_save_init(buf, &save);
+  if ((r = buf_peek_1(buf, ":\"")) < 0)
+    goto clean;
+  if (r > 0) {
     if ((r = buf_read_1(buf, ":")) <= 0)
-      return r;
-    if ((r1 = buf_parse_str(buf, &str)) <= 0)
-      buf_restore(buf, &save);
-    if (r1 < 0)
-      return r1;
-    if (r1 > 0) {
-      *dest = str_to_sym(&str);
-      str_clean(&str);
-      return r + r1;
-    }
+      goto clean;
+    result += r;
+    if ((r = buf_parse_str(buf, &str)) <= 0)
+      goto restore;
+    *dest = str_to_sym(&str);
+    str_clean(&str);
+    result += r;
+    r = result;
+    goto clean;
   }
-  if ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
-      (c == ':' || character_is_uppercase(c))) {
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+    goto clean;
+  if (c == ':' || character_is_uppercase(c)) {
     csize = r;
     BUF_INIT_ALLOCA(&tmp, SYM_MAX);
     if (c == ':') {
-      if ((r = buf_ignore(buf, csize)) != csize)
-        goto error;
+      if ((r = buf_ignore(buf, csize)) < 0)
+        goto clean;
       if ((r = buf_peek_character_utf8(buf, &c)) <= 0 ||
-          sym_character_is_reserved(c)) {
-        buf_restore(buf, &save);
-        if (r < 0)
-          return r;
-        return 0;
-      }
+          sym_character_is_reserved(c))
+        goto restore;
     }
     else {
-      if ((r = buf_xfer(&tmp, buf, csize)) != csize)
-        goto error;
+      if ((r = buf_xfer(&tmp, buf, csize)) < 0)
+        goto clean;
     }
     result += csize;
     while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
            ! sym_character_is_reserved(c)) {
       csize = r;
-      if ((r = buf_xfer(&tmp, buf, csize)) != csize)
-        goto error;
+      if ((r = buf_xfer(&tmp, buf, csize)) < 0)
+        goto restore;
       result += csize;
     }
     if (r < 0)
-      goto error;
+      goto restore;
     buf_read_to_str(&tmp, &str);
     *dest = str_to_sym(&str);
     str_clean(&str);
-    return result;
+    r = result;
+    goto clean;
   }
-  if (r < 0)
-    return r;
-  return 0;
- error:
-  buf_restore(buf, &save);
+  if (r > 0)
+    r = 0;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 
@@ -423,21 +440,22 @@ sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
  sw r;
   sw result = 0;
   u8 digit;
+  s_buf_save save;
   u64 tmp = 0;
-  s_buf save;
-  buf_save(buf, &save);
+  buf_save_init(buf, &save);
   while ((r = buf_parse_digit_hex(buf, &digit)) > 0) {
     tmp = tmp * 16 + digit;
     result += r;
   }
   if (r < 0) {
-    buf_restore(buf, &save);
-    return r;
+    buf_save_restore(buf, &save);
+    goto clean;
   }
-  if (result == 0)
-    return 0;
   *dest = tmp;
-  return result;
+  r = result;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_tag (s_buf *buf, s_tag *dest)

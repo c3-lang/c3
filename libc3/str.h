@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "types.h"
 
-#define STR_MAX 0x1000000
+#define STR_MAX (16 * 1024 * 1024)
 
 /* Stack allocation compatible functions */
 s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p);
