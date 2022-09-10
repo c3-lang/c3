@@ -32,38 +32,38 @@ void ident_test ()
 
 void ident_test_inspect ()
 {
-  IDENT_TEST_INSPECT("", "~i\"\"");
-  IDENT_TEST_INSPECT(" ", "~i\" \"");
-  IDENT_TEST_INSPECT("\n", "~i\"\\n\"");
-  IDENT_TEST_INSPECT("\r", "~i\"\\r\"");
-  IDENT_TEST_INSPECT("\t", "~i\"\\t\"");
-  IDENT_TEST_INSPECT("\v", "~i\"\\v\"");
-  IDENT_TEST_INSPECT("\"", "~i\"\\\"\"");
-  IDENT_TEST_INSPECT(".", "~i\".\"");
-  IDENT_TEST_INSPECT("..", "~i\"..\"");
-  IDENT_TEST_INSPECT("...", "~i\"...\"");
-  IDENT_TEST_INSPECT(".. .", "~i\".. .\"");
+  IDENT_TEST_INSPECT("", "_\"\"");
+  IDENT_TEST_INSPECT(" ", "_\" \"");
+  IDENT_TEST_INSPECT("\n", "_\"\\n\"");
+  IDENT_TEST_INSPECT("\r", "_\"\\r\"");
+  IDENT_TEST_INSPECT("\t", "_\"\\t\"");
+  IDENT_TEST_INSPECT("\v", "_\"\\v\"");
+  IDENT_TEST_INSPECT("\"", "_\"\\\"\"");
+  IDENT_TEST_INSPECT(".", "_\".\"");
+  IDENT_TEST_INSPECT("..", "_\"..\"");
+  IDENT_TEST_INSPECT("...", "_\"...\"");
+  IDENT_TEST_INSPECT(".. .", "_\".. .\"");
   IDENT_TEST_INSPECT("t", "t");
-  IDENT_TEST_INSPECT("T", "~i\"T\"");
+  IDENT_TEST_INSPECT("T", "_\"T\"");
   IDENT_TEST_INSPECT("test", "test");
-  IDENT_TEST_INSPECT("Test", "~i\"Test\"");
-  IDENT_TEST_INSPECT("123", "~i\"123\"");
+  IDENT_TEST_INSPECT("Test", "_\"Test\"");
+  IDENT_TEST_INSPECT("123", "_\"123\"");
   IDENT_TEST_INSPECT("test123", "test123");
-  IDENT_TEST_INSPECT("Test123", "~i\"Test123\"");
-  IDENT_TEST_INSPECT("test 123", "~i\"test 123\"");
-  IDENT_TEST_INSPECT("Test 123", "~i\"Test 123\"");
-  IDENT_TEST_INSPECT("test123.test456", "~i\"test123.test456\"");
-  IDENT_TEST_INSPECT("Test123.Test456", "~i\"Test123.Test456\"");
-  IDENT_TEST_INSPECT("test123(test456)", "~i\"test123(test456)\"");
-  IDENT_TEST_INSPECT("Test123(Test456)", "~i\"Test123(Test456)\"");
-  IDENT_TEST_INSPECT("test123{test456}", "~i\"test123{test456}\"");
-  IDENT_TEST_INSPECT("Test123{Test456}", "~i\"Test123{Test456}\"");
-  IDENT_TEST_INSPECT("É", "~i\"É\"");
-  IDENT_TEST_INSPECT("Éo", "~i\"Éo\"");
+  IDENT_TEST_INSPECT("Test123", "_\"Test123\"");
+  IDENT_TEST_INSPECT("test 123", "_\"test 123\"");
+  IDENT_TEST_INSPECT("Test 123", "_\"Test 123\"");
+  IDENT_TEST_INSPECT("test123.test456", "_\"test123.test456\"");
+  IDENT_TEST_INSPECT("Test123.Test456", "_\"Test123.Test456\"");
+  IDENT_TEST_INSPECT("test123(test456)", "_\"test123(test456)\"");
+  IDENT_TEST_INSPECT("Test123(Test456)", "_\"Test123(Test456)\"");
+  IDENT_TEST_INSPECT("test123{test456}", "_\"test123{test456}\"");
+  IDENT_TEST_INSPECT("Test123{Test456}", "_\"Test123{Test456}\"");
+  IDENT_TEST_INSPECT("É", "_\"É\"");
+  IDENT_TEST_INSPECT("Éo", "_\"Éo\"");
   IDENT_TEST_INSPECT("Éoà \n\r\t\v\"",
-                     "~i\"Éoà \\n\\r\\t\\v\\\"\"");
+                     "_\"Éoà \\n\\r\\t\\v\\\"\"");
   IDENT_TEST_INSPECT("éoà \n\r\t\v\"",
-                     "~i\"éoà \\n\\r\\t\\v\\\"\"");
+                     "_\"éoà \\n\\r\\t\\v\\\"\"");
   IDENT_TEST_INSPECT("é", "é");
   IDENT_TEST_INSPECT("éoπꝝ꒴", "éoπꝝ꒴");
 }

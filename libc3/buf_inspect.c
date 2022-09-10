@@ -29,15 +29,13 @@ sw buf_inspect_bool (s_buf *buf, e_bool b)
 
 sw buf_inspect_character (s_buf *buf, character c)
 {
+  sw r;
   sw size;
   size = buf_inspect_character_size(c);
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write_u8(buf, '\'');
-  buf_inspect_str_character(buf, c);
-  buf_write_u8(buf, '\'');
+  if ((r = buf_write_u8(buf, '\'')) < 0 ||
+      (r = buf_inspect_str_character(buf, c)) < 0 ||
+      (r = buf_write_u8(buf, '\'')) < 0)
+    return r;
   return size;
 }
 
@@ -51,7 +49,7 @@ sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *ident)
     assert(! "buffer overflow");
     return -1;
   }
-  buf_write_1(buf, "~i");
+  buf_write_1(buf, "_");
   buf_inspect_str_reserved(buf, &ident->sym->str);
   return size;
 }
@@ -60,7 +58,7 @@ sw buf_inspect_ident_reserved_size (const s_ident *ident)
 {
   sw size;
   assert(ident);
-  size = strlen("~i");
+  size = strlen("_");
   size += buf_inspect_str_reserved_size(&ident->sym->str);
   return size;
 }
@@ -70,7 +68,7 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
   assert(buf);
   assert(ident);
   if (ident->sym->str.size == 0)
-    return buf_write_1(buf, "~i\"\"");
+    return buf_write_1(buf, "_\"\"");
   if (ident_has_reserved_characters(ident))
     return buf_inspect_ident_reserved(buf, ident);
   return buf_write_str(buf, &ident->sym->str);
@@ -80,7 +78,7 @@ sw buf_inspect_ident_size (const s_ident *ident)
 {
   assert(ident);
   if (ident->sym->str.size == 0)
-    return strlen("~i\"\"");
+    return strlen("_\"\"");
   if (ident_has_reserved_characters(ident))
     return buf_inspect_ident_reserved_size(ident);
   return ident->sym->str.size;

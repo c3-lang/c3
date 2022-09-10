@@ -135,10 +135,10 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_peek_1(buf, "~i\"")) < 0)
+  if ((r = buf_peek_1(buf, "_\"")) < 0)
     goto clean;
   if (r > 0) {
-    if ((r = buf_read_1(buf, "~i")) < 0)
+    if ((r = buf_read_1(buf, "_")) < 0)
       goto clean;
     result += r;
     if ((r = buf_parse_str(buf, &str)) < 0)
@@ -151,7 +151,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   }
   if ((r = buf_peek_character_utf8(buf, &c)) < 0)
     goto clean;
-  if (r > 0 && character_is_lowercase(c)) {
+  if (r > 0 && ! ident_first_character_is_reserved(c)) {
     csize = r;
     BUF_INIT_ALLOCA(&tmp, IDENT_MAX);
     if ((r = buf_xfer(&tmp, buf, csize)) < 0)
@@ -236,14 +236,17 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
   while (1) {
     if ((r = buf_read_1(buf, "\"")) < 0)
       goto restore;
-    result += r;
-    if (r > 0)
+    if (r > 0) {
+      result += r;
       break;
+    }
     if ((r = buf_parse_str_character(buf, &c)) <= 0) {
       if ((r = buf_parse_str_u8(buf, &b)) <= 0)
         goto restore;
+      result += r;
       if ((r = buf_write_u8(&tmp, b)) < 0)
         goto restore;
+      continue;
     }
     result += r;
     if ((r = buf_write_character_utf8(&tmp, c)) < 0)
@@ -435,29 +438,6 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
   return r;
 }
 
-sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
-{
- sw r;
-  sw result = 0;
-  u8 digit;
-  s_buf_save save;
-  u64 tmp = 0;
-  buf_save_init(buf, &save);
-  while ((r = buf_parse_digit_hex(buf, &digit)) > 0) {
-    tmp = tmp * 16 + digit;
-    result += r;
-  }
-  if (r < 0) {
-    buf_save_restore(buf, &save);
-    goto clean;
-  }
-  *dest = tmp;
-  r = result;
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
 sw buf_parse_tag (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -492,5 +472,28 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   sw r;
   if ((r = buf_parse_sym(buf, &dest->data.sym)) > 0)
     dest->type.type = TAG_SYM;
+  return r;
+}
+
+sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
+{
+ sw r;
+  sw result = 0;
+  u8 digit;
+  s_buf_save save;
+  u64 tmp = 0;
+  buf_save_init(buf, &save);
+  while ((r = buf_parse_digit_hex(buf, &digit)) > 0) {
+    tmp = tmp * 16 + digit;
+    result += r;
+  }
+  if (r < 0) {
+    buf_save_restore(buf, &save);
+    goto clean;
+  }
+  *dest = tmp;
+  r = result;
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }

@@ -8,14 +8,15 @@
 #include "str.h"
 #include "sym.h"
 
-bool ident_first_character_is_reserved (character c)
-{
-  return ! character_is_lowercase(c);
-}
-
 bool ident_character_is_reserved (character c)
 {
   return sym_character_is_reserved(c);
+}
+
+bool ident_first_character_is_reserved (character c)
+{
+  return ! (character_is_lowercase(c) ||
+            c == '_');
 }
 
 bool ident_has_reserved_characters (const s_ident *ident)
