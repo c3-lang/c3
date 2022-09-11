@@ -478,6 +478,7 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_IDENT("_\"Z\"", "Z");
   BUF_PARSE_TEST_IDENT("_\"a\"", "a");
   BUF_PARSE_TEST_IDENT("_\"z\"", "z");
+  BUF_PARSE_TEST_IDENT("_\"09AZaz\"", "09AZaz");
   BUF_PARSE_TEST_IDENT("_", "_");
   BUF_PARSE_TEST_IDENT("__", "__");
   BUF_PARSE_TEST_IDENT("_0", "_0");
@@ -486,7 +487,24 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_IDENT("_Z", "_Z");
   BUF_PARSE_TEST_IDENT("_a", "_a");
   BUF_PARSE_TEST_IDENT("_z", "_z");
+  BUF_PARSE_TEST_IDENT("_az09AZ", "_az09AZ");
+  BUF_PARSE_TEST_IDENT("a", "a");
+  BUF_PARSE_TEST_IDENT("z", "z");
+  BUF_PARSE_TEST_IDENT("+", "+");
+  BUF_PARSE_TEST_IDENT("-", "-");
+  BUF_PARSE_TEST_IDENT("*", "*");
+  BUF_PARSE_TEST_IDENT("/", "/");
+  BUF_PARSE_TEST_IDENT("=", "=");
   BUF_PARSE_TEST_IDENT("az09AZ", "az09AZ");
+  BUF_PARSE_TEST_IDENT("a+b", "a+b");
+  BUF_PARSE_TEST_IDENT("+a", "+a");
+  BUF_PARSE_TEST_IDENT("/a", "/a");
+  BUF_PARSE_TEST_IDENT("=a", "=a");
+  BUF_PARSE_TEST_IDENT("a+", "a+");
+  BUF_PARSE_TEST_IDENT("a-", "a-");
+  BUF_PARSE_TEST_IDENT("a*", "a*");
+  BUF_PARSE_TEST_IDENT("a/", "a/");
+  BUF_PARSE_TEST_IDENT("a=", "a=");
 }
 
 void buf_parse_test_str ()
@@ -561,17 +579,29 @@ void buf_parse_test_str_character ()
 
 void buf_parse_test_str_u8 ()
 {
-  BUF_PARSE_TEST_NOT_STR_U8("\0");
-  BUF_PARSE_TEST_NOT_STR_U8("\x01");
-  BUF_PARSE_TEST_NOT_STR_U8("0");
-  BUF_PARSE_TEST_NOT_STR_U8("00");
-  BUF_PARSE_TEST_NOT_STR_U8("000");
-  BUF_PARSE_TEST_NOT_STR_U8("\\");
-  BUF_PARSE_TEST_NOT_STR_U8("\\x");
-  BUF_PARSE_TEST_NOT_STR_U8("\\x0");
-  BUF_PARSE_TEST_NOT_STR_U8("x");
-  BUF_PARSE_TEST_NOT_STR_U8("x0");
-  BUF_PARSE_TEST_NOT_STR_U8("x00");
+  BUF_PARSE_TEST_NOT_STR_U8("");
+  BUF_PARSE_TEST_STR_U8("\x01", 1, 0x01);
+  BUF_PARSE_TEST_STR_U8("0", 1, '0');
+  BUF_PARSE_TEST_STR_U8("00", 1, '0');
+  BUF_PARSE_TEST_STR_U8("000", 1, '0');
+  BUF_PARSE_TEST_STR_U8("\\", 1, '\\');
+  BUF_PARSE_TEST_STR_U8("\\x", 1, '\\');
+  BUF_PARSE_TEST_STR_U8("\\x0", 1, '\\');
+  BUF_PARSE_TEST_STR_U8("x", 1, 'x');
+  BUF_PARSE_TEST_STR_U8("x0", 1, 'x');
+  BUF_PARSE_TEST_STR_U8("x00", 1, 'x');
+  BUF_PARSE_TEST_STR_U8("\\0", 1, '\\');
+  BUF_PARSE_TEST_STR_U8("\\00", 1, '\\');
+  BUF_PARSE_TEST_STR_U8("\\000", 4, 0x00);
+  BUF_PARSE_TEST_STR_U8("\\001", 4, 0x01);
+  BUF_PARSE_TEST_STR_U8("\\010", 4, 0x08);
+  BUF_PARSE_TEST_STR_U8("\\100", 4, 0x40);
+  BUF_PARSE_TEST_STR_U8("\\377", 4, 0xFF);
+  BUF_PARSE_TEST_STR_U8("\\0008", 4, 0x00);
+  BUF_PARSE_TEST_STR_U8("\\0018", 4, 0x01);
+  BUF_PARSE_TEST_STR_U8("\\0108", 4, 0x08);
+  BUF_PARSE_TEST_STR_U8("\\1008", 4, 0x40);
+  BUF_PARSE_TEST_STR_U8("\\3778", 4, 0xFF);
   BUF_PARSE_TEST_STR_U8("\\x00", 4, 0x00);
   BUF_PARSE_TEST_STR_U8("\\x01", 4, 0x01);
   BUF_PARSE_TEST_STR_U8("\\x0F", 4, 0x0F);
@@ -596,12 +626,15 @@ void buf_parse_test_sym ()
   BUF_PARSE_TEST_NOT_SYM("0Abc");
   BUF_PARSE_TEST_NOT_SYM("0abc");
   BUF_PARSE_TEST_NOT_SYM(":");
+  BUF_PARSE_TEST_NOT_SYM("_");
+  BUF_PARSE_TEST_NOT_SYM("_abc");
   BUF_PARSE_TEST_SYM(":\"0\"", "0");
   BUF_PARSE_TEST_SYM(":\"9\"", "9");
   BUF_PARSE_TEST_SYM(":\"A\"", "A");
   BUF_PARSE_TEST_SYM(":\"Z\"", "Z");
   BUF_PARSE_TEST_SYM(":\"a\"", "a");
   BUF_PARSE_TEST_SYM(":\"z\"", "z");
+  BUF_PARSE_TEST_SYM(":\"_az\"", "_az");
   BUF_PARSE_TEST_SYM("A", "A");
   BUF_PARSE_TEST_SYM("Z", "Z");
   BUF_PARSE_TEST_SYM("Az09az", "Az09az");

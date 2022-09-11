@@ -351,17 +351,50 @@ sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "\\x")) <= 0)
+  if ((r = buf_read_1(buf, "\\")) < 0)
     goto clean;
-  result += r;
-  if ((r = buf_parse_digit_hex(buf, &digit[0])) <= 0)
-    goto restore;
-  result += r;
-  if ((r = buf_parse_digit_hex(buf, &digit[1])) <= 0)
-    goto restore;
-  result += r;
-  *dest = digit[0] * 16 + digit[1];
-  r = result;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_read_1(buf, "x")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      if ((r = buf_parse_digit_hex(buf, &digit[0])) < 0)
+        goto restore;
+      if (r == 0)
+        goto read_u8;
+      result += r;
+      if ((r = buf_parse_digit_hex(buf, &digit[1])) < 0)
+        goto restore;
+      if (r == 0)
+        goto read_u8;
+      result += r;
+      *dest = digit[0] * 16 + digit[1];
+      r = result;
+      goto clean;
+    }
+    if ((r = buf_parse_digit_oct(buf, &digit[0])) < 0)
+      goto restore;
+    if (r == 0)
+      goto read_u8;
+    result += r;
+    if ((r = buf_parse_digit_oct(buf, &digit[1])) < 0)
+      goto restore;
+    if (r == 0)
+      goto read_u8;
+    result += r;
+    if ((r = buf_parse_digit_oct(buf, &digit[2])) < 0)
+      goto restore;
+    if (r == 0)
+      goto read_u8;
+    result += r;
+    *dest = digit[0] * 64 + digit[1] * 8 + digit[2];
+    r = result;
+    goto clean;
+  read_u8:
+    buf_save_restore(buf, &save);
+  }
+  r = buf_read_u8(buf, dest);
   goto clean;
  restore:
   buf_save_restore(buf, &save);

@@ -39,7 +39,7 @@ void ident_test_inspect ()
   IDENT_TEST_INSPECT("\t", "_\"\\t\"");
   IDENT_TEST_INSPECT("\v", "_\"\\v\"");
   IDENT_TEST_INSPECT("\"", "_\"\\\"\"");
-  IDENT_TEST_INSPECT(".", "_\".\"");
+  IDENT_TEST_INSPECT(".", ".");
   IDENT_TEST_INSPECT("..", "_\"..\"");
   IDENT_TEST_INSPECT("...", "_\"...\"");
   IDENT_TEST_INSPECT(".. .", "_\".. .\"");
@@ -56,7 +56,7 @@ void ident_test_inspect ()
   IDENT_TEST_INSPECT("Test123.Test456", "_\"Test123.Test456\"");
   IDENT_TEST_INSPECT("test123(test456)", "_\"test123(test456)\"");
   IDENT_TEST_INSPECT("Test123(Test456)", "_\"Test123(Test456)\"");
-  IDENT_TEST_INSPECT("test123{test456}", "_\"test123{test456}\"");
+  IDENT_TEST_INSPECT("test123{test456}", "test123{test456}");
   IDENT_TEST_INSPECT("Test123{Test456}", "_\"Test123{Test456}\"");
   IDENT_TEST_INSPECT("É", "_\"É\"");
   IDENT_TEST_INSPECT("Éo", "_\"Éo\"");
