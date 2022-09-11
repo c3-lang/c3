@@ -1,4 +1,19 @@
 #!/bin/sh
 set -e
 cd ic3
-./hello.sh
+if [ $# = 0 ]; then
+    if [ "x${IC3_TEST_TARGETS}" = "x" ]; then
+        TARGETS="$(ls -1 *.out.expected | sed -e 's/[.]out[.]expected$//')"
+    else
+        TARGETS="${IC3_TEST_TARGETS}"
+    fi
+else
+    TARGETS="$@"
+fi
+for TARGET in $TARGETS; do
+    $IC3 < ${TARGET}.in > ${TARGET}.out 2> ${TARGET}.err
+    echo $? > ${TARGET}.ret
+    diff -u ${TARGET}.out.expected ${TARGET}.out &&
+        diff -u ${TARGET}.err.expected ${TARGET}.err &&
+        diff -u ${TARGET}.ret.expected ${TARGET}.ret
+done
