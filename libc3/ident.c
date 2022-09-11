@@ -11,8 +11,12 @@
 bool ident_character_is_reserved (character c)
 {
   return (character_is_space(c) ||
+          c == '#' ||
           c == '(' ||
-          c == '.');
+          c == '.' ||
+          c == ';' ||
+          c == ',' ||
+          c == ')');
 }
 
 bool ident_first_character_is_reserved (character c)

@@ -3,7 +3,6 @@ c3c/c3c
 config.mk
 *.core
 *.css
-*.err
 *.gcno
 *.html
 ic3/ic3
@@ -14,10 +13,12 @@ ic3/ic3.debug
 .libs/
 *.lo
 *.o
-*.out
-*.ret
 test/c3_test
 test/c3_test.asan
 test/c3_test.cov
 test/c3_test.debug
+test/ic3/*.diff
+test/ic3/*.err
+test/ic3/*.out
+test/ic3/*.ret
 ucd2c/ucd2c

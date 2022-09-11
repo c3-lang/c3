@@ -36,6 +36,7 @@ for TARGET in $TARGETS; do
     diff -u ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff &&
         diff -u ${TARGET}.err.expected ${TARGET}.err >> ${TARGET}.diff &&
         diff -u ${TARGET}.ret.expected ${TARGET}.ret >> ${TARGET}.diff &&
+        rm ${TARGET}.diff &&
         test_ok ||
         test_ko
 done
