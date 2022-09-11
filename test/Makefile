@@ -1,7 +1,7 @@
 ## c3
 ## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
 
-CLEANFILES = *.a c3_test c3_test.asan c3_test.cov c3_test.debug *.css *.gcno *.html *.o .libs *.lo test/*.err test/*.out
+CLEANFILES = *.a c3_test c3_test.asan c3_test.cov c3_test.debug *.css *.gcno *.html ic3/*.diff ic3/*.err ic3/*.out *.o .libs *.lo
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 
 build: c3_test

@@ -1,6 +1,25 @@
 #!/bin/sh
-set -e
-cd ic3
+cd ic3 || exit
+
+TEST_COLOR_KO="[91m"
+TEST_COLOR_OK="[92m"
+TEST_COLOR_RESET="[39m"
+TEST_COUNT=0
+TEST_KO=0
+TEST_OK=0
+
+test_ko() {
+    echo -n "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
+    TEST_KO=$(($TEST_KO + 1))
+    TEST_COUNT=$(($TEST_COUNT + 1))
+}
+
+test_ok() {
+    echo -n "${TEST_COLOR_OK}.${TEST_COLOR_RESET}"
+    TEST_OK=$(($TEST_OK + 1))
+    TEST_COUNT=$(($TEST_COUNT + 1))
+}
+
 if [ $# = 0 ]; then
     if [ "x${IC3_TEST_TARGETS}" = "x" ]; then
         TARGETS="$(ls -1 *.out.expected | sed -e 's/[.]out[.]expected$//')"
@@ -10,10 +29,17 @@ if [ $# = 0 ]; then
 else
     TARGETS="$@"
 fi
+
 for TARGET in $TARGETS; do
     $IC3 < ${TARGET}.in > ${TARGET}.out 2> ${TARGET}.err
     echo $? > ${TARGET}.ret
-    diff -u ${TARGET}.out.expected ${TARGET}.out &&
-        diff -u ${TARGET}.err.expected ${TARGET}.err &&
-        diff -u ${TARGET}.ret.expected ${TARGET}.ret
+    diff -u ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff &&
+        diff -u ${TARGET}.err.expected ${TARGET}.err >> ${TARGET}.diff &&
+        diff -u ${TARGET}.ret.expected ${TARGET}.ret >> ${TARGET}.diff &&
+        test_ok ||
+        test_ko
 done
+echo
+echo -n "Total $TEST_COUNT tests. "
+echo -n "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
+echo "${TEST_COLOR_KO}KO $TEST_KO ($(($TEST_KO * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}."
