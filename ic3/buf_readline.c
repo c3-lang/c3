@@ -43,6 +43,7 @@ s_buf * buf_readline_open_r (s_buf *buf, const char *prompt)
     buf->refill = buf_readline_refill_fgets;
   buf_readline->prompt = prompt;
   buf->user_ptr = buf_readline;
+  using_history();
   return buf;
 }
 
@@ -94,6 +95,7 @@ sw buf_readline_refill_readline (s_buf *buf)
         buf_readline->buf.size = 0;
       return -1;
     }
+    add_history(buf_readline->buf.ptr.p);
     buf_readline_len = strlen(buf_readline->buf.ptr.p);
     buf_readline->buf.ptr.ps8[buf_readline_len++] = '\n';
     buf_readline->buf.size = buf_readline->buf.wpos = buf_readline_len;
