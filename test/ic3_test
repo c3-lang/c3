@@ -22,7 +22,7 @@ test_ok() {
 
 if [ $# = 0 ]; then
     if [ "x${IC3_TEST_TARGETS}" = "x" ]; then
-        TARGETS="$(ls -1 *.out.expected | sed -e 's/[.]out[.]expected$//')"
+        TARGETS="$(ls -1 *.in | sed -e 's/[.]in$//')"
     else
         TARGETS="${IC3_TEST_TARGETS}"
     fi
