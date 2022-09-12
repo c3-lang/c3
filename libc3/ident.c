@@ -8,7 +8,7 @@
 #include "str.h"
 #include "sym.h"
 
-bool ident_character_is_reserved (character c)
+e_bool ident_character_is_reserved (character c)
 {
   return (character_is_space(c) ||
           c == '#' ||

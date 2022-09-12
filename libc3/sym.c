@@ -101,7 +101,7 @@ s_str * sym_inspect (const s_sym *sym)
   return str;
 }
 
-bool sym_is_module (const s_sym *sym)
+e_bool sym_is_module (const s_sym *sym)
 {
   character c;
   if (str_peek_character(&sym->str, &c) > 0)
