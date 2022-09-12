@@ -83,6 +83,10 @@ void buf_inspect_test_character ()
   BUF_INSPECT_TEST_CHARACTER(0xFF, "'ÿ'");
   BUF_INSPECT_TEST_CHARACTER(42164, "'꒴'");
   BUF_INSPECT_TEST_CHARACTER(65856, "'𐅀'");
+  BUF_INSPECT_TEST_CHARACTER(127923, "'🎳'");
+  BUF_INSPECT_TEST_CHARACTER(128516, "'😄'");
+  BUF_INSPECT_TEST_CHARACTER(128995, "'🟣'");
+  BUF_INSPECT_TEST_CHARACTER(129321, "'🤩'");
 }
 
 void buf_inspect_test_str_character ()
@@ -158,5 +162,5 @@ void buf_inspect_test_str ()
   BUF_INSPECT_TEST_STR("éoà \n\r\t\v\"",
                        "\"éoà \\n\\r\\t\\v\\\"\"");
   BUF_INSPECT_TEST_STR("é", "\"é\"");
-  BUF_INSPECT_TEST_STR("éoπꝝ꒴", "\"éoπꝝ꒴\"");
+  BUF_INSPECT_TEST_STR("éoπꝝ꒴𐅀🎳😄🟣🤩", "\"éoπꝝ꒴𐅀🎳😄🟣🤩\"");
  }

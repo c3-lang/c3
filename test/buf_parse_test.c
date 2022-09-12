@@ -505,6 +505,15 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_IDENT("a*", "a*");
   BUF_PARSE_TEST_IDENT("a/", "a/");
   BUF_PARSE_TEST_IDENT("a=", "a=");
+  BUF_PARSE_TEST_IDENT("é", "é");
+  BUF_PARSE_TEST_IDENT("ÿ", "ÿ");
+  BUF_PARSE_TEST_IDENT("Π", "Π");
+  BUF_PARSE_TEST_IDENT("꒴", "꒴");
+  BUF_PARSE_TEST_IDENT("𐅀", "𐅀");
+  BUF_PARSE_TEST_IDENT("🎳", "🎳");
+  BUF_PARSE_TEST_IDENT("😄", "😄");
+  BUF_PARSE_TEST_IDENT("🟣", "🟣");
+  BUF_PARSE_TEST_IDENT("🤩", "🤩");
 }
 
 void buf_parse_test_str ()

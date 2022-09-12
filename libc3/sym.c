@@ -25,6 +25,17 @@ const s_sym * sym_1 (const s8 *p)
   return str_to_sym(&stra);
 }
 
+e_bool sym_character_is_reserved (character c)
+{
+  return (character_is_space(c) ||
+          c == '#' ||
+          c == '(' ||
+          c == ')' ||
+          c == ',' ||
+          c == '.' ||
+          c == ';');
+}
+
 void sym_delete (s_sym *sym)
 {
   str_clean(&sym->str);
@@ -56,13 +67,6 @@ const s_sym * sym_find (const s_str *str)
     sym_list = sym_list->next;
   }
   return NULL;
-}
-
-e_bool sym_character_is_reserved (character c)
-{
-  return str_character_is_reserved(c) ||
-    character_is_space(c) ||
-    (c <= 0xFF && strchr("#%(),.;{}~", c));
 }
 
 e_bool sym_has_reserved_characters (const s_sym *sym)
