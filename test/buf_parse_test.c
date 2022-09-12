@@ -243,15 +243,15 @@ do {                                                                   \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_NOT_INTEGER_DEC(test, expected)                     \
+#define BUF_PARSE_TEST_NOT_INTEGER_DEC(test, expected)                 \
 do {                                                                   \
   s_buf buf;                                                           \
   s_integer s_tmp;                                                     \
   u64 u64_tmp;                                                         \
-  test_context("buf_parse_integer_dec(" # test ") -> " # expected);        \
+  test_context("buf_parse_integer_dec(" # test ") -> " # expected);    \
   buf_init_1(&buf, (test));                                            \
   integer_init(&s_tmp);                                                \
-  TEST_EQ(buf_parse_integer_dec(&buf, &s_tmp), 0);                         \
+  TEST_EQ(buf_parse_integer_dec(&buf, &s_tmp), 0);                     \
   u64_tmp = mp_get_u64(&s_tmp.mp_int);                                 \
   TEST_EQ(buf.rpos, 0);                                                \
   TEST_EQ(u64_tmp, (expected));                                        \
@@ -601,6 +601,34 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_IDENT("😄", "😄");
   BUF_PARSE_TEST_IDENT("🟣", "🟣");
   BUF_PARSE_TEST_IDENT("🤩", "🤩");
+}
+
+void buf_parse_test_integer_dec()
+{
+  BUF_PARSE_TEST_INTEGER_DEC("9", 9);
+  BUF_PARSE_TEST_INTEGER_DEC("256", 256);
+  BUF_PARSE_TEST_INTEGER_DEC("100000000000000000", 100000000000000000);
+  BUF_PARSE_TEST_INTEGER_DEC("0", 0);
+  BUF_PARSE_TEST_INTEGER_DEC("-256", -256);
+  BUF_PARSE_TEST_INTEGER_DEC("-100000000000000000", -100000000000000000);
+  BUF_PARSE_TEST_NOT_INTEGER_DEC("A", 0);
+  BUF_PARSE_TEST_NOT_INTEGER_DEC("STR", 0);
+}
+
+void buf_parse_test_integer_hex()
+{
+  BUF_PARSE_TEST_INTEGER_HEX("9", 9);
+  BUF_PARSE_TEST_INTEGER_HEX("256", 0x256);
+  BUF_PARSE_TEST_INTEGER_HEX("0", 0);
+  BUF_PARSE_TEST_INTEGER_HEX("-256", -0x256);
+  BUF_PARSE_TEST_INTEGER_HEX("-E8D4A51000", -1000000000000);
+  BUF_PARSE_TEST_INTEGER_HEX("A", 10);
+  BUF_PARSE_TEST_NOT_INTEGER_HEX("STR");
+}
+
+void buf_parse_test_integer_oct()
+{
+  BUF_PARSE_TEST_INTEGER_OCT("777", 511);
 }
 
 void buf_parse_test_integer_dec()

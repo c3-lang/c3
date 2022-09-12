@@ -133,37 +133,6 @@ sw buf_inspect_str_integer_dec(s_buf *buf, const s_integer *x)
   return size;
 }
 
-sw buf_inspect_integer_dec(s_buf *buf, const s_integer *x)
-{
-  sw size;
-  assert(buf);
-  assert(x);
-  size = buf_inspect_integer_dec_size(x);
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write_u8(buf, '~');
-  buf_write_u8(buf, 'd');
-  buf_write_u8(buf, '"');
-  buf_inspect_str_integer_dec(buf, x);
-  buf_write_u8(buf, '"');
-  return size;
-}
-
-sw buf_inspect_f32 (s_buf *buf, f32 x)
-{
-  sw r;
-  if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) < 0)
-      return r;
-    x = -x;
-  }
-  /* TODO */
-  errx(1, "not implemented");
-  return -1;
-}
-
 sw buf_inspect_f64 (s_buf *buf, f64 x)
 {
   sw r;
@@ -190,7 +159,6 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
   if ((r = buf_write_1(buf, " | ")) < 0)
     return r;
   result += r;
-
   if ((r = buf_inspect_list(buf, x->next)) < 0)
     return r;
   result += r;
