@@ -45,6 +45,12 @@ for TARGET in $TARGETS; do
         test_ko
 done
 echo
+for TARGET in $TARGETS; do
+    if [ -f "${TARGET}.diff" ]; then
+        cat "${TARGET}.diff"
+    fi
+done
+echo
 echo -n "Total $TEST_COUNT tests. "
 echo -n "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
 echo "${TEST_COLOR_KO}KO $TEST_KO ($(($TEST_KO * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}."
