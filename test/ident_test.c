@@ -4,9 +4,20 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../libc3/character.h"
 #include "../libc3/ident.h"
 #include "../libc3/str.h"
 #include "test.h"
+
+#define IDENT_TEST_CHARACTER_IS_RESERVED(test, expected)               \
+  do {                                                                 \
+    TEST_EQ(ident_character_is_reserved(test), expected);              \
+  } while (0)
+
+#define IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(test, expected)         \
+  do {                                                                 \
+    TEST_EQ(ident_first_character_is_reserved(test), (expected));      \
+  } while (0)
 
 #define IDENT_TEST_INSPECT(test, result)                   \
   do {                                                     \
@@ -23,11 +34,63 @@
   } while (0)
 
 void ident_test ();
+void ident_test_character_is_reserved ();
+void ident_test_first_character_is_reserved ();
 void ident_test_inspect ();
+
+void ident_test_character_is_reserved ()
+{
+  IDENT_TEST_CHARACTER_IS_RESERVED('_', false);
+  IDENT_TEST_CHARACTER_IS_RESERVED('0', false);
+  IDENT_TEST_CHARACTER_IS_RESERVED('9', false);
+  IDENT_TEST_CHARACTER_IS_RESERVED('A', false);
+  IDENT_TEST_CHARACTER_IS_RESERVED('Z', false);
+  IDENT_TEST_CHARACTER_IS_RESERVED('a', false);
+  IDENT_TEST_CHARACTER_IS_RESERVED('z', false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("À"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("É"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("à"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("é"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("ÿ"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("Ÿ"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("Π"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("꒴"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("𐅀"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("🎳"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("😄"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("🟣"), false);
+  IDENT_TEST_CHARACTER_IS_RESERVED(character_1("🤩"), false);
+}
+
+void ident_test_first_character_is_reserved ()
+{
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('_', false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('0', true);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('9', true);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('A', true);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('Z', true);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('a', false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('z', false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("À"), true);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("É"), true);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("à"), false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("é"), false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("ÿ"), false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("Ÿ"), true);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("Π"), true);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("꒴"), false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("𐅀"), false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("🎳"), false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("😄"), false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("🟣"), false);
+  IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("🤩"), false);
+}
 
 void ident_test ()
 {
   ident_test_inspect();
+  ident_test_first_character_is_reserved();
+  ident_test_character_is_reserved();
 }
 
 void ident_test_inspect ()

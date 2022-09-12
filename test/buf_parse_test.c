@@ -472,6 +472,7 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_NOT_IDENT("A");
   BUF_PARSE_TEST_NOT_IDENT("Z");
   BUF_PARSE_TEST_NOT_IDENT("09AZ");
+  BUF_PARSE_TEST_NOT_IDENT("Π");
   BUF_PARSE_TEST_IDENT("_\"0\"", "0");
   BUF_PARSE_TEST_IDENT("_\"9\"", "9");
   BUF_PARSE_TEST_IDENT("_\"A\"", "A");
@@ -487,6 +488,7 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_IDENT("_Z", "_Z");
   BUF_PARSE_TEST_IDENT("_a", "_a");
   BUF_PARSE_TEST_IDENT("_z", "_z");
+  BUF_PARSE_TEST_IDENT("_Π", "_Π");
   BUF_PARSE_TEST_IDENT("_az09AZ", "_az09AZ");
   BUF_PARSE_TEST_IDENT("a", "a");
   BUF_PARSE_TEST_IDENT("z", "z");
@@ -507,7 +509,7 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_IDENT("a=", "a=");
   BUF_PARSE_TEST_IDENT("é", "é");
   BUF_PARSE_TEST_IDENT("ÿ", "ÿ");
-  BUF_PARSE_TEST_IDENT("Π", "Π");
+  BUF_PARSE_TEST_IDENT("π", "π");
   BUF_PARSE_TEST_IDENT("꒴", "꒴");
   BUF_PARSE_TEST_IDENT("𐅀", "𐅀");
   BUF_PARSE_TEST_IDENT("🎳", "🎳");
@@ -557,6 +559,10 @@ void buf_parse_test_str ()
   BUF_PARSE_TEST_STR("\"꒴\"", "꒴");
   BUF_PARSE_TEST_STR("\"𐅀\"", "𐅀");
   BUF_PARSE_TEST_STR("\"●\"", "●");
+  BUF_PARSE_TEST_STR("\"🎳\"", "🎳");
+  BUF_PARSE_TEST_STR("\"😄\"", "😄");
+  BUF_PARSE_TEST_STR("\"🟣\"", "🟣");
+  BUF_PARSE_TEST_STR("\"🤩\"", "🤩");
 }
 
 void buf_parse_test_str_character ()

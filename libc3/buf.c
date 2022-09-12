@@ -149,7 +149,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   const u8 _11111000 = 0xF8;
   if (buf_refill(buf, 1) < 1)
     return 0;
-  b = (const u8 *) buf->ptr.pu8 + buf->rpos;
+  b = buf->ptr.pu8 + buf->rpos;
   if ((b[0] & _10000000) == 0) {
     *c = b[0];
     return 1;

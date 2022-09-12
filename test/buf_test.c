@@ -48,6 +48,19 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_TEST_PEEK_CHARACTER_UTF8(test, expected, c)                \
+  do {                                                                 \
+    character dest;                                                    \
+    s_buf buf;                                                         \
+    test_context("buf_peek_character_utf8(" # test ")");               \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_peek_character_utf8(&buf, &dest), (expected));         \
+    TEST_EQ(buf.rpos, 0);                                              \
+    TEST_EQ(dest, (c));                                                \
+    buf_clean(&buf);						       \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_TEST_READ_1(test)                                          \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -109,6 +122,7 @@ void buf_test_init_clean ();
 void buf_test_new_delete ();
 void buf_test_new_alloc_delete ();
 void buf_test_peek_1 ();
+void buf_test_peek_character_utf8 ();
 void buf_test_peek_f32 ();
 void buf_test_peek_f64 ();
 void buf_test_peek_s8 ();
@@ -159,7 +173,8 @@ void buf_test ()
   buf_test_write_s32();
   buf_test_write_s64();
   buf_test_write_str();
-  buf_test_peek_1 ();
+  buf_test_peek_1();
+  buf_test_peek_character_utf8();
   buf_test_peek_s8 ();
   buf_test_peek_s16 ();
   buf_test_peek_u8();
@@ -282,6 +297,11 @@ void buf_test_peek_1 ()
   BUF_TEST_PEEK_1("π");
   BUF_TEST_PEEK_1("ꝝ");
   BUF_TEST_PEEK_1("\x01\x02\x03" "ABCabcÀÉΠꝜ꒴𐅀àéπꝝ");
+}
+
+void buf_test_peek_character_utf8 ()
+{
+  BUF_TEST_PEEK_CHARACTER_UTF8("0", 1, '0');
 }
 
 void buf_test_peek_s8 ()
