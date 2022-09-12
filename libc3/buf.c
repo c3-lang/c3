@@ -124,50 +124,6 @@ s_buf * buf_new_alloc (uw size)
   return buf;
 }
 
-s_buf * buf_open_r (s_buf *buf, FILE *fp)
-{
-  assert(buf);
-  assert(fp);
-  buf->fp = fp;
-  buf->refill = buf_open_r_refill;
-  return buf;
-}
-
-sw buf_open_r_refill (s_buf *buf)
-{
-  uw r;
-  uw size;
-  assert(buf);
-  assert(buf->fp);
-  if (buf->rpos > buf->wpos ||
-      buf->wpos > buf->size)
-    return -1;
-  size = buf->size - buf->wpos;
-  r = fread(buf->ptr.ps8 + buf->wpos, 1, size, buf->fp);
-  if (buf->wpos + r > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf->wpos += r;
-  return r;
-}
-
-s_buf * buf_open_w (s_buf *buf, FILE *fp)
-{
-  assert(buf);
-  assert(fp);
-  buf->fp = fp;
-  buf->flush = buf_open_w_flush;
-  return buf;
-}
-
-sw buf_open_w_flush (s_buf *buf)
-{
-  /* TODO */
-  errx(1, "not implemented");
-  (void) buf;
-}
-
 sw buf_peek_1 (s_buf *buf, const s8 *p)
 {
   s_str stra;

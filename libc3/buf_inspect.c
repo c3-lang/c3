@@ -52,7 +52,7 @@ sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *x)
     return -1;
   }
   buf_write_1(buf, "_");
-  buf_inspect_str_reserved(buf, &ident->sym->str);
+  buf_inspect_str_reserved(buf, &x->sym->str);
   return size;
 }
 
@@ -61,7 +61,7 @@ sw buf_inspect_ident_reserved_size (const s_ident *x)
   sw size;
   assert(x);
   size = strlen("_");
-  size += buf_inspect_str_reserved_size(&ident->sym->str);
+  size += buf_inspect_str_reserved_size(&x->sym->str);
   return size;
 }
 
@@ -69,7 +69,7 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *x)
 {
   assert(buf);
   assert(x);
-  if (ident->sym->str.size == 0)
+  if (x->sym->str.size == 0)
     return buf_write_1(buf, "_\"\"");
   if (ident_has_reserved_characters(x))
     return buf_inspect_ident_reserved(buf, x);
@@ -80,7 +80,7 @@ sw buf_inspect_ident_size (const s_ident *x)
 {
   assert(x);
   if (x->sym->str.size == 0)
-    return strlen("~i\"\"");
+    return strlen("_\"\"");
   if (ident_has_reserved_characters(x))
     return buf_inspect_ident_reserved_size(x);
   return x->sym->str.size;
@@ -151,7 +151,6 @@ sw buf_inspect_integer_dec(s_buf *buf, const s_integer *x)
   return size;
 }
 
-
 sw buf_inspect_f32 (s_buf *buf, f32 x)
 {
   sw r;
@@ -163,33 +162,6 @@ sw buf_inspect_f32 (s_buf *buf, f32 x)
   /* TODO */
   errx(1, "not implemented");
   return -1;
-}
-sw buf_inspect_f32 (s_buf *buf, f32 x)
-{
-  u8 digit;
-  sw i;
-  sw r;
-  sw size = 0;
-  s_buf tmp;
-  s_buf save;
-  BUF_INIT_ALLOCA(&tmp, 20);
-  while (x > 0) {
-    digit = (int)x % 10;
-    x /= 10;
-    if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      assert(! "error");
-      return -1;
-    }
-    size++;
-  }
-  buf_save(buf, &save);
-  i = size;
-  while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) != 1) {
-      buf_restore(buf, &save);
-      return r;
-    }
-  return size;
 }
 
 sw buf_inspect_f64 (s_buf *buf, f64 x)
@@ -302,7 +274,7 @@ sw buf_inspect_str_byte (s_buf *buf, u8 x)
   const sw size = 4;
   if ((r = buf_write_u8(buf, '\\')) < 0 ||
       (r = buf_write_u8(buf, 'x')) < 0 ||
-      (r = buf_u8_to_hex(buf, b)) < 0)
+      (r = buf_u8_to_hex(buf, x)) < 0)
     return r;
   return size;
 }
