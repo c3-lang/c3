@@ -117,8 +117,8 @@ void sym_test_inspect ()
   SYM_TEST_INSPECT("Test123.Test456", ":\"Test123.Test456\"");
   SYM_TEST_INSPECT("test123(test456)", ":\"test123(test456)\"");
   SYM_TEST_INSPECT("Test123(Test456)", ":\"Test123(Test456)\"");
-  SYM_TEST_INSPECT("test123{test456}", ":\"test123{test456}\"");
-  SYM_TEST_INSPECT("Test123{Test456}", ":\"Test123{Test456}\"");
+  SYM_TEST_INSPECT("test123{test456}", ":test123{test456}");
+  SYM_TEST_INSPECT("Test123{Test456}", "Test123{Test456}");
   SYM_TEST_INSPECT("É", "É");
   SYM_TEST_INSPECT("Éo", "Éo");
   SYM_TEST_INSPECT("Éoà \n\r\t\v\"",
