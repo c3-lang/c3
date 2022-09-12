@@ -46,6 +46,13 @@ debug:
 	${MAKE} -C ic3 debug
 	${MAKE} -C test debug
 
+distclean:
+	${MAKE} -C libtommath distclean
+	${MAKE} -C ucd2c distclean
+	${MAKE} -C libc3 distclean
+	${MAKE} -C ic3 distclean
+	${MAKE} -C test distclean
+
 gcovr: test_cov
 	${MAKE} -C libc3 gcovr
 	${MAKE} -C ic3 gcovr

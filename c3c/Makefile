@@ -5,9 +5,14 @@ all: c3c
 
 CLEANFILES = c3c .libs *.lo *.la
 
+DISTCLEANFILES = ${CLEANFILES} config.mk
+
 clean:
 	rm -rf ${CLEANFILES}
 
-.PHONY: all clean
+distclean:
+	rm -rf ${DISTCLEANFILES}
+
+.PHONY: all clean distclean
 
 include config.mk

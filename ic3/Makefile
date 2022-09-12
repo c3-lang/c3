@@ -2,7 +2,11 @@
 ## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
 
 CLEANFILES = *.a ic3 ic3.asan ic3.cov ic3.debug *.css *.gcno *.html *.o .libs *.lo
+
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES += ${CLEANFILES_COV}
+
+DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build: ic3
 
@@ -21,9 +25,12 @@ cov:   ic3.cov
 
 debug: ic3.debug
 
+distclean:
+	rm -rf ${DISTCLEANFILES}
+
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ic3.html
 
-.PHONY: all asan cov debug clean clean_cov
+.PHONY: all asan cov debug clean clean_cov distclean
 
 include config.mk

@@ -6,6 +6,8 @@ CLEANFILES = *.a *.gcno *.la libc3.la .libs *.lo *.o
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
 
+DISTCLEANFILES = ${CLEANFILES} config.mk
+
 build: libc3.la libc3.a
 
 all: build cov debug
@@ -22,6 +24,9 @@ clean_cov:
 cov: libc3.cov.la libc3.cov.a
 
 debug: libc3.debug.la libc3.debug.a
+
+distclean:
+	rm -rf ${DISTCLEANFILES}
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libc3.html
@@ -40,6 +45,6 @@ libc3.debug.a: libc3.debug.la
 
 test:
 
-.PHONY: all asan build clean cov debug test
+.PHONY: all asan build clean cov debug distclean test
 
 include config.mk

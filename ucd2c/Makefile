@@ -1,7 +1,9 @@
 ## c3
 ## Copyright 2022 Thomas de Grivel <thoxdg@gmail.com>
 
-CLEANFILES = ucd2c
+CLEANFILES = ucd2c *.lo *.o
+
+DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build: ucd.c
 
@@ -24,6 +26,9 @@ ucd.c: UCD UCD/UnicodeData.txt ucd2c
 clean:
 	rm -f ${CLEANFILES}
 
-.PHONY: all build clean
+distclean:
+	rm -rf ${DISTCLEANFILES}
+
+.PHONY: all build clean distclean
 
 include config.mk
