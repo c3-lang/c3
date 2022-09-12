@@ -172,16 +172,16 @@ void character_test_is_space ()
   TEST_ASSERT(! character_is_space(character_1("ꝝ")));
   TEST_ASSERT(! character_is_space(character_1("꒴")));
   TEST_ASSERT(! character_is_space(character_1("𐅀")));
-  TEST_ASSERT(character_is_space('A'));
-  TEST_ASSERT(character_is_space('B'));
-  TEST_ASSERT(character_is_space('C'));
-  TEST_ASSERT(character_is_space('X'));
-  TEST_ASSERT(character_is_space('Y'));
-  TEST_ASSERT(character_is_space('Z'));
-  TEST_ASSERT(character_is_space(character_1("À")));
-  TEST_ASSERT(character_is_space(character_1("É")));
-  TEST_ASSERT(character_is_space(character_1("Π")));
-  TEST_ASSERT(character_is_space(character_1("Ꝝ")));
+  TEST_ASSERT(! character_is_space('A'));
+  TEST_ASSERT(! character_is_space('B'));
+  TEST_ASSERT(! character_is_space('C'));
+  TEST_ASSERT(! character_is_space('X'));
+  TEST_ASSERT(! character_is_space('Y'));
+  TEST_ASSERT(! character_is_space('Z'));
+  TEST_ASSERT(! character_is_space(character_1("À")));
+  TEST_ASSERT(! character_is_space(character_1("É")));
+  TEST_ASSERT(! character_is_space(character_1("Π")));
+  TEST_ASSERT(! character_is_space(character_1("Ꝝ")));
 }
 
 void character_test_is_uppercase ()
