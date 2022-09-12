@@ -6,7 +6,7 @@ CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 
 build: ic3
 
-all:   build cov debug
+all: build cov debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 asan: ic3.asan
