@@ -97,39 +97,31 @@ sw buf_inspect_character_size (character x)
   size += 2;
   return size;
 }
-sw buf_inspect_integer_dec_size(const s_integer *x)
+sw buf_inspect_integer_size (const s_integer *x)
 {
-  sw size;
+  s32 size;
   assert(x);
-  int size_tmp = 0;
-  int err;
-  err = mp_radix_size(&x->mp_int, 10,&size_tmp);
+  sw err;
+  err = mp_radix_size(&x->mp_int, 10, &size);
   if (err != MP_OKAY) {
     assert(! "mp_radix_size failed");
     return -1;
   }
-  size = size_tmp;
-  if (size < 0)
-    return size;
   if (size == 0)
     return -1;
   return size;
 }
 
-sw buf_inspect_str_integer_dec(s_buf *buf, const s_integer *x)
+sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 {
   sw size;
   assert(buf);
   assert(x);
-  size = buf_inspect_integer_dec_size(x);
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
+  size = buf_inspect_integer_size(x);
   if (x->mp_int.sign == MP_NEG) {
     buf_write_u8(buf, '-');
   }
-  buf_write_u8(buf, '0');
+  errx(1, "not implemented");
   return size;
 }
 
@@ -458,25 +450,26 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
 {
   assert(tag);
   switch(tag->type.type) {
-  case TAG_VOID:  return 0;
-  case TAG_BOOL:  return buf_inspect_bool(buf, tag->data.bool);
+  case TAG_VOID:    return 0;
+  case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.bool);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, tag->data.character);
-  case TAG_F32:   return buf_inspect_f32(buf, tag->data.f32);
-  case TAG_F64:   return buf_inspect_f64(buf, tag->data.f64);
-  case TAG_IDENT: return buf_inspect_ident(buf, &tag->data.ident);
-  case TAG_LIST:  return buf_inspect_list(buf, &tag->data.list);
-  case TAG_S8:    return buf_inspect_s8(buf, tag->data.s8);
-  case TAG_S16:   return buf_inspect_s16(buf, tag->data.s16);
-  case TAG_S32:   return buf_inspect_s32(buf, tag->data.s32);
-  case TAG_S64:   return buf_inspect_s64(buf, tag->data.s64);
-  case TAG_STR:   return buf_inspect_str(buf, &tag->data.str);
-  case TAG_SYM:   return buf_inspect_sym(buf, tag->data.sym);
-  case TAG_TUPLE: return buf_inspect_tuple(buf, &tag->data.tuple);
-  case TAG_U8:    return buf_inspect_u8(buf, tag->data.u8);
-  case TAG_U16:   return buf_inspect_u16(buf, tag->data.u16);
-  case TAG_U32:   return buf_inspect_u32(buf, tag->data.u32);
-  case TAG_U64:   return buf_inspect_u64(buf, tag->data.u64);
+  case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
+  case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
+  case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
+  case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
+  case TAG_LIST:    return buf_inspect_list(buf, &tag->data.list);
+  case TAG_S8:      return buf_inspect_s8(buf, tag->data.s8);
+  case TAG_S16:     return buf_inspect_s16(buf, tag->data.s16);
+  case TAG_S32:     return buf_inspect_s32(buf, tag->data.s32);
+  case TAG_S64:     return buf_inspect_s64(buf, tag->data.s64);
+  case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
+  case TAG_SYM:     return buf_inspect_sym(buf, tag->data.sym);
+  case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
+  case TAG_U8:      return buf_inspect_u8(buf, tag->data.u8);
+  case TAG_U16:     return buf_inspect_u16(buf, tag->data.u16);
+  case TAG_U32:     return buf_inspect_u32(buf, tag->data.u32);
+  case TAG_U64:     return buf_inspect_u64(buf, tag->data.u64);
   }
   assert(! "unknown tag type");
   return -1;

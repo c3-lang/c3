@@ -111,6 +111,7 @@ typedef enum tag_type {
   TAG_F32,
   TAG_F64,
   TAG_IDENT,
+  TAG_INTEGER,
   TAG_LIST,
   TAG_S8,
   TAG_S16,
@@ -135,6 +136,7 @@ typedef union tag_data {
   f32 f32;
   f64 f64;
   s_ident ident;
+  s_integer integer;
   s_list list;
   s_str str;
   const s_sym *sym;

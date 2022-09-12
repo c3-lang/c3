@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include "integer.h"
 #include "str.h"
 #include "tag.h"
 
@@ -41,6 +42,15 @@ s_tag * tag_init_f64 (s_tag *tag, f64 f)
     tag->type.type = TAG_F64;
     tag->data.f64 = f;
     return tag;
+}
+
+s_tag * tag_init_integer (s_tag *tag, const s_integer *i)
+{
+  assert(i);
+  assert(tag);
+  tag->type.type = TAG_INTEGER;
+  integer_copy(i, &tag->data.integer);
+  return tag;
 }
 
 s_tag * tag_init_s64 (s_tag *tag, s64 i)
