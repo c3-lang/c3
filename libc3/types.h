@@ -120,7 +120,6 @@ typedef enum tag_type {
 
 typedef union tag_type_ {
   e_tag_type type;
-  u64 u64;
 } u_tag_type;
 
 typedef union tag_data {

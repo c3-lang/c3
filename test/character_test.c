@@ -9,6 +9,7 @@
 void character_test_1 ();
 void character_test_is_digit ();
 void character_test_is_lowercase ();
+void character_test_is_space ();
 void character_test_is_uppercase ();
 void character_test_utf8 ();
 void character_test_utf8_size ();
@@ -18,6 +19,7 @@ void character_test ()
   character_test_1();
   character_test_is_digit();
   character_test_is_lowercase();
+  character_test_is_space();
   character_test_is_uppercase();
   character_test_utf8_size();
   character_test_utf8();
@@ -28,6 +30,7 @@ void character_test ()
 
 void character_test_1 ()
 {
+  CHARACTER_TEST_1_ASCII("_");
   CHARACTER_TEST_1_ASCII("0");
   CHARACTER_TEST_1_ASCII("1");
   CHARACTER_TEST_1_ASCII("2");
@@ -71,6 +74,7 @@ void character_test_is_digit ()
   TEST_ASSERT(! character_is_digit('\r'));
   TEST_ASSERT(! character_is_digit('\n'));
   TEST_ASSERT(! character_is_digit(' '));
+  TEST_ASSERT(! character_is_digit('_'));
   TEST_ASSERT(character_is_digit('0'));
   TEST_ASSERT(character_is_digit('1'));
   TEST_ASSERT(character_is_digit('2'));
@@ -115,6 +119,7 @@ void character_test_is_lowercase ()
   TEST_ASSERT(! character_is_lowercase('\r'));
   TEST_ASSERT(! character_is_lowercase('\n'));
   TEST_ASSERT(! character_is_lowercase(' '));
+  TEST_ASSERT(! character_is_lowercase('_'));
   TEST_ASSERT(! character_is_lowercase('0'));
   TEST_ASSERT(! character_is_lowercase('1'));
   TEST_ASSERT(! character_is_lowercase('8'));
@@ -143,11 +148,49 @@ void character_test_is_lowercase ()
   TEST_ASSERT(character_is_lowercase(character_1("ꝝ")));
 }
 
+void character_test_is_space ()
+{
+  TEST_ASSERT(character_is_space('\n'));
+  TEST_ASSERT(character_is_space('\r'));
+  TEST_ASSERT(character_is_space('\t'));
+  TEST_ASSERT(character_is_space('\v'));
+  TEST_ASSERT(character_is_space(' '));
+  TEST_ASSERT(! character_is_space('_'));
+  TEST_ASSERT(! character_is_space('0'));
+  TEST_ASSERT(! character_is_space('1'));
+  TEST_ASSERT(! character_is_space('8'));
+  TEST_ASSERT(! character_is_space('9'));
+  TEST_ASSERT(! character_is_space('a'));
+  TEST_ASSERT(! character_is_space('b'));
+  TEST_ASSERT(! character_is_space('c'));
+  TEST_ASSERT(! character_is_space('x'));
+  TEST_ASSERT(! character_is_space('y'));
+  TEST_ASSERT(! character_is_space('z'));
+  TEST_ASSERT(! character_is_space(character_1("à")));
+  TEST_ASSERT(! character_is_space(character_1("é")));
+  TEST_ASSERT(! character_is_space(character_1("π")));
+  TEST_ASSERT(! character_is_space(character_1("ꝝ")));
+  TEST_ASSERT(! character_is_space(character_1("꒴")));
+  TEST_ASSERT(! character_is_space(character_1("𐅀")));
+  TEST_ASSERT(character_is_space('A'));
+  TEST_ASSERT(character_is_space('B'));
+  TEST_ASSERT(character_is_space('C'));
+  TEST_ASSERT(character_is_space('X'));
+  TEST_ASSERT(character_is_space('Y'));
+  TEST_ASSERT(character_is_space('Z'));
+  TEST_ASSERT(character_is_space(character_1("À")));
+  TEST_ASSERT(character_is_space(character_1("É")));
+  TEST_ASSERT(character_is_space(character_1("Π")));
+  TEST_ASSERT(character_is_space(character_1("Ꝝ")));
+}
+
 void character_test_is_uppercase ()
 {
   character c;
   for (c = -10; c < 40; c++)
     TEST_ASSERT(! character_is_uppercase(c));
+  TEST_ASSERT(! character_is_uppercase(' '));
+  TEST_ASSERT(! character_is_uppercase('_'));
   TEST_ASSERT(! character_is_uppercase('0'));
   TEST_ASSERT(! character_is_uppercase('1'));
   TEST_ASSERT(! character_is_uppercase('8'));
@@ -185,6 +228,7 @@ void character_test_utf8_size ()
   character c;
   for (c = -10; c < 0; c++)
     TEST_EQ(character_utf8_size(c), -1);
+  TEST_EQ(character_utf8_size('_'), 1);
   TEST_EQ(character_utf8_size('0'), 1);
   TEST_EQ(character_utf8_size('1'), 1);
   TEST_EQ(character_utf8_size('2'), 1);

@@ -19,7 +19,7 @@ bool ident_character_is_reserved (character c)
           c == ')');
 }
 
-bool ident_first_character_is_reserved (character c)
+e_bool ident_first_character_is_reserved (character c)
 {
   return (character_is_digit(c) ||
           character_is_uppercase(c) ||
@@ -28,7 +28,7 @@ bool ident_first_character_is_reserved (character c)
           c == '"');
 }
 
-bool ident_has_reserved_characters (const s_ident *ident)
+e_bool ident_has_reserved_characters (const s_ident *ident)
 {
   character c;
   sw r;
