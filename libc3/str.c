@@ -128,19 +128,17 @@ s_str * str_init_str (s_str *str, const s_str *src)
   return str;
 }
 
-s_str * str_inspect (const s_str *src)
+s_str * str_inspect (const s_str *src, s_str *dest)
 {
   s_buf buf;
   sw size;
-  s_str *str;
   size = buf_inspect_str_size(src);
   if (size <= 0)
     return NULL;
   buf_init_alloc(&buf, size);
   buf_inspect_str(&buf, src);
-  assert(buf.wpos == (u64) size);
-  str = str_new(buf.ptr.p, buf.size, buf.ptr.p);
-  return str;
+  assert(buf.wpos == (uw) size);
+  return str_init(dest, buf.ptr.p, buf.size, buf.ptr.p);
 }
 
 s_str * str_new (s8 *free, uw size, const s8 *p)

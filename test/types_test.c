@@ -4,7 +4,16 @@
 #include "../libc3/types.h"
 #include "test.h"
 
-void types_test () {
+void types_test ();
+void types_test_sizeof ();
+
+void types_test ()
+{
+  types_test_sizeof();
+}
+
+void types_test_sizeof ()
+{
   TEST_EQ(sizeof(s8), 1);
   TEST_EQ(sizeof(s16), 2);
   TEST_EQ(sizeof(s32), 4);
@@ -16,9 +25,5 @@ void types_test () {
   TEST_ASSERT(sizeof(uw) == 4 || sizeof(uw) == 8);
   TEST_EQ(sizeof(u64), 8);
   TEST_EQ(sizeof(bool), sizeof(u8));
-  TEST_ASSERT(true);
-  TEST_ASSERT(! false);
-  TEST_ASSERT((bool) true);
-  TEST_ASSERT(! (bool) false);
   TEST_EQ(sizeof(u_ptr), sizeof(void *));
 }

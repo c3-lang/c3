@@ -7,72 +7,69 @@
 #include "../libc3/str.h"
 #include "test.h"
 
-#define STR_TEST_CMP(a, b, expected)                       \
-  do {                                                     \
-    s_str *a_ = (a);					   \
-    s_str *b_ = (b);					   \
-    sw tmp = str_cmp(a_, b_);                              \
-    str_delete(a_);					   \
-    str_delete(b_);					   \
-    if (tmp == expected) {                                 \
-      test_ok();                                           \
-    }                                                      \
-    else {                                                 \
-      test_ko();                                           \
-      printf("\n%sAssertion failed in %s:%d %s\n"          \
-             "str_cmp(%s, %s) == %s\n"                     \
-             "Expected %s got %ld.%s\n",                   \
-             TEST_COLOR_KO,                                \
-             __FILE__, __LINE__, __func__,                 \
-             # a, # b, # expected, # expected, tmp,        \
-             TEST_COLOR_RESET);                            \
-    }                                                      \
+#define STR_TEST_CMP(a, b, expected)                                   \
+  do {                                                                 \
+    s_str *a_ = (a);                                                   \
+    s_str *b_ = (b);                                                   \
+    sw tmp = str_cmp(a_, b_);                                          \
+    str_delete(a_);                                                    \
+    str_delete(b_);                                                    \
+    if (tmp == expected) {                                             \
+      test_ok();                                                       \
+    }                                                                  \
+    else {                                                             \
+      test_ko();                                                       \
+      printf("\n%sAssertion failed in %s:%d %s\n"                      \
+             "str_cmp(%s, %s) == %s\n"                                 \
+             "Expected %s got %ld.%s\n",                               \
+             TEST_COLOR_KO,                                            \
+             __FILE__, __LINE__, __func__,                             \
+             # a, # b, # expected, # expected, tmp,                    \
+             TEST_COLOR_RESET);                                        \
+    }                                                                  \
   } while (0)
 
-#define STR_TEST_INSPECT_1(test, result)                        \
-  do {                                                          \
-    assert(test);                                               \
-    assert(result);                                             \
-    STR_TEST_INSPECT(str_new_1(NULL, test), result);           \
+#define STR_TEST_INSPECT(test, expected)                               \
+  do {                                                                 \
+    s_str *str_test;                                                   \
+    s_str result;                                                      \
+    assert(test);                                                      \
+    str_test = test;                                                   \
+    test_context("str_inspect(" # test ") -> " # expected);            \
+    TEST_EQ(str_inspect(str_test, &result), &result);                  \
+    TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
+    str_clean(&result);                                                \
+    str_delete(str_test);                                              \
+    test_context(NULL);                                                \
   } while (0)
 
-#define STR_TEST_INSPECT(test, result)                          \
-  do {                                                          \
-    s_str *str_test;                                            \
-    s_str *str_result;                                          \
-    str_test = test;                                            \
-    assert(str_test);                                           \
-    assert(result);                                             \
-    test_context("str_inspect(" # test ") -> " # result);       \
-    TEST_ASSERT((str_result = str_inspect(str_test)));          \
-    TEST_STRNCMP(str_result->ptr.p, result, str_result->size);  \
-    str_delete(str_result);                                     \
-    str_delete(str_test);                                       \
-    test_context(NULL);                                         \
+#define STR_TEST_INSPECT_1(test, result)                               \
+  do {                                                                 \
+    STR_TEST_INSPECT(str_new_1(NULL, (test)), (result));               \
   } while (0)
 
-#define STR_TEST_TO_HEX(test, result)                                   \
-  do {                                                                  \
-    s_str str;                                                          \
-    s_str *test_;                                                       \
-    test_context("str_to_hex(" # test ") -> " # result);                \
-    test_ = (test);                                                     \
-    TEST_EQ(str_to_hex(test_, &str), &str);                             \
-    TEST_STRNCMP(str.ptr.p, (result), str.size);                        \
-    str_clean(&str);                                                    \
-    str_delete(test_);                                                  \
-    test_context(NULL);                                                 \
+#define STR_TEST_TO_HEX(test, result)                                  \
+  do {                                                                 \
+    s_str str;                                                         \
+    s_str *test_;                                                      \
+    test_context("str_to_hex(" # test ") -> " # result);               \
+    test_ = (test);                                                    \
+    TEST_EQ(str_to_hex(test_, &str), &str);                            \
+    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
+    str_clean(&str);                                                   \
+    str_delete(test_);                                                 \
+    test_context(NULL);                                                \
   } while (0)
 
-#define STR_TEST_TO_SYM(test)                                           \
-  do {                                                                  \
-    s_str str;                                                          \
-    const s_sym *result = 0;                                            \
-    test_context("str_to_sym(" # test ")");                             \
-    str_init_1(&str, NULL, (test));                                     \
-    TEST_ASSERT((result = str_to_sym(&str)));                           \
-    TEST_EQ(str_to_sym(&str), result);                                  \
-    TEST_STR_CMP(&result->str, &str, 0);                                \
+#define STR_TEST_TO_SYM(test)                                          \
+  do {                                                                 \
+    s_str str;                                                         \
+    const s_sym *result = 0;                                           \
+    test_context("str_to_sym(" # test ")");                            \
+    str_init_1(&str, NULL, (test));                                    \
+    TEST_ASSERT((result = str_to_sym(&str)));                          \
+    TEST_EQ(str_to_sym(&str), result);                                 \
+    TEST_STR_CMP(&result->str, &str, 0);                               \
   } while (0)
 
 void str_test_character_is_reserved ();

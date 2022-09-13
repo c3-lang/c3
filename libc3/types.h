@@ -44,7 +44,7 @@ typedef union ptr_w {
 
 typedef struct str {
   u_ptr_w free;        /**< Pointer to free or NULL. */
-  u64     size;        /**< Size in bytes. */
+  uw      size;        /**< Size in bytes. */
   u_ptr   ptr;         /**< Pointer to memory. */
 } s_str;
 

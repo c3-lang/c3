@@ -12,7 +12,7 @@
 #include "sym.h"
 
 void         sym_delete (s_sym *sym);
-s_str *      sym_inspect_reserved (const s_sym *sym);
+s_str *      sym_inspect_reserved (const s_sym *sym, s_str *dest);
 sw           sym_inspect_reserved_size (const s_sym *sym);
 s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next);
 
@@ -84,10 +84,9 @@ e_bool sym_has_reserved_characters (const s_sym *sym)
   return false;
 }
 
-s_str * sym_inspect (const s_sym *sym)
+s_str * sym_inspect (const s_sym *sym, s_str *dest)
 {
   sw size;
-  s_str *str;
   s_buf tmp;
   size = buf_inspect_sym_size(sym);
   if (size < 0) {
@@ -97,8 +96,7 @@ s_str * sym_inspect (const s_sym *sym)
   buf_init_alloc(&tmp, size);
   buf_inspect_sym(&tmp, sym);
   assert(tmp.wpos == tmp.size);
-  str = str_new(tmp.ptr.p, tmp.size, tmp.ptr.p);
-  return str;
+  return str_init(dest, tmp.ptr.p, tmp.size, tmp.ptr.p);
 }
 
 e_bool sym_is_module (const s_sym *sym)

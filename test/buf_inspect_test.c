@@ -8,6 +8,16 @@
 #include "../libc3/str.h"
 #include "test.h"
 
+#define BUF_INSPECT_TEST_BOOL(test, result)                            \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    test_context("buf_inspect_bool(" # test ") -> " # result);         \
+    BUF_INIT_ALLOCA(&buf, 16);                                         \
+    TEST_EQ(buf_inspect_bool(&buf, (test)), strlen(result));           \
+    TEST_STRNCMP(buf.ptr.p, (result), buf.wpos);                       \
+    test_context(NULL);                                                \
+  } while (0)
+  
 #define BUF_INSPECT_TEST_CHARACTER(test, result)                       \
   do {                                                                 \
     s8 b[32];                                                          \
@@ -55,6 +65,8 @@
     test_context(NULL);                                                \
   } while (0)
 
+void buf_inspect_test ();
+void buf_inspect_test_bool ();
 void buf_inspect_test_character ();
 void buf_inspect_test_str_character ();
 void buf_inspect_test_str_character_size ();
@@ -62,10 +74,17 @@ void buf_inspect_test_str ();
 
 void buf_inspect_test ()
 {
+  buf_inspect_test_bool();
   buf_inspect_test_str_character_size();
   buf_inspect_test_str_character();
   buf_inspect_test_character();
   buf_inspect_test_str();
+}
+
+void buf_inspect_test_bool ()
+{
+  BUF_INSPECT_TEST_BOOL(true, "true");
+  BUF_INSPECT_TEST_BOOL(false, "false");
 }
 
 void buf_inspect_test_character ()

@@ -26,7 +26,6 @@ s_str * str_init_str (s_str *str, const s_str *src);
 void str_clean (s_str *str);
 
 /* Constructors, call str_delete after use */
-s_str * str_inspect (const s_str *x);
 s_str * str_new (s8 *free, uw size, const s8 *p);
 s_str * str_new_1 (s8 *free, const s8 *p);
 s_str * str_new_cpy (uw size, const s8 *p);
@@ -43,6 +42,7 @@ character     str_character_escape (character c);
 e_bool        str_character_is_reserved (character c);
 sw            str_cmp (const s_str *a, const s_str *b);
 e_bool        str_has_reserved_characters (const s_str *str);
+s_str *       str_inspect (const s_str *x, s_str *dest);
 sw            str_peek_bool (const s_str *src, bool *p);
 sw            str_peek_character (const s_str *src, character *p);
 sw            str_peek_f32 (const s_str *src, f32 *p);
