@@ -55,6 +55,18 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_INSPECT_TEST_F32(test, result)                             \
+  do {                                                                 \
+    s8 b[32];                                                          \
+    s_buf buf;                                                         \
+    test_context("buf_inspect_f32(" # test ") -> " # result);          \
+    buf_init(&buf, false, sizeof(b), b);                               \
+    TEST_FLOAT_EQ(buf_inspect_f32(&buf, test), strlen(result));              \
+    TEST_STRNCMP(buf.ptr.ps8, result, buf.wpos);                       \
+    test_context(NULL);                                                \
+  } while (0)
+
+
 #define BUF_INSPECT_TEST_INTEGER_DEC(test, result)                     \
   do {                                                                 \
   } while (0)
@@ -64,6 +76,7 @@ void buf_inspect_test_str_character ();
 void buf_inspect_test_str_character_size ();
 void buf_inspect_test_str ();
 void buf_inspect_test_integer_dec ();
+void buf_inspect_test_f32();
 
 void buf_inspect_test ()
 {
@@ -72,6 +85,7 @@ void buf_inspect_test ()
   buf_inspect_test_character();
   buf_inspect_test_str();
   buf_inspect_test_integer_dec();
+  buf_inspect_test_f32();
 }
 
 void buf_inspect_test_character ()
@@ -176,4 +190,10 @@ void buf_inspect_test_integer_dec ()
   BUF_INSPECT_TEST_INTEGER_DEC("9", 9);
   BUF_INSPECT_TEST_INTEGER_DEC("256", 256);
   BUF_INSPECT_TEST_INTEGER_DEC("100000000000000000", 100000000000000000);
+}
+
+void buf_inspect_test_f32 ()
+{
+  //compare the result of inspecting a f32 with the result of parsing a f32
+  //from the result of inspecting a f32
 }

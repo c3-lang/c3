@@ -129,32 +129,6 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
   return -1;
 }
 
-sw buf_inspect_f32 (s_buf *buf, f32 x)
-{
-  sw r;
-  if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) < 0)
-      return r;
-    x = -x;
-  }
-  /* TODO */
-  warnx("buf_inspect_f32: not implemented");
-  return -1;
-}
-
-sw buf_inspect_f64 (s_buf *buf, f64 x)
-{
-  sw r;
-  if (x < 0) {
-    if ((r = buf_write_u8(buf, '-')) < 0)
-      return r;
-    x = -x;
-  }
-  /* TODO */
-  warnx("buf_inspect_f64: not implemented");
-  return -1;
-}
-
 sw buf_inspect_list (s_buf *buf, const s_list *x)
 {
   sw r;
@@ -600,4 +574,34 @@ sw buf_inspect_u64 (s_buf *buf, u64 x)
     if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
       return r;
   return size;
+}
+
+sw buf_inspect_f32 (s_buf *buf, f32 x)
+{
+  sw r;
+  if (x < 0) {
+    if ((r = buf_write_u8(buf, '-')) < 0)
+      return r;
+    x = -x;
+  }
+  if ((r = buf_inspect_u32(buf, (u32) x)) < 0)
+    return r;
+  if ((r = buf_write_u8(buf, '.')) < 0)
+    return r;
+  if ((r = buf_inspect_u32(buf, (u32) ((x - (u32) x) * 1000000))) < 0)
+    return r;
+  return r;
+}
+
+sw buf_inspect_f64 (s_buf *buf, f64 x)
+{
+  sw r;
+  if (x < 0) {
+    if ((r = buf_write_u8(buf, '-')) < 0)
+      return r;
+    x = -x;
+  }
+  /* TODO */
+  warnx("buf_inspect_f64: not implemented");
+  return -1;
 }

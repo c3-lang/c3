@@ -352,6 +352,17 @@ do {                                                                   \
     buf_clean(&buf);                                                   \
   } while (0)
 
+#define BUF_PARSE_TEST_F32(test, expected)                             \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    f32 f32_tmp;                                                       \
+    test_context("buf_parse_f32(" # test ") -> " # expected);          \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_f32(&buf, &f32_tmp), strlen(test));              \
+    TEST_EQ(f32_tmp, (expected));                                      \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
 void buf_parse_test_bool ();
 void buf_parse_test_character ();
 void buf_parse_test_digit_bin ();
@@ -367,7 +378,7 @@ void buf_parse_test_str ();
 void buf_parse_test_str_character ();
 void buf_parse_test_str_u8 ();
 void buf_parse_test_sym ();
-sw buf_parse_str_integer (s_buf *buf, s_integer *dest);
+void buf_parse_test_f32();
 
 
 void buf_parse_test ()
@@ -385,6 +396,7 @@ void buf_parse_test ()
   buf_parse_test_str();
   buf_parse_test_sym();
   buf_parse_test_ident();
+  buf_parse_test_f32();
 }
 
 void buf_parse_test_bool ()
@@ -768,4 +780,11 @@ void buf_parse_test_sym ()
   BUF_PARSE_TEST_SYM("Z", "Z");
   BUF_PARSE_TEST_SYM("Az09az", "Az09az");
   BUF_PARSE_TEST_SYM(":az09AZ", "az09AZ");
+}
+
+void buf_parse_test_f32()
+{
+  BUF_PARSE_TEST_F32("123.123", 123.123);
+  BUF_PARSE_TEST_F32("3.14159", 3.14159);
+  BUF_PARSE_TEST_F32("2.1e+2", 210.0);
 }

@@ -13,6 +13,7 @@
 #include "str.h"
 #include "sym.h"
 #include "../libtommath/tommath.h"
+#include <math.h>
 
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
@@ -273,102 +274,116 @@ sw buf_parse_integer_bin (s_buf *buf, s_integer *dest)
 
 sw buf_parse_integer_dec (s_buf *buf, s_integer *dest)
 {
-  mp_err err;
   const mp_digit radix = 10;
   sw r;
-  u8 u8_digit ;
+  u8 digit;
   int result = 0;
   bool negative = false;
+  s_buf_save save;
+  buf_save_init(buf, &save);
   mp_zero(&dest->mp_int);
-  if ((r = buf_read_1(buf, "-")) == 1) {
+  if ((r = buf_read_1(buf, "-")) < 0)
+    goto clean;
+  if (r > 0) {
     negative = true;
     result += r;
   }
-  while ((r = buf_parse_digit_dec(buf, &u8_digit)) > 0) {
-    err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
-    err = mp_add_d(&dest->mp_int, u8_digit, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
     result += r;
+    if (mp_mul_d(&dest->mp_int, radix, &dest->mp_int) != MP_OKAY)
+      goto error;
+    if (mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+      goto error;
   }
   if (r < 0)
+    goto restore;
+  if (negative && mp_neg(&dest->mp_int, &dest->mp_int) != MP_OKAY)
+    goto error;
+  r = result;
+  goto clean;
+  error:
+    r = -1;
+  restore:
+    buf_save_restore(buf, &save);
+  clean:
+    buf_save_clean(buf, &save);
     return r;
-  if (negative){
-    err = mp_neg(&dest->mp_int, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
-  }
-  return result;
 }
 
 sw buf_parse_integer_hex (s_buf *buf, s_integer *dest)
 {
-  mp_err err;
   const mp_digit radix = 16;
   sw r;
-  u8 u8_digit ;
+  u8 digit;
   int result = 0;
   bool negative = false;
+  s_buf_save save;
+  buf_save_init(buf, &save);
   mp_zero(&dest->mp_int);
-  if ((r = buf_read_1(buf, "-")) == 1) {
+  if ((r = buf_read_1(buf, "-")) < 0)
+    goto clean;
+  if (r > 0) {
     negative = true;
     result += r;
   }
-  if ((r = buf_read_1(buf, "0x")) == 2)
+  while ((r = buf_parse_digit_hex(buf, &digit)) > 0) {
     result += r;
-  while ((r = buf_parse_digit_hex(buf, &u8_digit)) > 0) {
-    err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
-    err = mp_add_d(&dest->mp_int, u8_digit, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
-    result += r;
+    if (mp_mul_d(&dest->mp_int, radix, &dest->mp_int) != MP_OKAY)
+      goto error;
+    if (mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+      goto error;
   }
   if (r < 0)
-    return r;
-  if (negative){
-    err = mp_neg(&dest->mp_int, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
-  }
-  return result;
+    goto restore;
+  if (negative && mp_neg(&dest->mp_int, &dest->mp_int) != MP_OKAY)
+    goto error;
+  r = result;
+  goto clean;
+ error:
+  r = -1;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_integer_oct (s_buf *buf, s_integer *dest)
 {
-  mp_err err;
   const mp_digit radix = 8;
   sw r;
-  u8 u8_digit ;
+  u8 digit;
   int result = 0;
   bool negative = false;
+  s_buf_save save;
+  buf_save_init(buf, &save);
   mp_zero(&dest->mp_int);
-  if ((r = buf_read_1(buf, "-")) == 1) {
+  if ((r = buf_read_1(buf, "-")) < 0)
+    goto clean;
+  if (r > 0) {
     negative = true;
     result += r;
   }
-  if ((r = buf_read_1(buf, "0o")) == 2)
+  while ((r = buf_parse_digit_oct(buf, &digit)) > 0) {
     result += r;
-  while ((r = buf_parse_digit_oct(buf, &u8_digit)) > 0) {
-    err = mp_mul_d(&dest->mp_int, radix, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
-    err = mp_add_d(&dest->mp_int, u8_digit, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
-    result += r;
+    if (mp_mul_d(&dest->mp_int, radix, &dest->mp_int) != MP_OKAY)
+      goto error;
+    if (mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+      goto error;
   }
   if (r < 0)
-    return r;
-  if (negative){
-    err = mp_neg(&dest->mp_int, &dest->mp_int);
-    if (err != MP_OKAY)
-      return -1;
-  }
-  return result;
+    goto restore;
+  if (negative && mp_neg(&dest->mp_int, &dest->mp_int) != MP_OKAY)
+    goto error;
+  r = result;
+  goto clean;
+ error:
+  r = -1;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
@@ -680,6 +695,126 @@ sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
   *dest = tmp;
   r = result;
  clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_u32 (s_buf *buf, u32 *dest)
+{
+  sw r;
+  sw result = 0;
+  u8 digit;
+  s_buf_save save;
+  u32 tmp = 0;
+  buf_save_init(buf, &save);
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    tmp = tmp * 10 + digit;
+    result += r;
+  }
+  if (r < 0) {
+    buf_save_restore(buf, &save);
+    goto clean;
+  }
+  *dest = tmp;
+  r = result;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_u8 (s_buf *buf, u8 *dest)
+{
+  sw r;
+  sw result = 0;
+  u8 digit;
+  s_buf_save save;
+  u8 tmp = 0;
+  buf_save_init(buf, &save);
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    tmp = tmp * 10 + digit;
+    result += r;
+  }
+  if (r < 0) {
+    buf_save_restore(buf, &save);
+    goto clean;
+  }
+  *dest = tmp;
+  r = result;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_f32 (s_buf *buf, f32 *dest)
+{
+  sw r;
+  sw result = 0;
+  u8 digit;
+  u8  exponent;
+  s_buf_save save;
+  f32 tmp = 0;
+  f32 frac = 0.1;
+  f32 exp = 0;
+  f32 exp_sign = 1;
+  buf_save_init(buf, &save);
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    tmp = tmp * 10 + digit;
+    result += r;
+    printf("tmp: %f\n", tmp);
+  }
+  if (r < 0) {
+    buf_save_restore(buf, &save);
+    goto clean;
+  }
+  if ((r = buf_peek_1(buf, ".")) > 0) {
+    result += r;
+    if ((r = buf_ignore(buf, 1)) < 0)
+      goto restore;
+    while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+      tmp += frac * digit;
+      frac /= 10;
+      printf("tmp frac: %f\n", tmp);
+      result += r;
+    }
+    if (r < 0) {
+      buf_save_restore(buf, &save);
+      goto clean;
+    }
+  }
+  if ((r = buf_peek_1(buf, "e")) > 0) {
+    exponent = 1;
+    result += r;
+    if ((r = buf_ignore(buf, 1)) < 0)
+      goto restore;
+    if ((r = buf_peek_1(buf, "-")) > 0) {
+      exp_sign = -1;
+      result += r;
+      if ((r = buf_ignore(buf, 1)) < 0)
+        goto restore;
+    }
+    else if ((r = buf_peek_1(buf, "+")) > 0) {
+      result += r;
+      if ((r = buf_ignore(buf, 1)) < 0)
+        goto restore;
+    }
+    while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+      exp = exp * 10 + digit;
+      result += r;
+    }
+    if (r < 0) {
+      buf_save_restore(buf, &save);
+      goto clean;
+    }
+  }
+  if (exponent) {
+    tmp *= pow(10, exp_sign * exp);
+  }
+  *dest = tmp;
+  r = result;
+  goto clean;
+  restore:
+  buf_save_restore(buf, &save);
+  clean:
   buf_save_clean(buf, &save);
   return r;
 }

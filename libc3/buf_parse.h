@@ -51,5 +51,6 @@ sw buf_parse_tag_str_u8 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_sym (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest);
 sw buf_parse_tuple (s_buf *buf, s_tuple *dest);
+sw buf_parse_f32 (s_buf *buf, f32 *dest);
 
 #endif /* BUF_PARSE_H */
