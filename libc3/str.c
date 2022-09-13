@@ -138,7 +138,7 @@ s_str * str_inspect (const s_str *src, s_str *dest)
   buf_init_alloc(&buf, size);
   buf_inspect_str(&buf, src);
   assert(buf.wpos == (uw) size);
-  return str_init(dest, buf.ptr.p, buf.size, buf.ptr.p);
+  return buf_to_str(&buf, dest);
 }
 
 s_str * str_new (s8 *free, uw size, const s8 *p)

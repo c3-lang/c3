@@ -96,7 +96,7 @@ s_str * sym_inspect (const s_sym *sym, s_str *dest)
   buf_init_alloc(&tmp, size);
   buf_inspect_sym(&tmp, sym);
   assert(tmp.wpos == tmp.size);
-  return str_init(dest, tmp.ptr.p, tmp.size, tmp.ptr.p);
+  return buf_to_str(&tmp, dest);
 }
 
 e_bool sym_is_module (const s_sym *sym)
