@@ -189,7 +189,6 @@ sw buf_inspect_list_size (const s_list *list)
   const s_list *i;
   sw r;
   sw result = 0;
-  assert(buf);
   assert(list);
   result += strlen("[");
   i = list;
