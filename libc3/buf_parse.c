@@ -9,7 +9,7 @@
 #include "buf_save.h"
 #include "character.h"
 #include "ident.h"
-#include "limits.h"
+#include "list.h"
 #include "str.h"
 #include "sym.h"
 
@@ -217,6 +217,80 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest)
    return MP_OKAY;
 }
 */
+
+sw buf_parse_list (s_buf *buf, s_list **list)
+{
+  s_list **i;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "[")) <= 0)
+    goto clean;
+  result += r;
+  i = list;
+  while (1) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "]")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      r = result;
+      goto clean;
+    }
+    *i = list_new(NULL);
+    if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "]")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      r = result;
+      goto clean;
+    }
+    if ((r = buf_read_1(buf, ",")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      i = &(*i)->next.data.list;
+      continue;
+    }
+    if ((r = buf_read_1(buf, "|")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      if ((r = buf_parse_tag(buf, &(*i)->next)) <= 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_read_1(buf, "]")) <= 0)
+        goto restore;
+      result += r;
+      r = result;
+      goto clean;
+    }
+    goto restore;
+  }
+  result += r;
+  if ((r = buf_read_1(buf, "]")) <= 0)
+    goto restore;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {

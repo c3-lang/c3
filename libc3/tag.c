@@ -43,12 +43,20 @@ s_tag * tag_init_f64 (s_tag *tag, f64 f)
     return tag;
 }
 
+s_tag * tag_init_list (s_tag *tag, s_list *list)
+{
+  assert(tag);
+  tag->type.type = TAG_LIST;
+  tag->data.list = list;
+  return tag;
+}
+
 s_tag * tag_init_s64 (s_tag *tag, s64 i)
 {
-    assert(tag);
-    tag->type.type = TAG_S64;
-    tag->data.s64 = i;
-    return tag;
+  assert(tag);
+  tag->type.type = TAG_S64;
+  tag->data.s64 = i;
+  return tag;
 }
 
 s_tag * tag_init_str (s_tag *tag, s8 * free, uw size, const s8 *p)
@@ -61,19 +69,26 @@ s_tag * tag_init_str (s_tag *tag, s8 * free, uw size, const s8 *p)
 
 s_tag * tag_init_sym (s_tag *tag, const s_sym *p)
 {
-    assert(tag);
-    assert(p);
-    tag->type.type = TAG_SYM;
-    tag->data.sym = p;
-    return tag;
+  assert(tag);
+  assert(p);
+  tag->type.type = TAG_SYM;
+  tag->data.sym = p;
+  return tag;
 }
 
 s_tag * tag_init_u64 (s_tag *tag, u64 i)
 {
-    assert(tag);
-    tag->type.type = TAG_U64;
-    tag->data.u64 = i;
-    return tag;
+  assert(tag);
+  tag->type.type = TAG_U64;
+  tag->data.u64 = i;
+  return tag;
+}
+
+s_tag * tag_init_void (s_tag *tag)
+{
+  assert(tag);
+  tag->type.type = TAG_VOID;
+  return tag;
 }
 
 void tag_delete (s_tag *tag)

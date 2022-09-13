@@ -87,11 +87,6 @@ struct buf {
 typedef struct tag  s_tag;
 typedef struct list s_list;
 
-struct list {
-  s_tag *tag;
-  s_list *next;
-};
-
 typedef struct tuple {
   u64 count;
   s_tag *tag;
@@ -128,7 +123,7 @@ typedef union tag_data {
   f32 f32;
   f64 f64;
   s_ident ident;
-  s_list list;
+  s_list *list;
   s_str str;
   const s_sym *sym;
   s8 s8;
@@ -145,6 +140,11 @@ typedef union tag_data {
 struct tag {
   u_tag_type type;
   u_tag_data data;
+};
+
+struct list {
+  s_tag tag;
+  s_tag next;
 };
 
 #endif
