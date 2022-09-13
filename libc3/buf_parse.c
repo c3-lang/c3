@@ -182,6 +182,95 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   return r;
 }
 
+sw buf_parse_integer (s_buf *buf, s_integer *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "0b")) < 0)
+    goto clean;
+  if (r == 0 && (r = buf_read_1(buf, "0B")) < 0)
+    goto clean;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_parse_integer_bin(buf, dest)) <= 0)
+      goto restore;
+    result += r;
+    r = result;
+    goto clean;
+  }
+  if ((r = buf_read_1(buf, "0o")) < 0)
+    goto clean;
+  if (r == 0 && (r = buf_read_1(buf, "0O")) < 0)
+    goto clean;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_parse_integer_oct(buf, dest)) <= 0)
+      goto restore;
+    result += r;
+    r = result;
+    goto clean;
+  }
+  if ((r = buf_read_1(buf, "0x")) < 0)
+    goto clean;
+  if (r == 0 && (r = buf_read_1(buf, "0X")) < 0)
+    goto clean;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_parse_integer_hex(buf, dest)) <= 0)
+      goto restore;
+    result += r;
+    r = result;
+    goto clean;
+  }
+  r = buf_parse_integer_dec(buf, dest);
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_integer_bin (s_buf *buf, s_integer *dest)
+{
+  const mp_digit radix = 2;
+  sw r;
+  u8 digit;
+  int result = 0;
+  bool negative = false;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  mp_zero(&dest->mp_int);
+  if ((r = buf_read_1(buf, "-")) < 0)
+    goto clean;
+  if (r > 0) {
+    negative = true;
+    result += r;
+  }
+  while ((r = buf_parse_digit_bin(buf, &digit)) > 0) {
+    result += r;
+    if (mp_mul_d(&dest->mp_int, radix, &dest->mp_int) != MP_OKAY)
+      goto error;
+    if (mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+      goto error;
+  }
+  if (r < 0)
+    goto restore;
+  if (negative && mp_neg(&dest->mp_int, &dest->mp_int) != MP_OKAY)
+    goto error;
+  r = result;
+  goto clean;
+ error:
+  r = -1;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_integer_dec (s_buf *buf, s_integer *dest)
 {
   mp_err err;

@@ -123,9 +123,9 @@ s_integer * integer_gcd (const s_integer *a, const s_integer *b,
                          s_integer *dest)
 {
   sw r;
+  assert(a);
+  assert(b);
   assert(dest);
-  assert(j);
-  assert(k);
   if ((r = mp_gcd(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_gcd: %s", mp_error_to_string(r));
   return dest;
@@ -155,8 +155,8 @@ s_integer * integer_lcm (const s_integer *a, const s_integer *b,
 s_integer * integer_lshift (s_integer *a, sw b, s_integer *dest)
 {
   sw r;
+  assert(a);
   assert(dest);
-  assert(k);
   if ((r = mp_mul_2d(&a->mp_int, b, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_lshift: %s", mp_error_to_string(r));
   return dest;

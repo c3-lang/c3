@@ -114,15 +114,19 @@ sw buf_inspect_integer_size (const s_integer *x)
 
 sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 {
+  sw r;
   sw size;
   assert(buf);
   assert(x);
   size = buf_inspect_integer_size(x);
   if (x->mp_int.sign == MP_NEG) {
-    buf_write_u8(buf, '-');
+    if ((r = buf_write_u8(buf, '-')) < 0)
+      return r;
   }
-  errx(1, "not implemented");
-  return size;
+  /* TODO */
+  (void) size;
+  warnx("buf_inspect_integer: not implemented");
+  return -1;
 }
 
 sw buf_inspect_f32 (s_buf *buf, f32 x)
@@ -134,7 +138,7 @@ sw buf_inspect_f32 (s_buf *buf, f32 x)
     x = -x;
   }
   /* TODO */
-  errx(1, "not implemented");
+  warnx("buf_inspect_f32: not implemented");
   return -1;
 }
 
@@ -147,7 +151,7 @@ sw buf_inspect_f64 (s_buf *buf, f64 x)
     x = -x;
   }
   /* TODO */
-  errx(1, "not implemented");
+  warnx("buf_inspect_f64: not implemented");
   return -1;
 }
 

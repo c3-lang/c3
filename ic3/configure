@@ -31,7 +31,7 @@ CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 LDFLAGS="${LDFLAGS:=}"
-LIBS="${LIBS:=} -lreadline ../libtommath/libtommath.la"
+LIBS="${LIBS:=} -lreadline ../libtommath/libtommath.a"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
