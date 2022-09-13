@@ -508,6 +508,29 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_u64_dec (s_buf *buf, u64 *dest)
+{
+ sw r;
+  sw result = 0;
+  u8 digit;
+  s_buf_save save;
+  u64 tmp = 0;
+  buf_save_init(buf, &save);
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    tmp = tmp * 10 + digit;
+    result += r;
+  }
+  if (r < 0) {
+    buf_save_restore(buf, &save);
+    goto clean;
+  }
+  *dest = tmp;
+  r = result;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
 {
  sw r;
