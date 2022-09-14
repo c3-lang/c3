@@ -266,6 +266,9 @@ sw buf_parse_list (s_buf *buf, s_list **list)
       goto restore;
     if (r > 0) {
       result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
       if ((r = buf_parse_tag(buf, &(*i)->next)) <= 0)
         goto restore;
       result += r;
@@ -551,8 +554,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  (void) ((r = buf_parse_tag_bool(buf, dest)) != 0 ||
-          (r = buf_parse_tag_character(buf, dest)) != 0 ||
+  (void) ((r = buf_parse_tag_character(buf, dest)) != 0 ||
           (r = buf_parse_tag_list(buf, dest)) != 0 ||
           (r = buf_parse_tag_str(buf, dest)) != 0 ||
           (r = buf_parse_tag_sym(buf, dest)) != 0 ||

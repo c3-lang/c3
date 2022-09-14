@@ -313,6 +313,7 @@ sw buf_peek_s64 (s_buf *buf, s64 *p)
 
 sw buf_peek_str (s_buf *buf, const s_str *src)
 {
+  sw size;
   assert(buf);
   assert(src);
   if (buf->rpos > buf->wpos) {
@@ -322,6 +323,11 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
   if (buf->wpos > buf->size) {
     assert(buf->wpos <= buf->size);
     return -1;
+  }
+  size = buf->wpos - buf->rpos;
+  if ((uw) size < src->size) {
+    if (memcmp(buf->ptr.ps8 + buf->rpos, src->ptr.p, size))
+      return 0;
   }
   if (buf->rpos + src->size > buf->wpos &&
       buf_refill(buf, src->size) < (sw) src->size)

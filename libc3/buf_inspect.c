@@ -173,7 +173,7 @@ sw buf_inspect_list (s_buf *buf, const s_list *list)
       if ((r = buf_inspect_tag(buf, &i->next)) < 0)
         return r;
       result += r;
-      break;
+      i = NULL;
     }
   }
   if ((r = buf_write_1(buf, "]")) < 0)
