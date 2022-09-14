@@ -143,14 +143,12 @@ sw buf_inspect_ident_size (const s_ident *ident)
   return ident->sym->str.size;
 }
 
-
 sw buf_inspect_list (s_buf *buf, const s_list *list)
 {
   const s_list *i;
   sw r;
   sw result = 0;
   assert(buf);
-  assert(list);
   if ((r = buf_write_u8(buf, '[')) <= 0)
     return r;
   result++;

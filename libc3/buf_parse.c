@@ -229,6 +229,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
     goto clean;
   result += r;
   i = list;
+  *i = NULL;
   while (1) {
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
@@ -240,7 +241,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
       r = result;
       goto clean;
     }
-    *i = list_new(NULL);
+    *i = list_new();
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;
