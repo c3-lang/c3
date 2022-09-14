@@ -4,16 +4,17 @@
 #include "../libc3/c3.h"
 #include "test.h"
 
-void types_test ();
-void character_test ();
-void str_test ();
-void sym_test ();
-void ident_test ();
-void buf_test ();
+void bool_test ();
 void buf_file_test ();
 void buf_inspect_test ();
 void buf_parse_test ();
+void buf_test ();
+void character_test ();
+void ident_test ();
 void sha1_test ();
+void str_test ();
+void sym_test ();
+void types_test ();
 
 int main (int argc, char **argv)
 {
@@ -22,6 +23,10 @@ int main (int argc, char **argv)
   if (test_target("types")) {
     printf("\ntypes\n");
     types_test();
+  }
+  if (test_target("bool")) {
+    printf("\nbool\n");
+    bool_test();
   }
   if (test_target("character")) {
     printf("\ncharacter\n");

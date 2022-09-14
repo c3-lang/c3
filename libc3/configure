@@ -4,6 +4,8 @@
 
 set -e
 
+export C3_TOP="$(pwd)/.."
+
 . ../config.subr
 
 LIB=libc3.la

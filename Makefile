@@ -53,15 +53,31 @@ distclean:
 	${MAKE} -C ic3 distclean
 	${MAKE} -C test distclean
 
-gcovr: test_cov
+gcovr:
 	${MAKE} -C libc3 gcovr
 	${MAKE} -C ic3 gcovr
 	${MAKE} -C test gcovr
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
+ic3_gcovr:
+	${MAKE} clean_cov
+	${MAKE} ic3_test_cov
+	${MAKE} gcovr
+
+ic3_test_cov: cov
+	${MAKE} -C test ic3_test_cov
+
 install: all
 	${MAKE} -C libc3 install
 	${MAKE} -C ic3 install
+
+libc3_gcovr:
+	${MAKE} clean_cov
+	${MAKE} libc3_test_cov
+	${MAKE} gcovr
+
+libc3_test_cov: cov
+	${MAKE} -C test libc3_test_cov
 
 test: build
 	${MAKE} -C test test
