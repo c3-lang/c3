@@ -760,7 +760,6 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
   while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
     tmp = tmp * 10 + digit;
     result += r;
-    printf("tmp: %f\n", tmp);
   }
   if (r < 0) {
     buf_save_restore(buf, &save);
@@ -773,7 +772,6 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
     while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
       tmp += frac * digit;
       frac /= 10;
-      printf("tmp frac: %f\n", tmp);
       result += r;
     }
     if (r < 0) {
