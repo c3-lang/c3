@@ -552,6 +552,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   assert(dest);
   (void) ((r = buf_parse_tag_bool(buf, dest)) != 0 ||
           (r = buf_parse_tag_character(buf, dest)) != 0 ||
+          (r = buf_parse_tag_list(buf, dest)) != 0 ||
           (r = buf_parse_tag_str(buf, dest)) != 0 ||
           (r = buf_parse_tag_sym(buf, dest)) != 0 ||
           (r = buf_parse_tag_ident(buf, dest)));
@@ -579,6 +580,14 @@ sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
   sw r;
   if ((r = buf_parse_ident(buf, &dest->data.ident)) > 0)
     dest->type.type = TAG_IDENT;
+  return r;
+}
+
+sw buf_parse_tag_list (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_list(buf, &dest->data.list)) > 0)
+    dest->type.type = TAG_LIST;
   return r;
 }
 
