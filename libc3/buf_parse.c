@@ -550,11 +550,21 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
+  if ((r = buf_parse_tag_bool(buf, dest)) != 0)
+    return r;
   if ((r = buf_parse_tag_str(buf, dest)) != 0)
     return r;
   if ((r = buf_parse_tag_sym(buf, dest)) != 0)
     return r;
   r = buf_parse_tag_ident(buf, dest);
+  return r;
+}
+
+sw buf_parse_tag_bool (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_bool(buf, &dest->data.bool)) > 0)
+    dest->type.type = TAG_BOOL;
   return r;
 }
 
