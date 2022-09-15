@@ -7,13 +7,15 @@
 #include "list.h"
 #include "str.h"
 #include "tag.h"
+#include "tuple.h"
 
 void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type.type) {
-  case TAG_LIST: list_delete(tag->data.list); break;
-  case TAG_STR:  str_clean(&tag->data.str);  break;
+  case TAG_LIST:  list_delete(tag->data.list);   break;
+  case TAG_STR:   str_clean(&tag->data.str);     break;
+  case TAG_TUPLE: tuple_clean(&tag->data.tuple); break;
   default: ;
   }
 }
