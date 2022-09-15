@@ -18,6 +18,12 @@ void tag_clean (s_tag *tag)
   }
 }
 
+s_tag * tag_copy (const s_tag *src, s_tag *dest)
+{
+  *dest = *src;
+  return dest;
+}
+
 s_tag * tag_init_bool (s_tag *tag, bool b)
 {
   assert(tag);

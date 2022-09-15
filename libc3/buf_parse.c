@@ -610,6 +610,66 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
+{
+  s_list **i;
+  s_list *list;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "{")) <= 0)
+    goto clean;
+  result += r;
+  i = &list;
+  *i = NULL;
+  while (1) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      r = result;
+      goto clean;
+    }
+    *i = list_new();
+    if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      r = result;
+      goto clean;
+    }
+    if ((r = buf_read_1(buf, ",")) <= 0)
+      goto restore;
+    result += r;
+    i = &(*i)->next.data.list;
+  }
+  result += r;
+  if ((r = buf_read_1(buf, "}")) <= 0)
+    goto restore;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  if (r > 0)
+    list_to_tuple_reverse(list, tuple);
+  if (list)
+    list_clean(list);
+  return r;
+}
+
 sw buf_parse_u64_dec (s_buf *buf, u64 *dest)
 {
  sw r;

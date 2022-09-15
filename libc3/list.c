@@ -7,6 +7,7 @@
 #include "buf_inspect.h"
 #include "list.h"
 #include "tag.h"
+#include "tuple.h"
 
 void list_clean (s_list *list)
 {
@@ -74,4 +75,16 @@ s_list * list_new ()
   if (! l)
     errx(1, "list_new: out of memory");
   return list_init(l);
+}
+
+s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest)
+{
+  sw i;
+  i = list_length(list);
+  tuple_init(dest, i);
+  while (i--) {
+    tag_copy(&list->tag, dest->tag + i);
+    list = list_next(list);
+  }
+  return dest;
 }

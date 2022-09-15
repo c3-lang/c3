@@ -60,5 +60,6 @@ sw tag_type_size (e_tag_type type);
 s_str * tag_inspect (const s_tag *x);
 
 /* Modifiers */
+s_tag * tag_copy (const s_tag *src, s_tag *dest);
 
 #endif /* STR_H */

@@ -88,7 +88,7 @@ typedef struct tag  s_tag;
 typedef struct list s_list;
 
 typedef struct tuple {
-  u64 count;
+  uw count;
   s_tag *tag;
 } s_tuple;
 

@@ -7,6 +7,7 @@
 #include "../libc3/buf_parse.h"
 #include "../libc3/list.h"
 #include "../libc3/str.h"
+#include "../libc3/tuple.h"
 #include "test.h"
 
 #define BUF_PARSE_TEST_BOOL(test, expected)                            \
@@ -287,6 +288,17 @@
     if (g_test_last_ok)                                                \
       TEST_STRNCMP(dest->str.ptr.p, (expected), dest->str.size);       \
     buf_clean(&buf);                                                   \
+  } while (0)
+
+#define BUF_PARSE_TEST_TUPLE(test)                                     \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_tuple dest;                                                      \
+    test_context("buf_parse_tuple(" # test ")");                       \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_tuple(&buf, &dest), strlen(test));               \
+    buf_clean(&buf);                                                   \
+    tuple_clean(&dest);                                                \
   } while (0)
 
 void buf_parse_test_bool ();
@@ -684,4 +696,11 @@ void buf_parse_test_sym ()
 
 void buf_parse_test_tuple ()
 {
+  BUF_PARSE_TEST_TUPLE("{a, b}");
+  BUF_PARSE_TEST_TUPLE("{a, b, c}");
+  BUF_PARSE_TEST_TUPLE("{a, b, c, d}");
+  BUF_PARSE_TEST_TUPLE("{a, b, c, d}");
+  BUF_PARSE_TEST_TUPLE("{a, {b, c}}");
+  BUF_PARSE_TEST_TUPLE("{{a, b}, c}");
+  BUF_PARSE_TEST_TUPLE("{{a, b}, {c, d}}");
 }

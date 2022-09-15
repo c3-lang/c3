@@ -25,9 +25,10 @@ s_list * list_new ();
 void list_delete (s_list *list);
 
 /* Observers */
-sw       list_length (const s_list *list);
-s_list * list_next (const s_list *list);
+sw        list_length (const s_list *list);
+s_list *  list_next (const s_list *list);
+s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *tuple);
 /* Call str_delete after use. */
-s_str *  list_inspect (const s_list *x);
+s_str *   list_inspect (const s_list *x);
 
 #endif /* STR_H */
