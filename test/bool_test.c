@@ -3,6 +3,7 @@
  */
 #include <string.h>
 #include "../libc3/bool.h"
+#include "../libc3/str.h"
 #include "test.h"
 
 #define BOOL_TEST_INSPECT(test, expected)                              \
@@ -13,6 +14,7 @@
     TEST_EQ(str.size, strlen(expected));                               \
     if (g_test_last_ok)                                                \
       TEST_STRNCMP(str.ptr.p, (expected), str.size);                   \
+    str_clean(&str);						       \
   } while (0)
 
 void bool_test ();

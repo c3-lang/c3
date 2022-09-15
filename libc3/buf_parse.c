@@ -12,6 +12,8 @@
 #include "list.h"
 #include "str.h"
 #include "sym.h"
+#include "tag.h"
+#include "tuple.h"
 
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
@@ -663,10 +665,22 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
   buf_save_restore(buf, &save);
  clean:
   buf_save_clean(buf, &save);
-  if (r > 0)
-    list_to_tuple_reverse(list, tuple);
+  if (r > 0) {
+    sw i;
+    s_list *j;
+    i = list_length(list);
+    if (2 <= i) {
+      j = list;
+      tuple_init(tuple, i);
+      while (i--) {
+	tuple->tag[i] = j->tag;
+	tag_init_void(&j->tag);
+	j = list_next(j);
+      }
+    }
+  }
   if (list)
-    list_clean(list);
+    list_delete(list);
   return r;
 }
 

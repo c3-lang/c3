@@ -33,8 +33,8 @@
   do {                                                                 \
     s_str *str_test;                                                   \
     s_str result;                                                      \
-    assert(test);                                                      \
-    str_test = test;                                                   \
+    str_test = (test);						       \
+    assert(str_test);                                                  \
     test_context("str_inspect(" # test ") -> " # expected);            \
     TEST_EQ(str_inspect(str_test, &result), &result);                  \
     TEST_STRNCMP(result.ptr.p, (expected), result.size);               \

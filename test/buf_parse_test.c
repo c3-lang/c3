@@ -111,7 +111,7 @@
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_list(&buf, &dest), strlen(test));                \
     buf_clean(&buf);                                                   \
-    list_clean(dest);                                                  \
+    list_delete(dest);                                                 \
   } while (0)
 
 #define BUF_PARSE_TEST_NOT_CHARACTER(test)                             \
@@ -293,7 +293,7 @@
 #define BUF_PARSE_TEST_TUPLE(test)                                     \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_tuple dest;                                                      \
+    s_tuple dest = {0};						       \
     test_context("buf_parse_tuple(" # test ")");                       \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_tuple(&buf, &dest), strlen(test));               \

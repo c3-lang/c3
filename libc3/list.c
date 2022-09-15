@@ -77,13 +77,14 @@ s_list * list_new ()
   return list_init(l);
 }
 
-s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest)
+s_tuple * list_to_tuple_reverse (s_list *list, s_tuple *dest)
 {
   sw i;
   i = list_length(list);
   tuple_init(dest, i);
   while (i--) {
-    tag_copy(&list->tag, dest->tag + i);
+    dest->tag[i] = list->tag;
+    tag_init_void(&list->tag);
     list = list_next(list);
   }
   return dest;
