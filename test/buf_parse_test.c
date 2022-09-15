@@ -554,6 +554,9 @@ void buf_parse_test_list ()
   BUF_PARSE_TEST_LIST("[[] | []]");
   BUF_PARSE_TEST_LIST("[[], [], []]");
   BUF_PARSE_TEST_LIST("[[], [] | []]");
+  BUF_PARSE_TEST_LIST("[a | b]");
+  BUF_PARSE_TEST_LIST("[a, b | c]");
+  BUF_PARSE_TEST_LIST("[a, b, c | d]");
 }
 
 void buf_parse_test_str ()

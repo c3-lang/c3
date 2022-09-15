@@ -41,6 +41,7 @@ void str_delete (s_str *str);
 character     str_character_escape (character c);
 e_bool        str_character_is_reserved (character c);
 sw            str_cmp (const s_str *a, const s_str *b);
+s_str *       str_copy (const s_str *src, s_str *dest);
 e_bool        str_has_reserved_characters (const s_str *str);
 s_str *       str_inspect (const s_str *x, s_str *dest);
 sw            str_peek_bool (const s_str *src, bool *p);

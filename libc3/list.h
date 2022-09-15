@@ -25,6 +25,7 @@ s_list * list_new ();
 void list_delete (s_list *list);
 
 /* Observers */
+s_list *  list_copy (const s_list *src, s_list **dest);
 sw        list_length (const s_list *list);
 s_list *  list_next (const s_list *list);
 s_tuple * list_to_tuple_reverse (s_list *list, s_tuple *tuple);

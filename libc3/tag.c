@@ -20,7 +20,14 @@ void tag_clean (s_tag *tag)
 
 s_tag * tag_copy (const s_tag *src, s_tag *dest)
 {
-  *dest = *src;
+  assert(src);
+  assert(dest);
+  switch (src->type.type) {
+  case TAG_LIST: list_copy(src->data.list, &dest->data.list); break;
+  case TAG_STR: str_copy(&src->data.str, &dest->data.str); break;
+  default: dest->data = src->data;
+  }
+  dest->type.type = src->type.type;
   return dest;
 }
 

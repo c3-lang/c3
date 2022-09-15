@@ -17,14 +17,35 @@
 
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
+  character c;
   sw r;
+  s_buf_save save;
+  bool value;
   assert(buf);
-  if ((r = buf_read_1(buf, "true")) > 0)
-    *p = true;
-  if (r != 0)
-    return r;
-  if ((r = buf_read_1(buf, "false")) > 0)
-    *p = false;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "true")) < 0)
+    goto clean;
+  if (r > 0)
+    value = true;
+  else {
+    if ((r = buf_read_1(buf, "false")) < 0)
+      goto clean;
+    if (r > 0)
+      value = false;
+  }
+  if (r == 0)
+    goto clean;
+  if (buf_peek_character_utf8(buf, &c) > 0 &&
+      ! ident_character_is_reserved(c)) {
+    r = 0;
+    goto restore;
+  }
+  *p = value;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 
@@ -560,6 +581,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
           (r = buf_parse_tag_list(buf, dest)) != 0 ||
           (r = buf_parse_tag_str(buf, dest)) != 0 ||
           (r = buf_parse_tag_sym(buf, dest)) != 0 ||
+          (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
           (r = buf_parse_tag_ident(buf, dest)));
   return r;
 }
@@ -609,6 +631,14 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   sw r;
   if ((r = buf_parse_sym(buf, &dest->data.sym)) > 0)
     dest->type.type = TAG_SYM;
+  return r;
+}
+
+sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_tuple(buf, &dest->data.tuple)) > 0)
+    dest->type.type = TAG_TUPLE;
   return r;
 }
 

@@ -28,6 +28,15 @@ void str_clean (s_str *str)
     free(str->free.p);
 }
 
+s_str * str_copy (const s_str *src, s_str *dest)
+{
+  /* TODO */
+  (void) src;
+  (void) dest;
+  errx(1, "str_copy: not implemented");
+  return NULL;
+}
+
 sw str_cmp (const s_str *a, const s_str *b)
 {
   sw r;

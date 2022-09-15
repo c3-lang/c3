@@ -17,8 +17,9 @@ e_bool ident_character_is_reserved (character c)
           c == ',' ||
           c == '.' ||
           c == ';' ||
+          c == ']' ||
           c == '|' ||
-          c == ']');
+          c == '}');
 }
 
 e_bool ident_first_character_is_reserved (character c)

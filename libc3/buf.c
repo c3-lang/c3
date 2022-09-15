@@ -356,7 +356,6 @@ sw buf_peek_u8 (s_buf *buf, u8 *p)
       return r;
     if (r < size)
       return 0;
-    assert(! "error");
   }
   if (buf->rpos + size > buf->wpos) {
     assert(! "buf_peek_u8: buffer overflow");

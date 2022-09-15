@@ -17,6 +17,21 @@ void list_clean (s_list *list)
   }
 }
 
+s_list * list_copy (const s_list *src, s_list **dest)
+{
+  s_list *result = NULL;
+  *dest = NULL;
+  while (src) {
+    *dest = list_new();
+    if (! result)
+      result = *dest;
+    tag_copy(&src->tag, &(*dest)->tag);
+    dest = &(*dest)->next.data.list;
+    src = list_next(src);
+  }
+  return result;
+}
+
 void list_delete (s_list *list)
 {
   list_clean(list);
@@ -70,22 +85,9 @@ s_list * list_next (const s_list *list)
 
 s_list * list_new ()
 {
-  s_list *l;
-  l = malloc(sizeof(s_list));
-  if (! l)
+  s_list *list;
+  list = calloc(1, sizeof(s_list));
+  if (! list)
     errx(1, "list_new: out of memory");
-  return list_init(l);
-}
-
-s_tuple * list_to_tuple_reverse (s_list *list, s_tuple *dest)
-{
-  sw i;
-  i = list_length(list);
-  tuple_init(dest, i);
-  while (i--) {
-    dest->tag[i] = list->tag;
-    tag_init_void(&list->tag);
-    list = list_next(list);
-  }
-  return dest;
+  return list_init(list);
 }
