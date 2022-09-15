@@ -97,35 +97,56 @@ sw buf_inspect_character_size (character x)
   size += 2;
   return size;
 }
-sw buf_inspect_integer_size (const s_integer *x)
-{
-  s32 size;
-  assert(x);
-  sw err;
-  err = mp_radix_size(&x->mp_int, 10, &size);
-  if (err != MP_OKAY) {
-    assert(! "mp_radix_size failed");
-    return -1;
-  }
-  if (size == 0)
-    return -1;
-  return size;
-}
 
 sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 {
-  sw r;
-  sw size;
-  assert(buf);
-  assert(x);
-  size = buf_inspect_integer_size(x);
-  if (x->mp_int.sign == MP_NEG) {
-    if ((r = buf_write_u8(buf, '-')) < 0)
-      return r;
+  mp_digit d;
+  mp_err  error;
+  sw result = 0;
+  size_t  maxlen = 0;
+  u8 p;
+  const u32 radix = 10;
+  int size = 0;
+  mp_int  t;
+
+  if ((error = mp_radix_size(&x->mp_int, 10, &size) != MP_OKAY))
+    return -1;
+  maxlen = size;
+  if (MP_IS_ZERO(&x->mp_int)) {
+    buf_write_u8(buf, '0');
+    return 1;
   }
-  /* TODO */
-  (void) size;
-  warnx("buf_inspect_integer: not implemented");
+  if ((error = mp_init_copy(&t, &x->mp_int)) != MP_OKAY) {
+    return error;
+  }
+  if (t.sign == MP_NEG) {
+    t.sign = MP_ZPOS;
+    --maxlen;
+  }
+  while (!MP_IS_ZERO(&t)) {
+    if (--maxlen < 1u) {
+      error = MP_BUF;
+      goto LBL_ERR;
+    }
+    if ((error = mp_div_d(&t, (mp_digit)radix, &t, &d)) != MP_OKAY) {
+      goto LBL_ERR;
+    }
+    p = (u8)(d  + '0');
+    if (p > '9' ) {
+      goto  LBL_ERR;
+    }
+    buf_write_u8(buf, p);
+    ++result;
+  }
+  if (x->mp_int.sign == MP_NEG) {
+    buf_write_u8(buf, '-');
+    ++result;
+  }
+  buf_reverse_u8(buf);
+  mp_clear(&t);
+  return result;
+  LBL_ERR:
+  mp_clear(&t);
   return -1;
 }
 

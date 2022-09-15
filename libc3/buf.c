@@ -586,6 +586,19 @@ sw buf_refill_compact (s_buf *buf)
   return 0;
 }
 
+sw buf_reverse_u8(s_buf *buf)
+{
+  sw i;
+  u8 tmp;
+  sw size = buf->wpos;
+  for(i = 0; i < size/2; i++) {
+    tmp = buf->ptr.pu8[i];
+    buf->ptr.pu8[i] = buf->ptr.pu8[size-i-1];
+    buf->ptr.pu8[size-i-1] = tmp;
+  }
+  return size;
+}
+
 sw buf_str_to_hex (s_buf *buf, const s_str *src)
 {
   const u8 *b;
@@ -832,3 +845,4 @@ sw buf_xfer (s_buf *buf, s_buf *src, uw size)
   buf->wpos += size;
   return size;
 }
+

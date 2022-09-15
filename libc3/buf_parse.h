@@ -33,6 +33,7 @@ sw buf_parse_integer_dec (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_hex (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_oct (s_buf *buf, s_integer *dest);
 sw buf_parse_ident (s_buf *buf, s_ident *dest);
+sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_list (s_buf *buf, s_list *dest);
 sw buf_parse_str (s_buf *buf, s_str *dest);
 sw buf_parse_str_character (s_buf *buf, character *dest);
