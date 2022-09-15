@@ -248,22 +248,23 @@ sw buf_parse_list (s_buf *buf, s_list **list)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
+  i = list;
   if ((r = buf_read_1(buf, "[")) <= 0)
     goto clean;
   result += r;
-  i = list;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "]")) < 0)
+    goto restore;
+  if (r > 0) {
+    result += r;
+    *list = NULL;
+    r = result;
+    goto clean;
+  }
   *i = NULL;
   while (1) {
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_read_1(buf, "]")) < 0)
-      goto restore;
-    if (r > 0) {
-      result += r;
-      r = result;
-      goto clean;
-    }
     *i = list_new();
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
@@ -283,6 +284,9 @@ sw buf_parse_list (s_buf *buf, s_list **list)
     if (r > 0) {
       result += r;
       i = &(*i)->next.data.list;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+	goto restore;
+      result += r;
       continue;
     }
     if ((r = buf_read_1(buf, "|")) < 0)
@@ -306,12 +310,6 @@ sw buf_parse_list (s_buf *buf, s_list **list)
     }
     goto restore;
   }
-  result += r;
-  if ((r = buf_read_1(buf, "]")) <= 0)
-    goto restore;
-  result += r;
-  r = result;
-  goto clean;
  restore:
   buf_save_restore(buf, &save);
  clean:
@@ -645,7 +643,7 @@ sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
 sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
 {
   s_list **i;
-  s_list *list;
+  s_list *list = 0;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -659,13 +657,6 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    if ((r = buf_read_1(buf, "}")) < 0)
-      goto restore;
-    if (r > 0) {
-      result += r;
-      r = result;
-      goto clean;
-    }
     *i = list_new();
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
@@ -676,7 +667,21 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
     if ((r = buf_read_1(buf, "}")) < 0)
       goto restore;
     if (r > 0) {
+      sw i;
+      s_list *j;
       result += r;
+      i = list_length(list);
+      if (i < 2) {
+	r = 0;
+	goto restore;
+      }
+      tuple_init(tuple, i);
+      j = list;
+      while (i--) {
+	tuple->tag[i] = j->tag;
+	tag_init_void(&j->tag);
+	j = list_next(j);
+      }
       r = result;
       goto clean;
     }
@@ -695,20 +700,6 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
   buf_save_restore(buf, &save);
  clean:
   buf_save_clean(buf, &save);
-  if (r > 0) {
-    sw i;
-    s_list *j;
-    i = list_length(list);
-    if (2 <= i) {
-      j = list;
-      tuple_init(tuple, i);
-      while (i--) {
-	tuple->tag[i] = j->tag;
-	tag_init_void(&j->tag);
-	j = list_next(j);
-      }
-    }
-  }
   if (list)
     list_delete(list);
   return r;
