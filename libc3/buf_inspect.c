@@ -153,52 +153,42 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 {
   s_buf buf_tmp;
   mp_digit d;
-  mp_err  error;
   sw result = 0;
-  size_t  maxlen;
+  size_t maxlen;
   u8 p;
-  const u32 radix = 10;
-  int size = 0;
-  mp_int  t;
-
-  if ((error = mp_radix_size(&x->mp_int, 10, &size) != MP_OKAY))
+  const mp_digit radix = 10;
+  s32 size = 0;
+  mp_int t;
+  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
     return -1;
   maxlen = size;
-  if (MP_IS_ZERO(&x->mp_int)) {
-    buf_write_u8(buf, '0');
-    return 1;
-  }
-  buf_init_alloc(&buf_tmp, maxlen);
-  if ((error = mp_init_copy(&t, &x->mp_int)) != MP_OKAY)
-    return error;
+  if (MP_IS_ZERO(&x->mp_int))
+    return buf_write_u8(buf, '0');
+  if (mp_init_copy(&t, &x->mp_int) != MP_OKAY)
+    return -1;
   if (t.sign == MP_NEG) {
     t.sign = MP_ZPOS;
-    --maxlen;
+    maxlen--;
+    buf_write_u8(buf, '-');
+    result++;
   }
+  buf_init_alloc(&buf_tmp, maxlen);
   while (!MP_IS_ZERO(&t)) {
-    if (--maxlen < 1u) {
-      error = MP_BUF;
-      goto LBL_ERR;
-    }
-    if ((error = mp_div_d(&t, (mp_digit)radix, &t, &d)) != MP_OKAY)
-      goto LBL_ERR;
-    p = (u8)(d  + '0');
-    if (p > '9' )
-      goto  LBL_ERR;
+    if (mp_div_d(&t, radix, &t, &d) != MP_OKAY)
+      goto error;
+    p = '0' + d;
+    if (p > '9')
+      goto error;
     buf_write_u8(&buf_tmp, p);
-    ++result;
-  }
-  if (x->mp_int.sign == MP_NEG) {
-    buf_write_u8(&buf_tmp, '-');
-    ++result;
+    result++;
   }
   buf_xfer_reverse(&buf_tmp, buf);
   mp_clear(&t);
   buf_clean(&buf_tmp);
   return result;
-  LBL_ERR:
-  buf_clean(&buf_tmp);
+ error:
   mp_clear(&t);
+  buf_clean(&buf_tmp);
   return -1;
 }
 
