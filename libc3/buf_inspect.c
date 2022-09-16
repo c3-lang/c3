@@ -104,7 +104,7 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
   mp_digit d;
   mp_err  error;
   sw result = 0;
-  size_t  maxlen = 0;
+  size_t  maxlen;
   u8 p;
   const u32 radix = 10;
   int size = 0;
