@@ -816,6 +816,8 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
   sw r;
   sw result = 0;
   s_buf_save save;
+  assert(buf);
+  assert(tuple);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "{")) <= 0)
     goto clean;

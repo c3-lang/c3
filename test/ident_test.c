@@ -19,18 +19,18 @@
     TEST_EQ(ident_first_character_is_reserved(test), (expected));      \
   } while (0)
 
-#define IDENT_TEST_INSPECT(test, result)                   \
-  do {                                                     \
-    s_ident ident;                                         \
-    s_str str;                                             \
-    assert(test);                                          \
-    assert(result);                                        \
-    test_context("ident_inspect(" #test ") -> " #result);  \
-    ident_init_1(&ident, test);                            \
-    TEST_EQ(ident_inspect(&ident, &str), &str);            \
-    TEST_STRNCMP(str.ptr.p, (result), str.size);           \
-    str_clean(&str);                                       \
-    test_context(NULL);                                    \
+#define IDENT_TEST_INSPECT(test, result)                               \
+  do {                                                                 \
+    s_ident ident;                                                     \
+    s_str str;                                                         \
+    assert(test);                                                      \
+    assert(result);                                                    \
+    test_context("ident_inspect(" #test ") -> " #result);              \
+    ident_init_1(&ident, (test));                                      \
+    TEST_EQ(ident_inspect(&ident, &str), &str);                        \
+    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
+    str_clean(&str);                                                   \
+    test_context(NULL);                                                \
   } while (0)
 
 void ident_test ();
