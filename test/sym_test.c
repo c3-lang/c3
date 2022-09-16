@@ -77,18 +77,18 @@ void sym_test_delete_all ()
   test_ok();
 }
 
-#define SYM_TEST_INSPECT(test, result)                  \
-  do {                                                  \
-    const s_sym *sym;                                   \
-    s_str *str;                                         \
-    assert(test);                                       \
-    assert(result);                                     \
-    test_context("sym_inspect(" #test ") -> " #result); \
-    sym = sym_1(test);                                  \
-    TEST_ASSERT((str = sym_inspect(sym)));              \
-    TEST_STRNCMP(str->ptr.p, result, str->size);        \
-    str_delete(str);                                    \
-    test_context(NULL);                                 \
+#define SYM_TEST_INSPECT(test, result)                                 \
+  do {                                                                 \
+    const s_sym *sym;                                                  \
+    s_str str;                                                         \
+    assert(test);                                                      \
+    assert(result);                                                    \
+    test_context("sym_inspect(" # test ") -> " # result);              \
+    sym = sym_1(test);                                                 \
+    TEST_EQ(sym_inspect(sym, &str), &str);                             \
+    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
+    str_clean(&str);                                                   \
+    test_context(NULL);                                                \
   } while (0)
 
 void sym_test_inspect ()

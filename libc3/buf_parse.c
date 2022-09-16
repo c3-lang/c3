@@ -4,27 +4,50 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include "../libtommath/tommath.h"
 #include "buf.h"
 #include "buf_parse.h"
 #include "buf_save.h"
 #include "character.h"
 #include "ident.h"
-#include "limits.h"
+#include "list.h"
 #include "str.h"
 #include "sym.h"
-#include "../libtommath/tommath.h"
-#include <math.h>
+#include "tag.h"
+#include "tuple.h"
 
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
+  character c;
   sw r;
+  s_buf_save save;
+  bool value;
   assert(buf);
-  if ((r = buf_read_1(buf, "true")) > 0)
-    *p = true;
-  if (r != 0)
-    return r;
-  if ((r = buf_read_1(buf, "false")) > 0)
-    *p = false;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "true")) < 0)
+    goto clean;
+  if (r > 0)
+    value = true;
+  else {
+    if ((r = buf_read_1(buf, "false")) < 0)
+      goto clean;
+    if (r > 0)
+      value = false;
+  }
+  if (r == 0)
+    goto clean;
+  if (buf_peek_character_utf8(buf, &c) > 0 &&
+      ! ident_character_is_reserved(c)) {
+    r = 0;
+    goto restore;
+  }
+  *p = value;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 
@@ -386,6 +409,82 @@ sw buf_parse_integer_oct (s_buf *buf, s_integer *dest)
   return r;
 }
 
+sw buf_parse_list (s_buf *buf, s_list **list)
+{
+  s_list **i;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  i = list;
+  if ((r = buf_read_1(buf, "[")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "]")) < 0)
+    goto restore;
+  if (r > 0) {
+    result += r;
+    *list = NULL;
+    r = result;
+    goto clean;
+  }
+  *i = NULL;
+  while (1) {
+    *i = list_new();
+    if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "]")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      r = result;
+      goto clean;
+    }
+    if ((r = buf_read_1(buf, ",")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      i = &(*i)->next.data.list;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+	goto restore;
+      result += r;
+      continue;
+    }
+    if ((r = buf_read_1(buf, "|")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_parse_tag(buf, &(*i)->next)) <= 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_read_1(buf, "]")) <= 0)
+        goto restore;
+      result += r;
+      r = result;
+      goto clean;
+    }
+    goto restore;
+  }
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
   u8 b;
@@ -644,11 +743,29 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_tag_str(buf, dest)) != 0)
-    return r;
-  if ((r = buf_parse_tag_sym(buf, dest)) != 0)
-    return r;
-  r = buf_parse_tag_ident(buf, dest);
+  (void) ((r = buf_parse_tag_bool(buf, dest)) != 0 ||
+          (r = buf_parse_tag_character(buf, dest)) != 0 ||
+          (r = buf_parse_tag_list(buf, dest)) != 0 ||
+          (r = buf_parse_tag_str(buf, dest)) != 0 ||
+          (r = buf_parse_tag_sym(buf, dest)) != 0 ||
+          (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
+          (r = buf_parse_tag_ident(buf, dest)));
+  return r;
+}
+
+sw buf_parse_tag_bool (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_bool(buf, &dest->data.bool)) > 0)
+    dest->type.type = TAG_BOOL;
+  return r;
+}
+
+sw buf_parse_tag_character (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_character(buf, &dest->data.character)) > 0)
+    dest->type.type = TAG_CHARACTER;
   return r;
 }
 
@@ -657,6 +774,14 @@ sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
   sw r;
   if ((r = buf_parse_ident(buf, &dest->data.ident)) > 0)
     dest->type.type = TAG_IDENT;
+  return r;
+}
+
+sw buf_parse_tag_list (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_list(buf, &dest->data.list)) > 0)
+    dest->type.type = TAG_LIST;
   return r;
 }
 
@@ -673,6 +798,105 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   sw r;
   if ((r = buf_parse_sym(buf, &dest->data.sym)) > 0)
     dest->type.type = TAG_SYM;
+  return r;
+}
+
+sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_tuple(buf, &dest->data.tuple)) > 0)
+    dest->type.type = TAG_TUPLE;
+  return r;
+}
+
+sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
+{
+  s_list **i;
+  s_list *list = 0;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "{")) <= 0)
+    goto clean;
+  result += r;
+  i = &list;
+  *i = NULL;
+  while (1) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    *i = list_new();
+    if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    if (r > 0) {
+      sw i;
+      s_list *j;
+      sw k;
+      result += r;
+      i = list_length(list);
+      if (i < 2) {
+	r = 0;
+	goto restore;
+      }
+      tuple_init(tuple, i);
+      j = list;
+      k = 0;
+      while (i--) {
+	tuple->tag[k] = j->tag;
+	tag_init_void(&j->tag);
+	j = list_next(j);
+        k++;
+      }
+      r = result;
+      goto clean;
+    }
+    if ((r = buf_read_1(buf, ",")) <= 0)
+      goto restore;
+    result += r;
+    i = &(*i)->next.data.list;
+  }
+  result += r;
+  if ((r = buf_read_1(buf, "}")) <= 0)
+    goto restore;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  if (list)
+    list_delete(list);
+  return r;
+}
+
+sw buf_parse_u64_dec (s_buf *buf, u64 *dest)
+{
+ sw r;
+  sw result = 0;
+  u8 digit;
+  s_buf_save save;
+  u64 tmp = 0;
+  buf_save_init(buf, &save);
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    tmp = tmp * 10 + digit;
+    result += r;
+  }
+  if (r < 0) {
+    buf_save_restore(buf, &save);
+    goto clean;
+  }
+  *dest = tmp;
+  r = result;
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 

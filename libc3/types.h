@@ -51,7 +51,7 @@ typedef union ptr_w {
 
 typedef struct str {
   u_ptr_w free;        /**< Pointer to free or NULL. */
-  u64     size;        /**< Size in bytes. */
+  uw      size;        /**< Size in bytes. */
   u_ptr   ptr;         /**< Pointer to memory. */
 } s_str;
 
@@ -94,13 +94,8 @@ struct buf {
 typedef struct tag  s_tag;
 typedef struct list s_list;
 
-struct list {
-  s_tag *tag;
-  s_list *next;
-};
-
 typedef struct tuple {
-  u64 count;
+  uw count;
   s_tag *tag;
 } s_tuple;
 
@@ -137,7 +132,7 @@ typedef union tag_data {
   f64 f64;
   s_ident ident;
   s_integer integer;
-  s_list list;
+  s_list *list;
   s_str str;
   const s_sym *sym;
   s8 s8;
@@ -156,5 +151,9 @@ struct tag {
   u_tag_data data;
 };
 
+struct list {
+  s_tag tag;
+  s_tag next;
+};
 
 #endif

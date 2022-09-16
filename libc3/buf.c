@@ -62,6 +62,25 @@ sw buf_ignore (s_buf *buf, uw size)
   return size;
 }
 
+sw buf_ignore_spaces (s_buf *buf)
+{
+  character c;
+  sw csize;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
+         character_is_space(c)) {
+    csize = r;
+    if ((r = buf_ignore(buf, csize)) < 0)
+      return r;
+    result += csize;
+  }
+  if (r < 0)
+    return r;
+  return result;
+}
+
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
 {
   assert(buf);
@@ -294,6 +313,7 @@ sw buf_peek_s64 (s_buf *buf, s64 *p)
 
 sw buf_peek_str (s_buf *buf, const s_str *src)
 {
+  sw size;
   assert(buf);
   assert(src);
   if (buf->rpos > buf->wpos) {
@@ -303,6 +323,11 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
   if (buf->wpos > buf->size) {
     assert(buf->wpos <= buf->size);
     return -1;
+  }
+  size = buf->wpos - buf->rpos;
+  if ((uw) size < src->size) {
+    if (memcmp(buf->ptr.ps8 + buf->rpos, src->ptr.p, size))
+      return 0;
   }
   if (buf->rpos + src->size > buf->wpos &&
       buf_refill(buf, src->size) < (sw) src->size)
@@ -331,7 +356,6 @@ sw buf_peek_u8 (s_buf *buf, u8 *p)
       return r;
     if (r < size)
       return 0;
-    assert(! "error");
   }
   if (buf->rpos + size > buf->wpos) {
     assert(! "buf_peek_u8: buffer overflow");
@@ -625,6 +649,14 @@ s_str * buf_to_str (const s_buf *buf, s_str *str)
   assert(str);
   free = buf->free ? buf->ptr.p : NULL;
   return str_init(str, free, buf->size, buf->ptr.p);
+}
+
+s_str * buf_to_str_new (const s_buf *buf)
+{
+  void *free;
+  assert(buf);
+  free = buf->free ? buf->ptr.p : NULL;
+  return str_new(free, buf->size, buf->ptr.p);
 }
 
 sw buf_u8_to_hex (s_buf *buf, u8 x)

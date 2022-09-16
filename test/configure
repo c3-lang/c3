@@ -4,12 +4,14 @@
 
 set -e
 
+export C3_TOP="$(pwd)/.."
+
 . ../config.subr
 
-PROG=c3_test
-PROG_ASAN=c3_test.asan
-PROG_COV=c3_test.cov
-PROG_DEBUG=c3_test.debug
+PROG=libc3_test
+PROG_ASAN=libc3_test.asan
+PROG_COV=libc3_test.cov
+PROG_DEBUG=libc3_test.debug
 
 SOURCES="$(ls *.c | tr '\n' ' ')"
 echo "SOURCES = $SOURCES" >> ${CONFIG_MK}

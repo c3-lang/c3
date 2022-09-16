@@ -28,6 +28,15 @@ void str_clean (s_str *str)
     free(str->free.p);
 }
 
+s_str * str_copy (const s_str *src, s_str *dest)
+{
+  /* TODO */
+  (void) src;
+  (void) dest;
+  errx(1, "str_copy: not implemented");
+  return NULL;
+}
+
 sw str_cmp (const s_str *a, const s_str *b)
 {
   sw r;
@@ -128,19 +137,17 @@ s_str * str_init_str (s_str *str, const s_str *src)
   return str;
 }
 
-s_str * str_inspect (const s_str *src)
+s_str * str_inspect (const s_str *src, s_str *dest)
 {
   s_buf buf;
   sw size;
-  s_str *str;
   size = buf_inspect_str_size(src);
   if (size <= 0)
     return NULL;
   buf_init_alloc(&buf, size);
   buf_inspect_str(&buf, src);
-  assert(buf.wpos == (u64) size);
-  str = str_new(buf.ptr.p, buf.size, buf.ptr.p);
-  return str;
+  assert(buf.wpos == (uw) size);
+  return buf_to_str(&buf, dest);
 }
 
 s_str * str_new (s8 *free, uw size, const s8 *p)

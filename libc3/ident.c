@@ -13,10 +13,13 @@ e_bool ident_character_is_reserved (character c)
   return (character_is_space(c) ||
           c == '#' ||
           c == '(' ||
+          c == ')' ||
+          c == ',' ||
           c == '.' ||
           c == ';' ||
-          c == ',' ||
-          c == ')');
+          c == ']' ||
+          c == '|' ||
+          c == '}');
 }
 
 e_bool ident_first_character_is_reserved (character c)
@@ -63,7 +66,7 @@ s_ident * ident_init_1 (s_ident *ident, const s8 *p)
   return ident;
 }
 
-s_str * ident_inspect (const s_ident *ident, s_str *p)
+s_str * ident_inspect (const s_ident *ident, s_str *dest)
 {
   sw r;
   sw size;
@@ -77,5 +80,5 @@ s_str * ident_inspect (const s_ident *ident, s_str *p)
     buf_clean(&buf);
     return NULL;
   }
-  return buf_to_str(&buf, p);
+  return buf_to_str(&buf, dest);
 }

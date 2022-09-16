@@ -20,6 +20,7 @@ s_tag * tag_init_bool (s_tag *tag, bool p);
 s_tag * tag_init_character (s_tag *tag, character c);
 s_tag * tag_init_f32 (s_tag *tag, f32 f);
 s_tag * tag_init_f64 (s_tag *tag, f64 f);
+s_tag * tag_init_list (s_tag *tag, s_list *list);
 s_tag * tag_init_s8 (s_tag *tag, s8 i);
 s_tag * tag_init_s16 (s_tag *tag, s16 i);
 s_tag * tag_init_s32 (s_tag *tag, s32 i);
@@ -29,6 +30,7 @@ s_tag * tag_init_u8 (s_tag *tag, u8 i);
 s_tag * tag_init_u16 (s_tag *tag, u16 i);
 s_tag * tag_init_u32 (s_tag *tag, u32 i);
 s_tag * tag_init_u64 (s_tag *tag, u64 i);
+s_tag * tag_init_void (s_tag *tag);
 void    tag_clean (s_tag *tag);
 
 /* Constructors, call tag_delete after use */
@@ -58,5 +60,6 @@ sw tag_type_size (e_tag_type type);
 s_str * tag_inspect (const s_tag *x);
 
 /* Modifiers */
+s_tag * tag_copy (const s_tag *src, s_tag *dest);
 
 #endif /* STR_H */

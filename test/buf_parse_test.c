@@ -5,115 +5,146 @@
 #include <string.h>
 #include "../libc3/buf.h"
 #include "../libc3/buf_parse.h"
+#include "../libc3/list.h"
 #include "../libc3/str.h"
 #include "../libc3/integer.h"
+#include "../libc3/tuple.h"
 #include "test.h"
 
-#define BUF_PARSE_TEST_BOOL(test, result)                              \
+#define BUF_PARSE_TEST_BOOL(test, expected)                            \
   do {                                                                 \
     s_buf buf;                                                         \
     bool dest = -1;                                                    \
-    test_context("buf_parse_bool(" # test ") -> " # result);           \
+    test_context("buf_parse_bool(" # test ") -> " # expected);         \
     buf_init_1(&buf, (test));                                          \
-    if ((result) != -1) {                                              \
-      TEST_EQ(buf_parse_bool(&buf, &dest), strlen(test));              \
-      TEST_EQ(buf.rpos, strlen(test));                                 \
-    }                                                                  \
-    else {                                                             \
-      TEST_EQ(buf_parse_bool(&buf, &dest), 0);                         \
-      TEST_EQ(buf.rpos, 0);                                            \
-    }                                                                  \
-    TEST_EQ(dest, (result));                                           \
+    TEST_EQ(buf_parse_bool(&buf, &dest), strlen(test));                \
+    TEST_EQ(buf.rpos, strlen(test));                                   \
+    TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_CHARACTER(test, result)                         \
+#define BUF_PARSE_TEST_CHARACTER(test, expected)                       \
   do {                                                                 \
     s_buf buf;                                                         \
     character dest = -1;                                               \
-    test_context("buf_parse_character(" # test ") -> " # result);      \
+    test_context("buf_parse_character(" # test ") -> " # expected);    \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_character(&buf, &dest), strlen(test));           \
     TEST_EQ(buf.wpos, strlen(test));                                   \
-    TEST_EQ(dest, (result));                                           \
+    TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_DIGIT_BIN(test, result)                         \
+#define BUF_PARSE_TEST_DIGIT_BIN(test, expected)                       \
   do {                                                                 \
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
-    test_context("buf_parse_digit_bin(" # test ") -> " # result);      \
+    test_context("buf_parse_digit_bin(" # test ") -> " # expected);    \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_digit_bin(&buf, &dest), 1);                      \
     TEST_EQ(buf.rpos, 1);                                              \
-    TEST_EQ(dest, (result));                                           \
+    TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_DIGIT_DEC(test, result)                         \
+#define BUF_PARSE_TEST_DIGIT_DEC(test, expected)                       \
   do {                                                                 \
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
-    test_context("buf_parse_digit_dec(" # test ") -> " # result);      \
+    test_context("buf_parse_digit_dec(" # test ") -> " # expected);    \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_digit_dec(&buf, &dest), 1);                      \
     TEST_EQ(buf.rpos, 1);                                              \
-    TEST_EQ(dest, (result));                                           \
+    TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_DIGIT_HEX(test, result)                         \
+#define BUF_PARSE_TEST_DIGIT_HEX(test, expected)                       \
   do {                                                                 \
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
-    test_context("buf_parse_digit_hex(" # test ") -> " # result);      \
+    test_context("buf_parse_digit_hex(" # test ") -> " # expected);    \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_digit_hex(&buf, &dest), 1);                      \
     TEST_EQ(buf.rpos, 1);                                              \
-    TEST_EQ(dest, (result));                                           \
+    TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_DIGIT_OCT(test, result)                         \
+#define BUF_PARSE_TEST_DIGIT_OCT(test, expected)                       \
   do {                                                                 \
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
-    test_context("buf_parse_digit_oct(" # test ") -> " # result);      \
+    test_context("buf_parse_digit_oct(" # test ") -> " # expected);    \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_digit_oct(&buf, &dest), 1);                      \
     TEST_EQ(buf.rpos, 1);                                              \
-    TEST_EQ(dest, (result));                                           \
+    TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_IDENT(test, result)                             \
+#define BUF_PARSE_TEST_F32(test, expected)                             \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    f32 f32_tmp;                                                       \
+    test_context("buf_parse_f32(" # test ") -> " # expected);          \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_f32(&buf, &f32_tmp), strlen(test));              \
+    TEST_EQ(f32_tmp, (expected));                                      \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
+#define BUF_PARSE_TEST_IDENT(test, expected)                           \
   do {                                                                 \
     s_buf buf;                                                         \
     s_ident dest = {0};                                                \
-    test_context("buf_parse_ident(" # test ") -> " # result);          \
+    test_context("buf_parse_ident(" # test ") -> " # expected);        \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_ident(&buf, &dest), strlen(test));               \
     if (g_test_last_ok)                                                \
-      TEST_EQ(dest.sym->str.size, strlen(result));                     \
+      TEST_EQ(dest.sym->str.size, strlen(expected));                   \
     if (g_test_last_ok)                                                \
-      TEST_STRNCMP(dest.sym->str.ptr.p, (result), dest.sym->str.size); \
+      TEST_STRNCMP(dest.sym->str.ptr.p, (expected),                    \
+                   dest.sym->str.size);                                \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_INTEGER_BIN(test, expected)                       \
-  do {                                                                   \
-    s_buf buf;                                                           \
-    s_integer s_tmp;                                                     \
-    u64 u64_tmp;                                                         \
-    test_context("buf_parse_integer_bin(" # test ") -> " # expected);    \
-    buf_init_1(&buf, (test));                                            \
-    integer_init(&s_tmp);                                                \
-    TEST_EQ(buf_parse_integer_bin(&buf, &s_tmp), strlen(test));          \
-    u64_tmp = mp_get_u64(&s_tmp.mp_int);                                 \
-    TEST_EQ(u64_tmp, (expected));                                        \
-    buf_clean(&buf);                                                     \
-    mp_clear(&s_tmp.mp_int);                                             \
+#define BUF_PARSE_TEST_LIST(test)                                      \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_list *dest = NULL;                                               \
+    test_context("buf_parse_list(" # test ")");                        \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_list(&buf, &dest), strlen(test));                \
+    buf_clean(&buf);                                                   \
+    list_delete(dest);                                                 \
+  } while (0)
+
+#define BUF_PARSE_TEST_NOT_BOOL(test)                                  \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    bool dest = -1;                                                    \
+    test_context("buf_parse_bool(" # test ") -> 0");                   \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_bool(&buf, &dest), 0);                           \
+    TEST_EQ(buf.rpos, 0);                                              \
+    TEST_EQ(dest, -1);                                                 \
+    buf_clean(&buf);                                                   \
+  } while (0)
+
+#define BUF_PARSE_TEST_INTEGER_BIN(test, expected)                     \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_integer s_tmp;                                                   \
+    u64 u64_tmp;                                                       \
+    test_context("buf_parse_integer_bin(" # test ") -> " # expected);  \
+    buf_init_1(&buf, (test));                                          \
+    integer_init(&s_tmp);                                              \
+    TEST_EQ(buf_parse_integer_bin(&buf, &s_tmp), strlen(test));        \
+    u64_tmp = mp_get_u64(&s_tmp.mp_int);                               \
+    TEST_EQ(u64_tmp, (expected));                                      \
+    buf_clean(&buf);                                                   \
+    mp_clear(&s_tmp.mp_int);                                           \
   } while (0)
 
 #define BUF_PARSE_TEST_INTEGER_DEC(test, expected)                     \
@@ -131,36 +162,36 @@ do {                                                                   \
   mp_clear(&s_tmp.mp_int);                                             \
 } while (0)
 
-#define BUF_PARSE_TEST_INTEGER_HEX(test, expected)                    \
-  do {                                                                \
-    s_buf buf;                                                        \
-    s_integer s_tmp;                                                  \
-    u64 u64_tmp;                                                      \
-    test_context("buf_parse_integer_hex(" # test ") -> " # expected); \
-    buf_init_1(&buf, (test));                                         \
-    integer_init(&s_tmp);                                             \
-    TEST_EQ(buf_parse_integer_hex(&buf, &s_tmp), strlen(test));       \
-    u64_tmp = mp_get_u64(&s_tmp.mp_int);                              \
-    TEST_EQ(buf.wpos, strlen(test));                                  \
-    TEST_EQ(u64_tmp, (expected));                                     \
-    buf_clean(&buf);                                                  \
-    mp_clear(&s_tmp.mp_int);                                          \
+#define BUF_PARSE_TEST_INTEGER_HEX(test, expected)                     \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_integer s_tmp;                                                   \
+    u64 u64_tmp;                                                       \
+    test_context("buf_parse_integer_hex(" # test ") -> " # expected);  \
+    buf_init_1(&buf, (test));                                          \
+    integer_init(&s_tmp);                                              \
+    TEST_EQ(buf_parse_integer_hex(&buf, &s_tmp), strlen(test));        \
+    u64_tmp = mp_get_u64(&s_tmp.mp_int);                               \
+    TEST_EQ(buf.wpos, strlen(test));                                   \
+    TEST_EQ(u64_tmp, (expected));                                      \
+    buf_clean(&buf);                                                   \
+    mp_clear(&s_tmp.mp_int);                                           \
   } while (0)
 
-#define BUF_PARSE_TEST_INTEGER_OCT(test, expected)                    \
-  do {                                                                \
-    s_buf buf;                                                        \
-    s_integer s_tmp;                                                  \
-    u64 u64_tmp;                                                      \
-    test_context("buf_parse_integer_oct(" # test ") -> " # expected); \
-    buf_init_1(&buf, (test));                                         \
-    integer_init(&s_tmp);                                             \
-    TEST_EQ(buf_parse_integer_oct(&buf, &s_tmp), strlen(test));       \
-    u64_tmp = mp_get_u64(&s_tmp.mp_int);                              \
-    TEST_EQ(buf.wpos, strlen(test));                                  \
-    TEST_EQ(u64_tmp, (expected));                                     \
-    buf_clean(&buf);                                                  \
-    mp_clear(&s_tmp.mp_int);                                          \
+#define BUF_PARSE_TEST_INTEGER_OCT(test, expected)                     \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_integer s_tmp;                                                   \
+    u64 u64_tmp;                                                       \
+    test_context("buf_parse_integer_oct(" # test ") -> " # expected);  \
+    buf_init_1(&buf, (test));                                          \
+    integer_init(&s_tmp);                                              \
+    TEST_EQ(buf_parse_integer_oct(&buf, &s_tmp), strlen(test));        \
+    u64_tmp = mp_get_u64(&s_tmp.mp_int);                               \
+    TEST_EQ(buf.wpos, strlen(test));                                   \
+    TEST_EQ(u64_tmp, (expected));                                      \
+    buf_clean(&buf);                                                   \
+    mp_clear(&s_tmp.mp_int);                                           \
   } while (0)
 
 #define BUF_PARSE_TEST_NOT_CHARACTER(test)                             \
@@ -234,33 +265,20 @@ do {                                                                   \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_NOT_INTEGER_HEX(test)                \
-  do {                                                      \
-    s_buf buf;                                              \
-    s_integer s_tmp;                                        \
-    test_context("buf_parse_integer_hex(" # test ") -> 0"); \
-    buf_init_1(&buf, (test));                               \
-    integer_init(&s_tmp);                                   \
-    TEST_EQ(buf_parse_integer_hex(&buf, &s_tmp), 0);        \
-    TEST_EQ(buf.rpos, 0);                                   \
-    buf_clean(&buf);                                        \
-    mp_clear(&s_tmp.mp_int);                                \
-  } while (0)
-
-#define BUF_PARSE_TEST_NOT_INTEGER_BIN(test, expected)                   \
-  do {                                                                   \
-    s_buf buf;                                                           \
-    s_integer s_tmp;                                                     \
-    u64 u64_tmp;                                                         \
-    test_context("buf_parse_integer_bin (" # test ") -> " # expected);   \
-    buf_init_1(&buf, (test));                                            \
-    integer_init(&s_tmp);                                                \
-    TEST_EQ(buf_parse_integer_bin(&buf, &s_tmp), 0);                     \
-    u64_tmp = mp_get_u64(&s_tmp.mp_int);                                 \
-    TEST_EQ(buf.rpos, 0);                                                \
-    TEST_EQ(u64_tmp, (expected));                                        \
-    buf_clean(&buf);                                                     \
-    mp_clear(&s_tmp.mp_int);                                             \
+#define BUF_PARSE_TEST_NOT_INTEGER_BIN(test, expected)                 \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_integer s_tmp;                                                   \
+    u64 u64_tmp;                                                       \
+    test_context("buf_parse_integer_bin (" # test ") -> " # expected); \
+    buf_init_1(&buf, (test));                                          \
+    integer_init(&s_tmp);                                              \
+    TEST_EQ(buf_parse_integer_bin(&buf, &s_tmp), 0);                   \
+    u64_tmp = mp_get_u64(&s_tmp.mp_int);                               \
+    TEST_EQ(buf.rpos, 0);                                              \
+    TEST_EQ(u64_tmp, (expected));                                      \
+    buf_clean(&buf);                                                   \
+    mp_clear(&s_tmp.mp_int);                                           \
 } while (0)
 
 #define BUF_PARSE_TEST_NOT_INTEGER_DEC(test, expected)                 \
@@ -279,20 +297,33 @@ do {                                                                   \
   mp_clear(&s_tmp.mp_int);                                             \
 } while (0)
 
-#define BUF_PARSE_TEST_NOT_INTEGER_OCT(test, expected) \
-  do {                                                 \
-    s_buf buf;                                         \
-    s_integer s_tmp;                                   \
-    u64 u64_tmp;                                       \
-    test_context("buf_parse_integer_oct(" # test ") -> " # expected); \
-    buf_init_1(&buf, (test));                          \
-    integer_init(&s_tmp);                              \
-    TEST_EQ(buf_parse_integer_oct(&buf, &s_tmp), 0);   \
-    u64_tmp = mp_get_u64(&s_tmp.mp_int);               \
-    TEST_EQ(buf.rpos, 0);                              \
-    TEST_EQ(u64_tmp, (expected));                      \
-    buf_clean(&buf);                                   \
-    mp_clear(&s_tmp.mp_int);                           \
+#define BUF_PARSE_TEST_NOT_INTEGER_HEX(test)                           \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_integer s_tmp;                                                   \
+    test_context("buf_parse_integer_hex(" # test ") -> 0");            \
+    buf_init_1(&buf, (test));                                          \
+    integer_init(&s_tmp);                                              \
+    TEST_EQ(buf_parse_integer_hex(&buf, &s_tmp), 0);                   \
+    TEST_EQ(buf.rpos, 0);                                              \
+    buf_clean(&buf);                                                   \
+    mp_clear(&s_tmp.mp_int);                                           \
+  } while (0)
+
+#define BUF_PARSE_TEST_NOT_INTEGER_OCT(test, expected)                 \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_integer s_tmp;                                                   \
+    u64 u64_tmp;                                                       \
+    test_context("buf_parse_integer_oct(" # test ") -> " # expected);  \
+    buf_init_1(&buf, (test));                                          \
+    integer_init(&s_tmp);                                              \
+    TEST_EQ(buf_parse_integer_oct(&buf, &s_tmp), 0);                   \
+    u64_tmp = mp_get_u64(&s_tmp.mp_int);                               \
+    TEST_EQ(buf.rpos, 0);                                              \
+    TEST_EQ(u64_tmp, (expected));                                      \
+    buf_clean(&buf);                                                   \
+    mp_clear(&s_tmp.mp_int);                                           \
   } while (0)
 
 #define BUF_PARSE_TEST_NOT_STR(test)                                   \
@@ -329,85 +360,85 @@ do {                                                                   \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_STR(test, result)                               \
+#define BUF_PARSE_TEST_STR(test, expected)                             \
   do {                                                                 \
     s_buf buf;                                                         \
     s_str dest = {0};                                                  \
-    test_context("buf_parse_str(" # test ") -> " # result);            \
+    test_context("buf_parse_str(" # test ") -> " # expected);          \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_str(&buf, &dest), strlen(test));                 \
     if (g_test_last_ok)                                                \
-      TEST_EQ(dest.size, strlen(result));                              \
+      TEST_EQ(dest.size, strlen(expected));                            \
     if (g_test_last_ok)                                                \
-      TEST_STRNCMP(dest.ptr.p, (result), dest.size);                   \
+      TEST_STRNCMP(dest.ptr.p, (expected), dest.size);                 \
     buf_clean(&buf);                                                   \
     str_clean(&dest);                                                  \
   } while (0)
 
-#define BUF_PARSE_TEST_STR_CHARACTER(test, result)                     \
+#define BUF_PARSE_TEST_STR_CHARACTER(test, expected)                   \
   do {                                                                 \
     s_buf buf;                                                         \
     character dest = -1;                                               \
-    test_context("buf_parse_str_character(" # test ") -> " # result);  \
+    test_context("buf_parse_str_character(" # test ") -> " # expected);\
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_str_character(&buf, &dest), strlen(test));       \
     TEST_EQ(buf.rpos, strlen(test));                                   \
-    TEST_EQ(dest, (result));                                           \
+    TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_STR_N(test, n, result)                          \
+#define BUF_PARSE_TEST_STR_N(test, n, expected)                        \
   do {                                                                 \
     s_buf buf;                                                         \
     s_str dest;                                                        \
-    test_context("buf_parse_str(" # test ") -> " # result);            \
+    test_context("buf_parse_str(" # test ") -> " # expected);          \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_str(&buf, &dest), strlen(test));                 \
     if (g_test_last_ok)                                                \
       TEST_EQ(dest.size, n);                                           \
     if (g_test_last_ok)                                                \
-      TEST_EQ(memcmp(dest.ptr.p, result, n), 0);                       \
+      TEST_EQ(memcmp(dest.ptr.p, expected, n), 0);                     \
     buf_clean(&buf);                                                   \
     str_clean(&dest);						       \
   } while (0)
 
-#define BUF_PARSE_TEST_STR_U8(test, size, result)                      \
+#define BUF_PARSE_TEST_STR_U8(test, size, expected)                    \
   do {                                                                 \
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
-    test_context("buf_parse_str_u8(" # test ") -> " # result);         \
+    test_context("buf_parse_str_u8(" # test ") -> " # expected);       \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_str_u8(&buf, &dest), (size));                    \
     TEST_EQ(buf.rpos, (size));                                         \
-    TEST_EQ(dest, (result));                                           \
+    TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_SYM(test, result)                               \
+#define BUF_PARSE_TEST_SYM(test, expected)                             \
   do {                                                                 \
     s_buf buf;                                                         \
     const s_sym *dest = NULL;                                          \
-    test_context("buf_parse_sym(" # test ") -> " # result);            \
+    test_context("buf_parse_sym(" # test ") -> " # expected);          \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_sym(&buf, &dest), strlen(test));                 \
     if (g_test_last_ok)                                                \
       TEST_ASSERT(dest);                                               \
     if (g_test_last_ok)                                                \
-      TEST_EQ(dest->str.size, strlen(result));                         \
+      TEST_EQ(dest->str.size, strlen(expected));                       \
     if (g_test_last_ok)                                                \
-      TEST_STRNCMP(dest->str.ptr.p, (result), dest->str.size);         \
+      TEST_STRNCMP(dest->str.ptr.p, (expected), dest->str.size);       \
     buf_clean(&buf);                                                   \
   } while (0)
 
-#define BUF_PARSE_TEST_F32(test, expected)                             \
+#define BUF_PARSE_TEST_TUPLE(test)                                     \
   do {                                                                 \
     s_buf buf;                                                         \
-    f32 f32_tmp;                                                       \
-    test_context("buf_parse_f32(" # test ") -> " # expected);          \
+    s_tuple dest = {0};						       \
+    test_context("buf_parse_tuple(" # test ")");                       \
     buf_init_1(&buf, (test));                                          \
-    TEST_EQ(buf_parse_f32(&buf, &f32_tmp), strlen(test));              \
-    TEST_EQ(f32_tmp, (expected));                                      \
+    TEST_EQ(buf_parse_tuple(&buf, &dest), strlen(test));               \
     buf_clean(&buf);                                                   \
+    tuple_clean(&dest);                                                \
   } while (0)
 
 void buf_parse_test_bool ();
@@ -416,17 +447,18 @@ void buf_parse_test_digit_bin ();
 void buf_parse_test_digit_hex ();
 void buf_parse_test_digit_oct ();
 void buf_parse_test_digit_dec ();
+void buf_parse_test_f32();
 void buf_parse_test_integer_dec();
 void buf_parse_test_integer_hex();
 void buf_parse_test_integer_oct();
 void buf_parse_test_integer_bin();
 void buf_parse_test_ident ();
+void buf_parse_test_list ();
 void buf_parse_test_str ();
 void buf_parse_test_str_character ();
 void buf_parse_test_str_u8 ();
 void buf_parse_test_sym ();
-void buf_parse_test_f32();
-
+void buf_parse_test_tuple ();
 
 void buf_parse_test ()
 {
@@ -438,6 +470,7 @@ void buf_parse_test ()
   buf_parse_test_str_character();
   buf_parse_test_str_u8();
   buf_parse_test_character();
+  buf_parse_test_f32();
   buf_parse_test_integer_bin();
   buf_parse_test_integer_dec();
   buf_parse_test_integer_hex();
@@ -445,22 +478,25 @@ void buf_parse_test ()
   buf_parse_test_str();
   buf_parse_test_sym();
   buf_parse_test_ident();
-  buf_parse_test_f32();
+  buf_parse_test_list();
+  buf_parse_test_tuple();
 }
 
 void buf_parse_test_bool ()
 {
-  BUF_PARSE_TEST_BOOL("0", -1);
-  BUF_PARSE_TEST_BOOL("1", -1);
-  BUF_PARSE_TEST_BOOL("a", -1);
-  BUF_PARSE_TEST_BOOL("T", -1);
-  BUF_PARSE_TEST_BOOL("NIL", -1);
-  BUF_PARSE_TEST_BOOL("N", -1);
-  BUF_PARSE_TEST_BOOL("Y", -1);
-  BUF_PARSE_TEST_BOOL("t", -1);
-  BUF_PARSE_TEST_BOOL("nil", -1);
-  BUF_PARSE_TEST_BOOL("n", -1);
-  BUF_PARSE_TEST_BOOL("y", -1);
+  BUF_PARSE_TEST_NOT_BOOL("0");
+  BUF_PARSE_TEST_NOT_BOOL("1");
+  BUF_PARSE_TEST_NOT_BOOL("a");
+  BUF_PARSE_TEST_NOT_BOOL("T");
+  BUF_PARSE_TEST_NOT_BOOL("NIL");
+  BUF_PARSE_TEST_NOT_BOOL("N");
+  BUF_PARSE_TEST_NOT_BOOL("Y");
+  BUF_PARSE_TEST_NOT_BOOL("t");
+  BUF_PARSE_TEST_NOT_BOOL("nil");
+  BUF_PARSE_TEST_NOT_BOOL("n");
+  BUF_PARSE_TEST_NOT_BOOL("y");
+  BUF_PARSE_TEST_NOT_BOOL("falser");
+  BUF_PARSE_TEST_NOT_BOOL("truer");
   BUF_PARSE_TEST_BOOL("false", 0);
   BUF_PARSE_TEST_BOOL("true", 1);
 }
@@ -611,6 +647,13 @@ void buf_parse_test_digit_dec ()
   BUF_PARSE_TEST_DIGIT_DEC("9", 9);
 }
 
+void buf_parse_test_f32()
+{
+  BUF_PARSE_TEST_F32("123.123", 123.123);
+  BUF_PARSE_TEST_F32("3.14159", 3.14159);
+  BUF_PARSE_TEST_F32("2.1e+2", 209.99998);
+}
+
 void buf_parse_test_ident ()
 {
   BUF_PARSE_TEST_NOT_IDENT("0");
@@ -708,6 +751,18 @@ void buf_parse_test_integer_oct()
   BUF_PARSE_TEST_INTEGER_OCT("777", 511);
   BUF_PARSE_TEST_NOT_INTEGER_OCT("A", 0);
   BUF_PARSE_TEST_NOT_INTEGER_OCT("STR", 0);
+}
+
+void buf_parse_test_list ()
+{
+  BUF_PARSE_TEST_LIST("[]");
+  BUF_PARSE_TEST_LIST("[[], []]");
+  BUF_PARSE_TEST_LIST("[[] | []]");
+  BUF_PARSE_TEST_LIST("[[], [], []]");
+  BUF_PARSE_TEST_LIST("[[], [] | []]");
+  BUF_PARSE_TEST_LIST("[a | b]");
+  BUF_PARSE_TEST_LIST("[a, b | c]");
+  BUF_PARSE_TEST_LIST("[a, b, c | d]");
 }
 
 void buf_parse_test_str ()
@@ -849,9 +904,13 @@ void buf_parse_test_sym ()
   BUF_PARSE_TEST_SYM(":az09AZ", "az09AZ");
 }
 
-void buf_parse_test_f32()
+void buf_parse_test_tuple ()
 {
-  BUF_PARSE_TEST_F32("123.123", 123.123);
-  BUF_PARSE_TEST_F32("3.14159", 3.14159);
-  BUF_PARSE_TEST_F32("2.1e+2", 209.99998);
+  BUF_PARSE_TEST_TUPLE("{a, b}");
+  BUF_PARSE_TEST_TUPLE("{a, b, c}");
+  BUF_PARSE_TEST_TUPLE("{a, b, c, d}");
+  BUF_PARSE_TEST_TUPLE("{a, b, c, d}");
+  BUF_PARSE_TEST_TUPLE("{a, {b, c}}");
+  BUF_PARSE_TEST_TUPLE("{{a, b}, c}");
+  BUF_PARSE_TEST_TUPLE("{{a, b}, {c, d}}");
 }

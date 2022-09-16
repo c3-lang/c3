@@ -32,7 +32,7 @@ const s_sym * sym_find (const s_str *src);
 
 e_bool sym_has_reserved_characters (const s_sym *sym);
 
-s_str * sym_inspect (const s_sym *sym);
+s_str * sym_inspect (const s_sym *sym, s_str *dest);
 
 /** @brief True iff sym is a module name (starts with a capital). */
 e_bool sym_is_module (const s_sym *sym);
