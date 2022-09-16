@@ -5,9 +5,22 @@
 #include <stdlib.h>
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_parse.h"
 #include "list.h"
 #include "tag.h"
 #include "tuple.h"
+
+s_list * list_1 (const char *p)
+{
+  s_buf buf;
+  s_list *list;
+  buf_init_1(&buf, p);
+  if (buf_parse_list(&buf, &list) <= 0) {
+    assert(! "invalid list");
+    return NULL;
+  }
+  return list;
+}
 
 void list_clean (s_list *list)
 {
@@ -46,7 +59,7 @@ s_list * list_init (s_list *list)
   return list;
 }
 
-s_str * list_inspect (const s_list *x)
+s_str * list_inspect (const s_list *x, s_str *dest)
 {
   s_buf buf;
   sw r;
@@ -58,7 +71,7 @@ s_str * list_inspect (const s_list *x)
   assert(r == size);
   if (r != size)
     goto error;
-  return buf_to_str_new(&buf);
+  return buf_to_str(&buf, dest);
  error:
   buf_clean(&buf);
   return NULL;

@@ -14,11 +14,12 @@
 #include <stdio.h>
 #include "types.h"
 
-/* Stack allocation compatible functions */
+/* Stack allocation compatible functions, do not use */
 s_list * list_init (s_list *list);
 void     list_clean (s_list *list);
 
 /* Constructors, call list_delete after use */
+s_list * list_1 (const s8 *p);
 s_list * list_new ();
 
 /* Destructor */
@@ -30,6 +31,6 @@ sw        list_length (const s_list *list);
 s_list *  list_next (const s_list *list);
 s_tuple * list_to_tuple_reverse (s_list *list, s_tuple *tuple);
 /* Call str_delete after use. */
-s_str *   list_inspect (const s_list *x);
+s_str *   list_inspect (const s_list *x, s_str *dest);
 
 #endif /* STR_H */
