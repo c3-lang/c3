@@ -34,6 +34,22 @@ int main (int argc, char **argv)
     printf("\ncharacter\n");
     character_test();
   }
+  if (test_target("buf")) {
+    printf("\nbuf\n");
+    buf_test();
+  }
+  if (test_target("buf_inspect")) {
+    printf("\nbuf_inspect\n");
+    buf_inspect_test();
+  }
+  if (test_target("buf_parse")) {
+    printf("\nbuf_parse\n");
+    buf_parse_test();
+  }
+  if (test_target("buf_file")) {
+    printf("\nbuf_file\n");
+    buf_file_test();
+  }
   if (test_target("str")) {
     printf("\nstr\n");
     str_test();
@@ -57,22 +73,6 @@ int main (int argc, char **argv)
   if (test_target("tuple")) {
     printf("\ntuple\n");
     tuple_test();
-  }
-  if (test_target("buf")) {
-    printf("\nbuf\n");
-    buf_test();
-  }
-  if (test_target("buf_inspect")) {
-    printf("\nbuf_inspect\n");
-    buf_inspect_test();
-  }
-  if (test_target("buf_parse")) {
-    printf("\nbuf_parse\n");
-    buf_parse_test();
-  }
-  if (test_target("buf_file")) {
-    printf("\nbuf_file\n");
-    buf_file_test();
   }
   test_summary();
   test_shutdown();

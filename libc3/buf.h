@@ -101,7 +101,7 @@ sw      buf_write_u16 (s_buf *buf, u16 i);
 sw      buf_write_u32 (s_buf *buf, u32 i);
 sw      buf_write_u64 (s_buf *buf, u64 i);
 sw      buf_xfer (s_buf *buf, s_buf *src, uw size);
-sw      buf_xfer_reverse(s_buf *src, s_buf *dst);
+sw      buf_xfer_reverse(s_buf *src, s_buf *dest);
 
 /* Observers. */
 s_str * buf_to_str (const s_buf *buf, s_str *dest);

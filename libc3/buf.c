@@ -861,18 +861,25 @@ sw buf_write_u64 (s_buf *buf, u64 v)
   return size;
 }
 
-sw buf_xfer (s_buf *src, s_buf *dest, uw size)
+sw buf_xfer (s_buf *dest, s_buf *src, uw size)
 {
+  sw r = 0;
   assert(dest);
   assert(src);
   if (size == 0)
     return 0;
   assert(src->rpos <= src->wpos);
+  assert(dest->rpos <= dest->wpos);
   if (src->rpos + size > src->wpos &&
-      buf_refill(src, size) < (sw) size)
-    return -1;
+      (r = buf_refill(src, size)) < (sw) size) {
+    if (r < 0)
+      return r;
+    return 0;
+  }
   if (dest->wpos + size > dest->size &&
-      buf_flush(dest) < (sw) size) {
+      (r = buf_flush(dest)) < (sw) size) {
+    if (r < 0)
+      return r;
     return -1;
   }
   memcpy(dest->ptr.ps8 + dest->wpos, src->ptr.ps8 + src->rpos, size);
