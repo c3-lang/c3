@@ -610,15 +610,17 @@ sw buf_refill_compact (s_buf *buf)
   return 0;
 }
 
-sw buf_reverse_u8(s_buf *buf)
+sw buf_reverse_u8 (s_buf *buf)
 {
   sw i;
+  uw j;
   u8 tmp;
-  sw size = buf->wpos;
-  for(i = 0; i < size/2; i++) {
-    tmp = buf->ptr.pu8[i];
-    buf->ptr.pu8[i] = buf->ptr.pu8[size-i-1];
-    buf->ptr.pu8[size-i-1] = tmp;
+  sw size = buf->wpos - buf->rpos;
+  for (i = 0; i < size / 2; i++) {
+    j = size - 1 - i;
+    tmp = buf->ptr.pu8[buf->rpos + i];
+    buf->ptr.pu8[buf->rpos + i] = buf->ptr.pu8[buf->rpos + j];
+    buf->ptr.pu8[buf->rpos + j] = tmp;
   }
   return size;
 }
@@ -859,35 +861,38 @@ sw buf_write_u64 (s_buf *buf, u64 v)
   return size;
 }
 
-sw buf_xfer (s_buf *buf, s_buf *src, uw size)
+sw buf_xfer (s_buf *src, s_buf *dest, uw size)
 {
-  assert(buf);
+  assert(dest);
   assert(src);
   if (size == 0)
     return 0;
   assert(src->rpos <= src->wpos);
-  if (src->rpos + size > src->wpos)
-    return 0;
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
+  if (src->rpos + size > src->wpos &&
+      buf_refill(src, size) < (sw) size)
+    return -1;
+  if (dest->wpos + size > dest->size &&
+      buf_flush(dest) < (sw) size) {
     return -1;
   }
-  memcpy(buf->ptr.ps8 + buf->wpos, src->ptr.ps8 + src->rpos, size);
+  memcpy(dest->ptr.ps8 + dest->wpos, src->ptr.ps8 + src->rpos, size);
   src->rpos += size;
-  buf->wpos += size;
+  dest->wpos += size;
   return size;
 }
 
-sw buf_xfer_reverse(s_buf *src, s_buf *dst)
+sw buf_xfer_reverse (s_buf *src, s_buf *dest)
 {
+  sw size;
   assert(src);
-  assert(dst);
-  if (src->wpos - src->rpos > dst->size - dst->wpos)
+  assert(dest);
+  size = src->wpos - src->rpos;
+  if (dest->wpos + size > dest->size &&
+      buf_flush(dest) < size)
     return -1;
-  sw size = src->wpos - src->rpos;
   for (sw i = 0; i < size; i++)
-    dst->ptr.ps8[i] = src->ptr.ps8[src->wpos - i - 1];
-  dst->wpos += size;
+    dest->ptr.ps8[dest->wpos + i] = src->ptr.ps8[src->wpos - 1 - i];
   src->rpos += size;
+  dest->wpos += size;
   return size;
 }
