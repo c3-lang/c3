@@ -8,12 +8,19 @@
 #include "../libc3/str.h"
 #include "test.h"
 
+#define LIST_TEST_1(test)                                              \
+  do {                                                                 \
+    s_list *list_test;                                                 \
+    test_context("list_1(" # test ")");                                \
+    TEST_ASSERT((list_test = list_1(test)));                           \
+    list_delete(list_test);                                            \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define LIST_TEST_INSPECT(test, expected)                              \
   do {                                                                 \
     s_list *list_test;                                                 \
     s_str str_result;                                                  \
-    assert(test);                                                      \
-    assert(expected);                                                  \
     test_context("list_inspect(" # test ") -> " # expected);           \
     list_test = list_1(test);                                          \
     TEST_EQ(list_inspect(list_test, &str_result), &str_result);        \
@@ -22,6 +29,14 @@
     list_delete(list_test);                                            \
     test_context(NULL);                                                \
   } while (0)
+
+void list_test_1 ()
+{
+  TEST_ASSERT(! list_1("[]"));
+  LIST_TEST_1("[[] | []]");
+  LIST_TEST_1("[[], [] | []]");
+  LIST_TEST_1("[[], [], [] | []]");
+}
 
 void list_test_inspect ()
 {
@@ -32,5 +47,6 @@ void list_test_inspect ()
 
 void list_test ()
 {
+  list_test_1();
   list_test_inspect();
 }
