@@ -670,6 +670,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
     if (r > 0) {
       sw i;
       s_list *j;
+      sw k;
       result += r;
       i = list_length(list);
       if (i < 2) {
@@ -678,10 +679,12 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
       }
       tuple_init(tuple, i);
       j = list;
+      k = 0;
       while (i--) {
-	tuple->tag[i] = j->tag;
+	tuple->tag[k] = j->tag;
 	tag_init_void(&j->tag);
 	j = list_next(j);
+        k++;
       }
       r = result;
       goto clean;

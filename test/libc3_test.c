@@ -15,6 +15,7 @@ void list_test ();
 void sha1_test ();
 void str_test ();
 void sym_test ();
+void tuple_test ();
 void types_test ();
 
 int main (int argc, char **argv)
@@ -52,6 +53,10 @@ int main (int argc, char **argv)
   if (test_target("list")) {
     printf("\nlist\n");
     list_test();
+  }
+  if (test_target("tuple")) {
+    printf("\ntuple\n");
+    tuple_test();
   }
   if (test_target("buf")) {
     printf("\nbuf\n");

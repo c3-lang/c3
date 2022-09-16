@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_parse.h"
 #include "tuple.h"
 #include "tag.h"
 
@@ -39,7 +40,22 @@ s_tuple * tuple_init (s_tuple *tuple, uw count)
   return tuple;
 }
 
-s_str * tuple_inspect (const s_tuple *x)
+s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p)
+{
+  s_buf buf;
+  assert(tuple);
+  assert(p);
+  buf_init_1(&buf, p);
+  if (buf_parse_tuple(&buf, tuple) <= 0) {
+    assert(! "invalid tuple");
+    buf_clean(&buf);
+    return NULL;
+  }
+  buf_clean(&buf);
+  return tuple;
+}
+
+s_str * tuple_inspect (const s_tuple *x, s_str *dest)
 {
   s_buf buf;
   sw r;
@@ -51,7 +67,7 @@ s_str * tuple_inspect (const s_tuple *x)
   assert(r == size);
   if (r != size)
     goto error;
-  return buf_to_str_new(&buf);
+  return buf_to_str(&buf, dest);
  error:
   buf_clean(&buf);
   return NULL;
