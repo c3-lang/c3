@@ -846,3 +846,16 @@ sw buf_xfer (s_buf *buf, s_buf *src, uw size)
   return size;
 }
 
+sw buf_xfer_reverse(s_buf *src, s_buf *dst)
+{
+  assert(src);
+  assert(dst);
+  if (src->wpos - src->rpos > dst->size - dst->wpos)
+    return -1;
+  sw size = src->wpos - src->rpos;
+  for (sw i = 0; i < size; i++)
+    dst->ptr.ps8[i] = src->ptr.ps8[src->wpos - i - 1];
+  dst->wpos += size;
+  src->rpos += size;
+  return size;
+}

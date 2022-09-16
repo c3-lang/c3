@@ -100,6 +100,7 @@ sw buf_inspect_character_size (character x)
 
 sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 {
+  s_buf buf_tmp;
   mp_digit d;
   mp_err  error;
   sw result = 0;
@@ -116,9 +117,9 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
     buf_write_u8(buf, '0');
     return 1;
   }
-  if ((error = mp_init_copy(&t, &x->mp_int)) != MP_OKAY) {
+  buf_init_alloc(&buf_tmp, maxlen);
+  if ((error = mp_init_copy(&t, &x->mp_int)) != MP_OKAY)
     return error;
-  }
   if (t.sign == MP_NEG) {
     t.sign = MP_ZPOS;
     --maxlen;
@@ -128,24 +129,24 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
       error = MP_BUF;
       goto LBL_ERR;
     }
-    if ((error = mp_div_d(&t, (mp_digit)radix, &t, &d)) != MP_OKAY) {
+    if ((error = mp_div_d(&t, (mp_digit)radix, &t, &d)) != MP_OKAY)
       goto LBL_ERR;
-    }
     p = (u8)(d  + '0');
-    if (p > '9' ) {
+    if (p > '9' )
       goto  LBL_ERR;
-    }
-    buf_write_u8(buf, p);
+    buf_write_u8(&buf_tmp, p);
     ++result;
   }
   if (x->mp_int.sign == MP_NEG) {
-    buf_write_u8(buf, '-');
+    buf_write_u8(&buf_tmp, '-');
     ++result;
   }
-  buf_reverse_u8(buf);
+  buf_xfer_reverse(&buf_tmp, buf);
   mp_clear(&t);
+  buf_clean(&buf_tmp);
   return result;
   LBL_ERR:
+  buf_clean(&buf_tmp);
   mp_clear(&t);
   return -1;
 }
