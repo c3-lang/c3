@@ -91,4 +91,10 @@ test_cov: cov clean_cov
 test_debug: debug
 	${MAKE} -C test test_debug
 
+test_gcovr:
+	${MAKE} clean_cov
+	${MAKE} libc3_test_cov
+	${MAKE} ic3_test_cov
+	${MAKE} gcovr
+
 .PHONY: all asan cov clean clean_cov debug gcovr ic3 install libc3 libtommath test test_asan test_cov test_debug

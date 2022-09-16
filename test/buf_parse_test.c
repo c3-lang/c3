@@ -16,14 +16,8 @@
     bool dest = -1;                                                    \
     test_context("buf_parse_bool(" # test ") -> " # expected);         \
     buf_init_1(&buf, (test));                                          \
-    if ((expected) != -1) {                                            \
-      TEST_EQ(buf_parse_bool(&buf, &dest), strlen(test));              \
-      TEST_EQ(buf.rpos, strlen(test));                                 \
-    }                                                                  \
-    else {                                                             \
-      TEST_EQ(buf_parse_bool(&buf, &dest), 0);                         \
-      TEST_EQ(buf.rpos, 0);                                            \
-    }                                                                  \
+    TEST_EQ(buf_parse_bool(&buf, &dest), strlen(test));                \
+    TEST_EQ(buf.rpos, strlen(test));                                   \
     TEST_EQ(dest, (expected));                                         \
     buf_clean(&buf);                                                   \
   } while (0)
@@ -112,6 +106,18 @@
     TEST_EQ(buf_parse_list(&buf, &dest), strlen(test));                \
     buf_clean(&buf);                                                   \
     list_delete(dest);                                                 \
+  } while (0)
+
+#define BUF_PARSE_TEST_NOT_BOOL(test)                                  \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    bool dest = -1;                                                    \
+    test_context("buf_parse_bool(" # test ") -> 0");                   \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_bool(&buf, &dest), 0);                           \
+    TEST_EQ(buf.rpos, 0);                                              \
+    TEST_EQ(dest, -1);                                                 \
+    buf_clean(&buf);                                                   \
   } while (0)
 
 #define BUF_PARSE_TEST_NOT_CHARACTER(test)                             \
@@ -333,17 +339,19 @@ void buf_parse_test ()
 
 void buf_parse_test_bool ()
 {
-  BUF_PARSE_TEST_BOOL("0", -1);
-  BUF_PARSE_TEST_BOOL("1", -1);
-  BUF_PARSE_TEST_BOOL("a", -1);
-  BUF_PARSE_TEST_BOOL("T", -1);
-  BUF_PARSE_TEST_BOOL("NIL", -1);
-  BUF_PARSE_TEST_BOOL("N", -1);
-  BUF_PARSE_TEST_BOOL("Y", -1);
-  BUF_PARSE_TEST_BOOL("t", -1);
-  BUF_PARSE_TEST_BOOL("nil", -1);
-  BUF_PARSE_TEST_BOOL("n", -1);
-  BUF_PARSE_TEST_BOOL("y", -1);
+  BUF_PARSE_TEST_NOT_BOOL("0");
+  BUF_PARSE_TEST_NOT_BOOL("1");
+  BUF_PARSE_TEST_NOT_BOOL("a");
+  BUF_PARSE_TEST_NOT_BOOL("T");
+  BUF_PARSE_TEST_NOT_BOOL("NIL");
+  BUF_PARSE_TEST_NOT_BOOL("N");
+  BUF_PARSE_TEST_NOT_BOOL("Y");
+  BUF_PARSE_TEST_NOT_BOOL("t");
+  BUF_PARSE_TEST_NOT_BOOL("nil");
+  BUF_PARSE_TEST_NOT_BOOL("n");
+  BUF_PARSE_TEST_NOT_BOOL("y");
+  BUF_PARSE_TEST_NOT_BOOL("falser");
+  BUF_PARSE_TEST_NOT_BOOL("truer");
   BUF_PARSE_TEST_BOOL("false", 0);
   BUF_PARSE_TEST_BOOL("true", 1);
 }

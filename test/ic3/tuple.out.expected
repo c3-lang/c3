@@ -1,0 +1,17 @@
+{[], []}
+{"", ""}
+{"", []}
+{[], ""}
+{b, a}
+{c, b, a}
+{d, c, b, a}
+{e, d, c, b, a}
+{f, e, d, c, b, a}
+{g, f, e, d, c, b, a}
+{h, g, f, e, d, c, b, a}
+{i, h, g, f, e, d, c, b, a}
+{j, i, h, g, f, e, d, c, b, a}
+{{d, c}, {b, a}}
+{{f, e}, {d, c}, {b, a}}
+{{h, g}, {f, e}, {d, c}, {b, a}}
+{{j, i}, {h, g}, {f, e}, {d, c}, {b, a}}
